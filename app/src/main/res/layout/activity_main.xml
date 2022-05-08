@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:theme="@style/QMUI"
+    tools:context=".activity.MainActivity">
+
+    <com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
+        android:id="@+id/slider"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:theme="@style/Theme.Material3.Light.NoActionBar" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <FrameLayout
+            android:id="@+id/frameHome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="70dp" />
+
+        <FrameLayout
+            android:id="@+id/frameCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="70dp" />
+
+
+        <github.com.st235.lib_expandablebottombar.ExpandableBottomBar
+            android:id="@+id/expandable_bottom_bar"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_margin="0dp"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
+            app:exb_backgroundColor="#F1F1F1"
+            app:exb_backgroundCornerRadius="0dp"
+            app:exb_itemInactiveColor="#0E0E0E"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <!--        <com.dd.ShadowLayout-->
+        <!--            android:id="@+id/floatButtonShadowLayout"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/expandable_bottom_bar"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:sl_cornerRadius="5dp"-->
+        <!--            app:sl_dx="0dp"-->
+        <!--            app:sl_dy="0dp"-->
+        <!--            app:sl_shadowColor="#393131"-->
+        <!--            app:sl_shadowRadius="4dp">-->
+        <com.qmuiteam.qmui.layout.QMUILinearLayout
+            android:id="@+id/floatButtonShadowLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/expandable_bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/floatButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|end"
+                android:src="@drawable/ic_baseline_add_35_white"
+                android:theme="@style/Theme.Material3.Light.NoActionBar"
+                app:fab_colorNormal="@color/myBlue"
+                app:fab_colorPressed="#007BB3"
+                app:fab_colorRipple="#3D9ECA" />
+
+        </com.qmuiteam.qmui.layout.QMUILinearLayout>
+
+        <!--        </com.dd.ShadowLayout>-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

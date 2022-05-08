@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.layout.QMUILinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/QMUILinearLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="使用帮助"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <com.mikepenz.iconics.view.IconicsTextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:text="登录东大统一身份认证；\n看到 '综合教务系统' 字样后，\n点击右上方的按钮{gmi-arrow-right-top}" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="*你有可能需要多次登录\n*不适用于教师账号\n*不会以任何形式上传或存储隐私"
+        android:textColor="@color/gray_600" />
+
+</com.qmuiteam.qmui.layout.QMUILinearLayout>

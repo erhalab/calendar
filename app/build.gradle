@@ -1,0 +1,170 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+
+android {
+    compileSdkVersion buildConfig.compileSdk
+    buildToolsVersion "32.0.0"
+
+    defaultConfig {
+        applicationId "com.erha.calander"
+        minSdkVersion buildConfig.minSdk
+        targetSdkVersion buildConfig.targetSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
+    lintOptions {
+        abortOnError false
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    api 'com.tencent.tbs:tbssdk:44181'
+
+    //--------------------------------------------------------------------------
+    //DataPicker
+    implementation 'com.philliphsu:bottomsheetpickers:2.4.1'
+
+    implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    coreLibraryDesugaring libraries.coreLibraryDesugaring
+    implementation libraries.coreLibraryDesugaring
+
+    implementation libraries.kotlin
+
+    implementation libraries.androidxCore
+    implementation libraries.appCompat
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.activity:activity-ktx:1.4.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+
+    implementation 'com.google.android.material:material:1.5.0'
+
+    //    testImplementation testing.jUnit
+
+    //    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    //    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    //okhttp
+    //implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    //floating button
+    //implementation "com.leinardi.android:speed-dial:3.2.0"
+    //--------------------------------------------------------------------------
+    //Floating Button2
+    implementation 'com.github.clans:fab:1.6.4'
+    //--------------------------------------------------------------------------
+    //QMUI
+    implementation 'com.qmuiteam:qmui:2.1.0'
+    //--------------------------------------------------------------------------
+    //ICON
+    implementation "com.mikepenz:iconics-core:5.3.3"
+    implementation "com.mikepenz:iconics-views:5.3.3"
+    implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.8-kotlin@aar'
+    implementation 'com.mikepenz:google-material-typeface:4.0.0.2-kotlin@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:5.13.3.0-kotlin@aar'
+    //--------------------------------------------------------------------------
+    //Bottom Menu
+    implementation 'com.github.st235:expandablebottombar:1.4.0'
+    //--------------------------------------------------------------------------
+    // Shadow
+    // implementation 'com.github.dmytrodanylyk.shadow-layout:library:1.0.3'
+    //--------------------------------------------------------------------------
+    //Week
+    implementation project(':core')
+    implementation project(':jsr310')
+    //implementation project(':jodatime')
+    //implementation project(':threetenabp')
+    //implementation project(':emoji')
+    //
+    // Add this module to use WeekView with the Java 8 Date/Time API. This module
+    // uses core library desugaring, making it available on API 21 and above.
+    //implementation 'com.github.thellmund.Android-Week-View:jsr310:5.3.0'
+    // The development of JodaTime and ThreeTenABP are winding down.
+    // It’s best to opt for the Java 8 Date/Time API.
+    //implementation 'com.github.thellmund.Android-Week-View:jodatime:5.3.0'
+    //implementation 'com.github.thellmund.Android-Week-View:threetenabp:5.3.0'
+    //implementation 'com.github.thellmund.Android-Week-View:emoji:5.3.0'
+    //--------------------------------------------------------------------------
+    //GSON
+    implementation 'com.google.code.gson:gson:2.9.0'
+    //fastjson
+    //implementation 'com.alibaba:fastjson:1.2.70'
+    //--------------------------------------------------------------------------
+    //Drawer Layout
+    // https://mvnrepository.com/artifact/com.mikepenz/materialdrawer
+    implementation group: 'com.mikepenz', name: 'materialdrawer', version: '9.0.0'
+    // Add for NavController support
+    implementation 'com.mikepenz:materialdrawer-nav:9.0.0'
+    // Add for Android-Iconics support
+    implementation 'com.mikepenz:materialdrawer-iconics:9.0.0'
+    //--------------------------------------------------------------------------
+    //RecyclerView
+    implementation 'com.afollestad:recyclical:1.1.1'
+    //--------------------------------------------------------------------------
+    //EventBus
+    implementation 'org.greenrobot:eventbus:3.3.1'
+    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.3.1'
+    //--------------------------------------------------------------------------
+    //Popup dialog view
+    implementation 'com.github.li-xiaojun:XPopup:2.7.6'
+    //--------------------------------------------------------------------------
+    //Picker
+    implementation 'cn.carbswang.android:NumberPickerView:1.2.0'
+    //--------------------------------------------------------------------------
+    //Smooth CheckBox
+    //implementation project(':smoothCheckBox')
+    //--------------------------------------------------------------------------
+    //Login
+    implementation 'cn.authing:guard:1.2.9'
+    //--------------------------------------------------------------------------
+    //Code input
+    implementation 'com.galenleo.widgets:code-input-view:1.0.0'
+    //--------------------------------------------------------------------------
+    //materialtextfield
+    //implementation 'com.github.florent37:materialtextfield:1.0.7'
+    //--------------------------------------------------------------------------
+    //Toast
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
+    //--------------------------------------------------------------------------
+    //Loading
+    //implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    //--------------------------------------------------------------------------
+    //SMS
+    implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
+    implementation('com.tencentcloudapi:tencentcloud-sdk-java-sms:3.1.502')
+    //--------------------------------------------------------------------------
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
+    //--------------------------------------------------------------------------
+    //File
+    implementation 'com.github.javakam:file.core:3.5.0@aar'      //核心库必选(Core library required)
+    //--------------------------------------------------------------------------
+    //notify
+    implementation "io.karn:notify:1.4.0"
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.layout.QMUILinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/QMUILinearLayout"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="通知机制"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在这里，一切皆事件。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="事件：一个以确切的起始时间和持续时间为基本属性的东西。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="课程：一门课 ≠ 一个事件，一堂课才是。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="e.g.,第9周周五1-4节的安卓课 ＝ 一个事件。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="一个事件可以设置多个提醒时间，这些提醒称作通知。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="通知：不存在持续时间，若干通知隶属于同一个事项，一个通知只能在某个确切的时间点被触发。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="同一个事项的通知，是否互斥，你可以在上面进行设置。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="通知互斥：QQ好友给你发送了一条信息，手机响了一次，你没有处理他；好友又给你发了一条，手机又会响一次。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="非互斥：上述场景中，无论对方连续发了多少条信息，手机都只会在第一条信息来的时候响起。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="同一个事项的通知，是否互斥，你可以在上面进行设置。"
+        android:textColor="#757575" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="通知队列仅在本次启动有效。也就是说，用户启动App时，所有事项的通知会被重新启用，即使在上次启动时设置了不再提醒。"
+        android:textColor="#757575" />
+
+</com.qmuiteam.qmui.layout.QMUILinearLayout>

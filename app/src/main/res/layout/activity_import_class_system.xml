@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_background_color"
+    android:orientation="vertical"
+    tools:context=".activity.ImportClassSystemActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/backButton"
+            android:layout_width="50dp"
+            android:layout_height="match_parent">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                app:iiv_color="@android:color/black"
+                app:iiv_contour_color="@color/black"
+                app:iiv_icon="gmd-arrow-back" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:gravity="center"
+            android:text="@string/setting_import_class"
+            android:textSize="20sp"
+            android:transitionName="@string/transition_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right">
+
+            <Button
+                android:id="@+id/loginSuccess"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:foreground="?selectableItemBackground"
+                android:text="@string/setting_import_class_confirm" />
+
+            <LinearLayout
+                android:id="@+id/helpClickZone"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:id="@+id/helpIcon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="25dp"
+                    app:iiv_color="@color/black"
+                    app:iiv_contour_color="@color/black"
+                    app:iiv_icon="gmd-help" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

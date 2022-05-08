@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_today">今天</string>
+    <string name="action_day_view">日视图</string>
+    <string name="action_three_day_view">3日视图</string>
+    <string name="action_week_view">周视图</string>
+    <string name="setting_language">语言</string>
+    <string name="setting_componment">功能模块</string>
+    <string name="setting_time">日期与时间</string>
+    <string name="setting_notify">声音、提醒与通知</string>
+    <string name="setting_about">关于</string>
+    <string name="app_name">清单</string>
+    <string name="modelModifyText">你可以在这里开启或关闭以下功能，已开启的功能将在主界面选项卡中展示。</string>
+    <string name="setting_model_calendar">日历</string>
+    <string name="setting_model_calendar_subtitle">开启后，即可查看日历视图</string>
+    <string name="setting_model_search">搜索</string>
+    <string name="setting_model_search_subtitle">开启后，即可在主界面选项卡快速搜索任务</string>
+    <string name="setting_model_focus">专注</string>
+    <string name="setting_model_focus_subtitle">开启后，即可从主界面选项卡、任务详情或提醒弹窗中开始专注。</string>
+    <string name="menu_home_text">任务</string>
+    <string name="menu_calendar_text">日历</string>
+    <string name="menu_account_text">账户</string>
+    <string name="menu_setting_text">设置</string>
+    <string name="developer_name">黄逸航</string>
+    <string name="developer_email" translatable="false">1843939443@qq.com</string>
+    <string name="language_zh" translatable="false">简体中文</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="setting_time_the_first_week">第1周为</string>
+    <string name="setting_time_the_first_week_subtitle">%1$s所在周</string>
+    <string name="text_default">默认</string>
+    <string name="text_custom">自定义</string>
+    <string name="text_finish">完成</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_month">月</string>
+
+    <string-array name="month">
+        <item>1月</item>
+        <item>2月</item>
+        <item>3月</item>
+        <item>4月</item>
+        <item>5月</item>
+        <item>6月</item>
+        <item>7月</item>
+        <item>8月</item>
+        <item>9月</item>
+        <item>10月</item>
+        <item>11月</item>
+        <item>12月</item>
+    </string-array>
+    <string name="text_day">日</string>
+    <string name="popup_first_week_subtitle">%1$s所在周即为第一周</string>
+    <string name="text_about">关于</string>
+    <string name="about_visit_site">访问官网</string>
+    <string name="about_visit_site_link" translatable="false">qugeek.com</string>
+    <string name="about_rate_us">给我们评分</string>
+    <string name="about_wechat">微信公众号</string>
+    <string name="about_wechat_id" translatable="false">二哈君</string>
+    <string name="about_red_book">小红书</string>
+    <string name="about_red_book_id" translatable="false">二哈的小红书</string>
+    <string name="about_terms_of_use">使用政策</string>
+    <string name="about_privacy">隐私政策</string>
+    <string name="about_licenses">开源协议</string>
+    <string name="about_acknowledgements">致谢</string>
+    <string name="text_developing">此功能设计中</string>
+    <string name="about_version">版本信息： %1$s</string>
+    <string name="text_exit_app">退出应用</string>
+    <string name="transition_title" translatable="false">transition_title</string>
+    <string name="setting_import_class">导入课程</string>
+    <string name="setting_import_class_confirm">登录成功</string>
+    <string name="string_import_class_fail">导入失败</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="login">登录</string>
+    <string name="login_phone">请输入手机号</string>
+    <string name="setting_time_first_day_of_week">每周的第一天是</string>
+    <string name="setting_time_first_day_of_week_subtitle">%1$s</string>
+</resources>

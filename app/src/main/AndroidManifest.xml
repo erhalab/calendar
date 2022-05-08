@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.erha.calander">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/QMUI"
+        android:usesCleartextTraffic="true">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+        <!-- 注册接收系统开机广播消息的广播接收者 -->
+        <receiver
+            android:name=".service.AutoStartReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":erha">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="false" />
+
+        <service
+            android:name=".service.NotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":erha" />
+        <service
+            android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
+            android:label="dexopt"
+            android:process=":dexopt" />
+
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.ImportClassActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.ImportClassSystemActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.LauncherActivity"
+            android:exported="true"
+            android:process=":erha"
+            android:theme="@style/Launcher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SettingNotificationActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.SettingModelActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.SettingTimeActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.AboutActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:process=":erha"
+            android:theme="@style/Theme.Kotlin3" />
+    </application>
+
+</manifest>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_today">Today</string>
+    <string name="action_day_view">Day View</string>
+    <string name="action_three_day_view">Three Day View</string>
+    <string name="action_week_view">Week View</string>
+    <string name="setting_language">Language</string>
+    <string name="setting_componment">App Models</string>
+    <string name="app_name">List</string>
+    <string name="setting_time">Time</string>
+    <string name="setting_notify">Sound And Notify</string>
+    <string name="setting_about">About</string>
+    <string name="modelModifyText">You can turn on or off the following features here. The enabled features will be displayed in the main screen tab.</string>
+    <string name="setting_model_calendar">Calendar</string>
+    <string name="setting_model_calendar_subtitle">Turn it on to view the calendar view</string>
+    <string name="setting_model_search">Search</string>
+    <string name="setting_model_search_subtitle">Once turned on, you can quickly search for tasks in the main screen tab</string>
+    <string name="setting_model_focus">Focus</string>
+    <string name="setting_model_focus_subtitle">Once turned on, you can start focusing from the main screen tab, task details or reminder pop-ups.</string>
+    <string name="menu_home_text">Task</string>
+    <string name="menu_calendar_text">Calendar</string>
+    <string name="menu_account_text">Account</string>
+    <string name="menu_setting_text">Settings</string>
+    <string name="developer_name">Huang Yihang</string>
+    <string name="setting_time_the_first_week">Week 1 is</string>
+    <string name="setting_time_the_first_week_subtitle">Week of %1$s</string>
+    <string name="text_default">App Default</string>
+    <string name="text_custom">Custom</string>
+    <string name="text_finish">Finish</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_month">Month</string>
+
+    <string-array name="month">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <string name="text_day">Day</string>
+    <string name="popup_first_week_subtitle">Week of %1$s is the first week</string>
+    <string name="text_about">About</string>
+    <string name="about_visit_site">Official Site</string>
+    <string name="about_rate_us">Rate us</string>
+    <string name="about_wechat">Official wechat account</string>
+    <string name="about_red_book">Red book</string>
+    <string name="about_terms_of_use">Terms of use</string>
+    <string name="about_privacy">Privacy</string>
+    <string name="about_licenses">Licenses</string>
+    <string name="about_acknowledgements">Acknowledgements</string>
+    <string name="text_developing">Developing....</string>
+    <string name="about_version">Version  %1$s</string>
+    <string name="login">Login</string>
+</resources>

@@ -1,0 +1,9 @@
+include ':app'
+rootProject.name = "Kotlin3"
+include ':base'
+include ':base'
+include ':core'
+include ':jsr310'
+//include ':jodatime'
+//include ':emoji'
+//include ':threetenabp'

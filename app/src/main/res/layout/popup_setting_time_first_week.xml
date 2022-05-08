@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.layout.QMUILinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/QMUILinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_time_the_first_week"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp">
+
+        <RadioButton
+            android:id="@+id/defaultCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:buttonTint="@color/default_active"
+            android:text="@string/text_default" />
+        <!--            <cn.refactor.library.SmoothCheckBox-->
+        <!--                android:layout_width="18dp"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_margin="5dp"-->
+        <!--                app:color_checked="@color/default_active"/>-->
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:textSize="@dimen/text_middle"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_marginLeft="10dp"-->
+        <!--                android:text="@string/text_default"/>-->
+
+
+        <RadioButton
+            android:id="@+id/customCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:buttonTint="@color/default_active"
+            android:text="@string/text_custom" />
+        <!--            <cn.refactor.library.SmoothCheckBox-->
+        <!--                android:id="@+id/customCheckBox"-->
+        <!--                android:layout_width="18dp"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_margin="5dp"-->
+        <!--                app:color_checked="@color/default_active"/>-->
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:textSize="@dimen/text_middle"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_marginLeft="10dp"-->
+        <!--                android:text="@string/text_custom"/>-->
+
+    </RadioGroup>
+
+
+    <LinearLayout
+        android:id="@+id/customZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/beginWeekSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/text_default"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/text_middle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <cn.carbswang.android.numberpickerview.library.NumberPickerView
+                android:id="@+id/monthPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                app:npv_DividerColor="@color/transparent"
+                app:npv_ItemPaddingHorizontal="5dp"
+                app:npv_ItemPaddingVertical="5dp"
+                app:npv_RespondChangeOnDetached="false"
+                app:npv_TextColorNormal="@color/gray_alpha10"
+                app:npv_TextColorSelected="@color/black"
+                app:npv_TextSizeNormal="16sp"
+                app:npv_TextSizeSelected="20sp"
+                app:npv_WrapSelectorWheel="false" />
+
+            <cn.carbswang.android.numberpickerview.library.NumberPickerView
+                android:id="@+id/dayPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                app:npv_DividerColor="@color/transparent"
+                app:npv_ItemPaddingHorizontal="5dp"
+                app:npv_ItemPaddingVertical="5dp"
+                app:npv_RespondChangeOnDetached="false"
+                app:npv_TextColorNormal="@color/gray_alpha10"
+                app:npv_TextColorSelected="@color/black"
+                app:npv_TextSizeNormal="16sp"
+                app:npv_TextSizeSelected="20sp"
+                app:npv_WrapSelectorWheel="false" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttomCancle"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/text_cancel"
+            android:textColor="@color/default_active"
+            android:textSize="@dimen/text_middle" />
+
+        <Button
+            android:id="@+id/buttomFinish"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/text_finish"
+            android:textColor="@color/default_active"
+            android:textSize="@dimen/text_middle"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</com.qmuiteam.qmui.layout.QMUILinearLayout>
