@@ -14,5 +14,5 @@ interface WeekViewDisplayable<T> {
     @Deprecated(
         message = "This method is deprecated. Instead, construct a WeekViewEntity in the onCreateEntity() method of WeekView's adapter."
     )
-    fun toWeekViewEvent(): WeekViewEntity.Event
+    fun toWeekViewEvent(): WeekViewEvent<T>
 }
