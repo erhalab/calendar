@@ -493,16 +493,7 @@ data class WeekViewEvent<T> internal constructor(
             val endTime = checkNotNull(endTime) { "endTime == null" }
             val data = checkNotNull(data) { "data == null" }
             val style = this.style ?: WeekViewEntity.Style.Builder().build()
-            return WeekViewEntity.Event(
-                id,
-                title,
-                startTime,
-                endTime,
-                location,
-                isAllDay,
-                style,
-                data
-            )
+            return WeekViewEntity.Event(id, title, startTime, endTime, location, isAllDay, style, data)
         }
     }
 }
