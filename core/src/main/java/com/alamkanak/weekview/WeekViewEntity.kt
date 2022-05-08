@@ -333,11 +333,11 @@ data class WeekViewEvent<T> internal constructor(
     internal val endTime: Calendar = now(),
     internal val locationResource: TextResource? = null,
     internal val isAllDay: Boolean = false,
-    internal val style: WeekViewEntity.Style = WeekViewEntity.Style(),
+    internal val style: Style = Style(),
     internal val data: T
 ) : WeekViewDisplayable<T> {
 
-    override fun toWeekViewEvent(): WeekViewEntity.Event = this
+    override fun toWeekViewEvent(): WeekViewEvent<T> = this
 
     @Deprecated(
         "Use WeekViewEntity.Style instead.",
@@ -355,7 +355,7 @@ data class WeekViewEvent<T> internal constructor(
 
         class Builder {
 
-            private val style = WeekViewEntity.Style()
+            private val style = Style()
 
             @PublicApi
             fun setBackgroundColor(@ColorInt color: Int): Builder {
@@ -413,7 +413,7 @@ data class WeekViewEvent<T> internal constructor(
             }
 
             @PublicApi
-            fun build(): WeekViewEntity.Style = style
+            fun build(): Style = style
         }
     }
 
@@ -428,72 +428,72 @@ data class WeekViewEvent<T> internal constructor(
         private var location: TextResource? = null
         private var startTime: Calendar? = null
         private var endTime: Calendar? = null
-        private var style: WeekViewEntity.Style? = null
+        private var style: Style? = null
         private var isAllDay: Boolean = false
 
         @PublicApi
-        fun setId(id: Long): WeekViewEntity.Event.Builder {
+        fun setId(id: Long): Builder<T> {
             this.id = id
             return this
         }
 
         @PublicApi
-        fun setTitle(title: CharSequence): WeekViewEntity.Event.Builder {
+        fun setTitle(title: CharSequence): Builder<T> {
             this.title = TextResource.Value(title)
             return this
         }
 
         @PublicApi
-        fun setTitle(resId: Int): WeekViewEntity.Event.Builder {
+        fun setTitle(resId: Int): Builder<T> {
             this.title = TextResource.Id(resId)
             return this
         }
 
         @PublicApi
-        fun setStartTime(startTime: Calendar): WeekViewEntity.Event.Builder {
+        fun setStartTime(startTime: Calendar): Builder<T> {
             this.startTime = startTime
             return this
         }
 
         @PublicApi
-        fun setEndTime(endTime: Calendar): WeekViewEntity.Event.Builder {
+        fun setEndTime(endTime: Calendar): Builder<T> {
             this.endTime = endTime
             return this
         }
 
         @PublicApi
-        fun setLocation(location: CharSequence): WeekViewEntity.Event.Builder {
+        fun setLocation(location: CharSequence): Builder<T> {
             this.location = TextResource.Value(location)
             return this
         }
 
         @PublicApi
-        fun setLocation(resId: Int): WeekViewEntity.Event.Builder {
+        fun setLocation(resId: Int): Builder<T> {
             this.location = TextResource.Id(resId)
             return this
         }
 
         @PublicApi
-        fun setStyle(style: WeekViewEntity.Style): WeekViewEntity.Event.Builder {
+        fun setStyle(style: Style): Builder<T> {
             this.style = style
             return this
         }
 
         @PublicApi
-        fun setAllDay(isAllDay: Boolean): WeekViewEntity.Event.Builder {
+        fun setAllDay(isAllDay: Boolean): Builder<T> {
             this.isAllDay = isAllDay
             return this
         }
 
         @PublicApi
-        fun build(): WeekViewEntity.Event {
+        fun build(): WeekViewEvent<T> {
             val id = checkNotNull(id) { "id == null" }
             val title = checkNotNull(title) { "title == null" }
             val startTime = checkNotNull(startTime) { "startTime == null" }
             val endTime = checkNotNull(endTime) { "endTime == null" }
             val data = checkNotNull(data) { "data == null" }
-            val style = this.style ?: WeekViewEntity.Style.Builder().build()
-            return WeekViewEntity.Event(id, title, startTime, endTime, location, isAllDay, style, data)
+            val style = this.style ?: Style.Builder().build()
+            return WeekViewEvent(id, title, startTime, endTime, location, isAllDay, style, data)
         }
     }
 }
@@ -502,7 +502,7 @@ internal fun <T> WeekViewDisplayable<T>.toWeekViewEntity(
     context: Context
 ) = toWeekViewEvent().toWeekViewEntity(context)
 
-internal fun <T> WeekViewEntity.Event.toWeekViewEntity(
+internal fun <T> WeekViewEvent<T>.toWeekViewEntity(
     context: Context
 ): WeekViewEntity = WeekViewEntity.Event(
     id = id,
@@ -515,7 +515,7 @@ internal fun <T> WeekViewEntity.Event.toWeekViewEntity(
     data = data
 )
 
-private fun WeekViewEntity.Event.Style.toWeekViewEntityStyle(
+private fun WeekViewEvent.Style.toWeekViewEntityStyle(
     context: Context
 ): WeekViewEntity.Style {
     return WeekViewEntity.Style.Builder()
