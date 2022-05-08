@@ -8,6 +8,16 @@
 |  ----  | ----  | ----  | ----  | ----  | ----  |
 | ![](https://pic.imgdb.cn/item/6277723f0947543129f4a8f3.jpg) | ![](https://pic.imgdb.cn/item/627772590947543129f51060.jpg) | ![](https://pic.imgdb.cn/item/627772680947543129f54a8c.jpg) | ![](https://pic.imgdb.cn/item/627774e00947543129fdf99e.jpg) | ![](https://pic.imgdb.cn/item/627773a40947543129f9c944.jpg) | ![](https://pic.imgdb.cn/item/627772df0947543129f706be.jpg) |
 
+## 下载安卓安装包
+
+地址一：https://raw.fastgit.org/erhalab/calendar/master/app/release/app-release.apk
+
+地址二：https://ghproxy.fsofso.com/https://github.com/erhalab/calendar/blob/master/app/release/app-release.apk
+
+地址三：https://raw.iqiq.io/erhalab/calendar/master/app/release/app-release.apk
+
+地址四：https://hk1.monika.love/erhalab/calendar/master/app/release/app-release.apk
+
 ## 功能描述
 
 ### 日历视图
