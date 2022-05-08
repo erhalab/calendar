@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.*
+import android.provider.Settings
 import android.util.Log
 import cn.authing.guard.Authing
 import com.erha.calander.BuildConfig
@@ -160,14 +162,24 @@ class NotificationService : Service() {
                 "默认通知",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                this.description = "没有被分类的通知"
-                this.enableLights(true)
-                this.enableVibration(true)
-                this.setShowBadge(true)
+                description = "没有被分类的通知"
+                //通知声音
+                setSound(
+                    Settings.System.DEFAULT_NOTIFICATION_URI,
+                    Notification.AUDIO_ATTRIBUTES_DEFAULT
+                )
+                //呼吸灯
+                enableLights(true)
+                lightColor = Notification.DEFAULT_LIGHTS
+                //震动
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 250, 250)
+                setShowBadge(true)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     this.setAllowBubbles(true)
                 }
-                this.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                //锁屏可见性
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
         )
         channels.add(
@@ -176,14 +188,24 @@ class NotificationService : Service() {
                 "课程提醒",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                this.description = "所有的课程提醒~"
-                this.enableLights(true)
-                this.enableVibration(true)
-                this.setShowBadge(true)
+                description = "所有的课程提醒~"
+                //通知声音
+                setSound(
+                    Settings.System.DEFAULT_NOTIFICATION_URI,
+                    Notification.AUDIO_ATTRIBUTES_DEFAULT
+                )
+                //呼吸灯
+                enableLights(true)
+                lightColor = Notification.DEFAULT_LIGHTS
+                //震动
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 250, 250)
+                setShowBadge(true)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     this.setAllowBubbles(true)
                 }
-                this.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                //锁屏可见性
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
         )
         notificationManager.createNotificationChannels(channels)
@@ -195,15 +217,15 @@ class NotificationService : Service() {
             handler.sendEmptyMessage(0)
             try {
 
-                var nextCalendar = Calendar.getInstance()
+                val nextCalendar = Calendar.getInstance()
                 nextCalendar.apply {
                     //下一分钟，秒和毫秒都为0
                     set(Calendar.SECOND, 0)
                     set(Calendar.MILLISECOND, 0)
                     add(Calendar.MINUTE, 1)
                 }
-                var nowCalendar = Calendar.getInstance()
-                var s = (nextCalendar.timeInMillis - nowCalendar.timeInMillis)
+                val nowCalendar = Calendar.getInstance()
+                val s = (nextCalendar.timeInMillis - nowCalendar.timeInMillis)
                 Log.e("通知休眠 -> mills ", s.toString())
                 Thread.sleep(s)
             } catch (e: InterruptedException) {
@@ -287,8 +309,11 @@ class NotificationService : Service() {
 
     private fun sendNotification() {
         Log.e("获取新通知前，当前展示的条数", notificationManager.activeNotifications.size.toString())
-        Log.e("获取通知", SimpleDateFormat().format(Calendar.getInstance().timeInMillis))
-        var notifications =
+        Log.e(
+            "获取通知",
+            SimpleDateFormat.getDateTimeInstance().format(Calendar.getInstance().timeInMillis)
+        )
+        val notifications =
             NotificationDao.getNowShouldDisplayNotifications(notificationManager.activeNotifications)
 
         notifications["DISMISS"]?.apply {
@@ -300,7 +325,7 @@ class NotificationService : Service() {
             for (n in this) {
                 if (n is SimpleNotification) {
                     val intent = Intent(this@NotificationService, MainActivity::class.java)
-                    var bundle = Bundle()
+                    val bundle = Bundle()
                     bundle.putString("type", MainActivityIntentType.CLICK_EVENT_NOTIFICATION)
                     bundle.putInt("id", n.notificationId)
                     intent.putExtras(bundle)
@@ -311,7 +336,7 @@ class NotificationService : Service() {
                             intent,
                             FLAG_IMMUTABLE
                         )
-                    var i = Notify
+                    val i = Notify
                         .with(this@NotificationService)
                         .meta {
                             clearIntent = PendingIntent.getService(
@@ -325,10 +350,11 @@ class NotificationService : Service() {
                         .alerting(n.channel) {
                         }
                         .content { // this: Payload.Content.Default
-                            // The title of the notification (first line).
                             title = n.title
-                            // The second line of the notification.
                             text = n.text
+                            //添加icon
+                            largeIcon =
+                                BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_round)
                         }
                         .actions {
                             add(
