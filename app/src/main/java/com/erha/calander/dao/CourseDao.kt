@@ -1,9 +1,10 @@
 package com.erha.calander.dao
 
 import ando.file.core.FileUtils
+import android.graphics.Color
 import androidx.core.net.toUri
-import com.erha.calander.data.model.ApiEvent
-import com.erha.calander.data.model.SimpleNEUClass
+import com.erha.calander.model.CalendarEntity
+import com.erha.calander.model.SimpleNEUClass
 import com.erha.calander.type.NotificationChannelType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -36,7 +37,7 @@ object CourseDao {
 
     private var isInit = false
 
-    private val courseEvents = ArrayList<ApiEvent>()
+    private val courseEvents = ArrayList<CalendarEntity>()
     private val coursePostedNotifications = ArrayList<SimpleTaskNotification>()
     private val courseNewNotifications = ArrayList<SimpleTaskNotification>()
 
@@ -271,18 +272,33 @@ object CourseDao {
                 }
 
 
-                var apiEvent = ApiEvent(
-                    title = neuClass.name,
-                    location = neuClass.position,
-                    year = courseCalendar.get(Calendar.YEAR),
-                    month = month,
-                    dayOfMonth = dayOfMonth,
-                    startTime = startTime,
-                    duration = duration,
-                    color = color,
-                    isCanceled = false,
-                    isAllDay = false
+//                var apiEvent = ApiEvent(
+//                    title = neuClass.name,
+//                    location = neuClass.position,
+//                    year = courseCalendar.get(Calendar.YEAR),
+//                    month = month,
+//                    dayOfMonth = dayOfMonth,
+//                    startTime = startTime,
+//                    duration = duration,
+//                    color = color,
+//                    isCanceled = false,
+//                    isAllDay = false
+//                )
+
+
+                courseEvents.add(
+                    CalendarEntity.Event(
+                        id = "10${courseEvents.size + 1}".toLong(),
+                        title = neuClass.name,
+                        location = neuClass.position,
+                        startTime = courseCalendar,
+                        endTime = endCalendar,
+                        color = Color.parseColor(color),
+                        isAllDay = false,
+                        isCanceled = false
+                    )
                 )
+
                 if (!isPass) {
                     //开始创建通知
                     var simpleTaskNotification = SimpleTaskNotification()
@@ -305,7 +321,6 @@ object CourseDao {
                     courseNewNotifications.add(simpleTaskNotification)
                 }
 
-                courseEvents.add(apiEvent)
                 nowIndex = endSectionIndex
             }
         }
@@ -318,9 +333,9 @@ object CourseDao {
         this.courseNewNotifications.clear()
     }
 
-    fun getAll(): ArrayList<ApiEvent> {
+    fun getAll(): ArrayList<CalendarEntity> {
         if (!isInit) {
-            return ArrayList<ApiEvent>()
+            return ArrayList<CalendarEntity>()
         }
         return courseEvents
     }

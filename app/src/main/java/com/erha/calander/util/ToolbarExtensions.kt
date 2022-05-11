@@ -6,12 +6,10 @@ import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
-import com.alamkanak.weekview.jsr310.scrollToDateTime
 import com.erha.calander.R
 import com.erha.calander.type.SettingType
 import com.philliphsu.bottomsheetpickers.BottomSheetPickerDialog
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -33,11 +31,11 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
         when (item.itemId) {
             //响应 跳转到今天的按钮
             R.id.action_today -> {
-                var time = LocalDateTime.now()
+                var time = Calendar.getInstance()
                 if (weekView.numberOfVisibleDays == 7) {
-                    time = LocalDateTime.now().plusDays(
-                        (Calendar.getInstance()
-                            .get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY).toLong() * -1
+                    time.add(
+                        Calendar.DAY_OF_MONTH,
+                        -1 * (time.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY)
                     )
                 }
                 weekView.scrollToDateTime(dateTime = time)

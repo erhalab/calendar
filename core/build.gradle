@@ -27,13 +27,4 @@ dependencies {
     implementation libraries.appCompat
     implementation libraries.androidxCore
     implementation libraries.androidxCustomView
-
-//    testImplementation testing.androidxjUnit
-//    testImplementation testing.androidxTestRunner
-//    testImplementation testing.jUnit
-//    testImplementation testing.mockitoCore
-//    testImplementation testing.mockitoInline
-//    testImplementation testing.mockitoKotlin
-//    testImplementation testing.robolectric
-//    testImplementation testing.truth
 }

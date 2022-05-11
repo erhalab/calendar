@@ -26,10 +26,6 @@
     *;
 }
 
--keep class org.joda.time.chrono.** {
-    *;
-}
-
 
 -keep class com.tencent.tbs.** {
     *;

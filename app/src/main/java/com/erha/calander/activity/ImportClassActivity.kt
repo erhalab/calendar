@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.erha.calander.R
 import com.erha.calander.dao.CourseDao
-import com.erha.calander.data.model.SimpleNEUClass
 import com.erha.calander.databinding.ActivityImportClassBinding
+import com.erha.calander.model.SimpleNEUClass
 import com.erha.calander.popup.ImportClassHelpPopup
 import com.erha.calander.type.EventType
 import com.erha.calander.type.SettingType
@@ -274,6 +274,7 @@ class ImportClassActivity : AppCompatActivity() {
                                             )
                                             //发布事件变化通知
                                             EventBus.getDefault().post(EventType.EVENT_CHANGE)
+                                            EventBus.getDefault().post(EventType.FIRST_WEEK_CHANGE)
                                         }.start()
 
                                         Toasty.success(

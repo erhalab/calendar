@@ -6,33 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
-import com.alamkanak.weekview.jsr310.WeekViewPagingAdapterJsr310
 import com.erha.calander.R
-import com.erha.calander.data.model.CalendarEntity
-import com.erha.calander.data.model.toWeekViewEntity
+import com.erha.calander.dao.CourseDao
 import com.erha.calander.databinding.FragmentCalenderBinding
+import com.erha.calander.model.CalendarEntity
+import com.erha.calander.model.toWeekViewEntity
 import com.erha.calander.type.EventType
 import com.erha.calander.type.SettingType
 import com.erha.calander.util.TinyDB
-import com.erha.calander.util.genericViewModel
 import com.erha.calander.util.setupWithWeekView
-import com.erha.calander.util.yearMonthsBetween
 import com.google.android.material.appbar.MaterialToolbar
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.YearMonth
 import java.util.*
 
 class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.OnDateSetListener {
     private lateinit var binding: FragmentCalenderBinding
-    private val viewModel by genericViewModel()
+
+    //    private val viewModel by genericViewModel()
     private lateinit var store: TinyDB
     private lateinit var locale: Locale
+    private lateinit var weekViewAdapter: WeekViewSimpleAdapter
 
     init {
         Log.e("onCreate Fragment", this.javaClass.name)
@@ -56,24 +55,28 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             binding.weekView,
             this@CalendarFragment
         )
-        val adapter = FragmentWeekViewAdapter(
-            loadMoreHandler = viewModel::fetchEvents,
+//        val adapter = FragmentWeekViewAdapter(
+//            loadMoreHandler = viewModel::fetchEvents,
+//            locale = this.locale,
+//            toolbar = binding.toolbarContainer.toolbar,
+//            store = store
+//        )
+        weekViewAdapter = WeekViewSimpleAdapter(
             locale = this.locale,
             toolbar = binding.toolbarContainer.toolbar,
             store = store
         )
-        binding.weekView.adapter = adapter
+        binding.weekView.adapter = weekViewAdapter
         // Limit WeekView to the current month
         //binding.weekView.minDateAsLocalDate = YearMonth.now().atDay(1)
-        //binding.weekView.maxDateAsLocalDate = YearMonth.now().atEndOfMonth()
-        viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            adapter.submitList(viewState.entities)
-        }
+        weekViewAdapter.submitList(CourseDao.getAll())
+//        viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
+//            adapter.submitList(viewState.entities)
+//        }
         //支持本地语言
         binding.weekView.setDateFormatter { date ->
             defaultDateFormatter(binding.weekView.numberOfVisibleDays).format(date.time)
         }
-        fragmentManager
         binding.weekView.setTimeFormatter { hour ->
             val date = Calendar.getInstance().withTime(hour = hour, minutes = 0)
             when (hour) {
@@ -88,19 +91,28 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         store.getString(SettingType.CALENDAR_LAST_FIRST_DAY)?.apply {
             if (this.isBlank()) return@apply
             var calendar = Calendar.getInstance()
-            var s = this.split("-")
-            calendar.apply {
-                set(Calendar.YEAR, s[0].toInt())
-                set(Calendar.MONTH, s[1].toInt() - 1)
-                set(Calendar.DAY_OF_MONTH, s[2].toInt())
-                set(Calendar.HOUR_OF_DAY, 8)
-                set(Calendar.MINUTE, 0)
-                if (binding.weekView.numberOfVisibleDays == 7) {
-                    add(Calendar.DAY_OF_MONTH, -1 * (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY))
+            var s = this.split("/")
+            try {
+                calendar.apply {
+                    set(Calendar.YEAR, s[0].toInt())
+                    set(Calendar.MONTH, s[1].toInt() - 1)
+                    set(Calendar.DAY_OF_MONTH, s[2].toInt())
+                    set(Calendar.HOUR_OF_DAY, 8)
+                    set(Calendar.MINUTE, 0)
+                    if (binding.weekView.numberOfVisibleDays == 7) {
+                        add(
+                            Calendar.DAY_OF_MONTH,
+                            -1 * (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY)
+                        )
+                    }
                 }
+                Log.e("自动跳转到 ->", this)
+                binding.weekView.scrollToDateTime(calendar)
+            } catch (e: NumberFormatException) {
+                Log.e("滚动到上次的位置（记忆）", "NumberFormatException")
             }
-            Log.e("自动跳转到 ->", this)
-            binding.weekView.scrollToDateTime(calendar)
+
+
         }
         //初始化标题日期
         binding.toolbarContainer.toolbar.apply {
@@ -120,9 +132,8 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     //初始化第一周的日期
     private fun initFirstWeek() {
         var weekDate = store.getString(SettingType.FIRST_WEEK).toString()
-        var calendar: Calendar? = null
         if (weekDate.isNotBlank()) {
-            calendar = Calendar.getInstance().apply {
+            var calendar = Calendar.getInstance().apply {
                 set(Calendar.MONTH, weekDate.split(",")[0].toInt() - 1)
                 set(Calendar.DAY_OF_MONTH, weekDate.split(",")[1].toInt())
             }
@@ -158,6 +169,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             EventType.FIRST_WEEK_CHANGE -> {
                 initFirstWeek()
             }
+            EventType.EVENT_CHANGE -> {
+                weekViewAdapter.submitList(CourseDao.getAll())
+            }
         }
     }
 
@@ -184,34 +198,25 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     }
 }
 
-
-private class FragmentWeekViewAdapter(
-    private val loadMoreHandler: (List<YearMonth>) -> Unit,
-    private val locale: Locale,
+private class WeekViewSimpleAdapter(
     private val store: TinyDB,
-    private val toolbar: MaterialToolbar? = null
-) : WeekViewPagingAdapterJsr310<CalendarEntity>() {
-
-    override fun onCreateEntity(item: CalendarEntity): WeekViewEntity = item.toWeekViewEntity()
-
-    override fun onLoadMore(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ) {
-        return loadMoreHandler(yearMonthsBetween(startDate, endDate))
+    private val toolbar: MaterialToolbar? = null,
+    private val locale: Locale
+) : WeekView.SimpleAdapter<CalendarEntity>() {
+    override fun onCreateEntity(item: CalendarEntity): WeekViewEntity {
+        return item.toWeekViewEntity()
     }
 
-    override fun onRangeChanged(firstVisibleDate: LocalDate, lastVisibleDate: LocalDate) {
+    override fun onRangeChanged(firstVisibleDate: Calendar, lastVisibleDate: Calendar) {
         super.onRangeChanged(firstVisibleDate, lastVisibleDate)
-        var c = Calendar.getInstance().apply {
-            set(Calendar.YEAR, firstVisibleDate.year)
-            set(Calendar.MONTH, firstVisibleDate.monthValue - 1)
-        }
-        store.putString(SettingType.CALENDAR_LAST_FIRST_DAY, firstVisibleDate.toString())
+        store.putString(
+            SettingType.CALENDAR_LAST_FIRST_DAY,
+            SimpleDateFormat("yyyy/MM/dd", locale).format(firstVisibleDate.timeInMillis)
+        )
         Log.e("日历被滑动了，现在显示的第一天是 ->", firstVisibleDate.toString())
         toolbar?.apply {
-            title = SimpleDateFormat("MMMM", locale).format(c.time)
-            subtitle = SimpleDateFormat("yyyy", locale).format(c.time)
+            title = SimpleDateFormat("MMMM", locale).format(firstVisibleDate.timeInMillis)
+            subtitle = SimpleDateFormat("yyyy", locale).format(firstVisibleDate.timeInMillis)
         }
     }
 }

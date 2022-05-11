@@ -51,8 +51,6 @@ dependencies {
     implementation 'com.philliphsu:bottomsheetpickers:2.4.1'
 
     implementation 'androidx.annotation:annotation:1.3.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     coreLibraryDesugaring libraries.coreLibraryDesugaring
     implementation libraries.coreLibraryDesugaring
 
@@ -65,12 +63,8 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
 
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.0'
 
-    //    testImplementation testing.jUnit
-
-    //    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    //    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //okhttp
     //implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     //floating button
@@ -95,21 +89,8 @@ dependencies {
     // Shadow
     // implementation 'com.github.dmytrodanylyk.shadow-layout:library:1.0.3'
     //--------------------------------------------------------------------------
-    //Week
+    //WeekView
     implementation project(':core')
-    implementation project(':jsr310')
-    //implementation project(':jodatime')
-    //implementation project(':threetenabp')
-    //implementation project(':emoji')
-    //
-    // Add this module to use WeekView with the Java 8 Date/Time API. This module
-    // uses core library desugaring, making it available on API 21 and above.
-    //implementation 'com.github.thellmund.Android-Week-View:jsr310:5.3.0'
-    // The development of JodaTime and ThreeTenABP are winding down.
-    // It’s best to opt for the Java 8 Date/Time API.
-    //implementation 'com.github.thellmund.Android-Week-View:jodatime:5.3.0'
-    //implementation 'com.github.thellmund.Android-Week-View:threetenabp:5.3.0'
-    //implementation 'com.github.thellmund.Android-Week-View:emoji:5.3.0'
     //--------------------------------------------------------------------------
     //GSON
     implementation 'com.google.code.gson:gson:2.9.0'

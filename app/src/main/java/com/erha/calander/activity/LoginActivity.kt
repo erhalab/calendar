@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.authing.guard.data.UserInfo
 import cn.authing.guard.network.AuthClient
 import com.erha.calander.R
+import com.erha.calander.dao.SMSDao
 import com.erha.calander.dao.SecretKeyDao
-import com.erha.calander.data.SingleSms
-import com.erha.calander.data.Sms
+import com.erha.calander.data.SingleSMS
 import com.erha.calander.databinding.ActivityLoginBinding
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loadingPopup: LoadingPopupView
     private var loadingPopupInit = false
     private lateinit var store: TinyDB
-    private lateinit var phoneSms: SingleSms
+    private lateinit var phoneSMS: SingleSMS
     private val phonePattern: Pattern =
         Pattern.compile("^((13[0-9])|(15[^4])|(18[0-9])|(17[1-9]))\\d{8}$")
 
@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
 
                 val expiredTime = Calendar.getInstance()
                 expiredTime.add(Calendar.SECOND, seconds)
-                phoneSms = SingleSms(
+                phoneSMS = SingleSMS(
                     code = code,
                     phone = binding.phoneNumberInput.text.toString(),
                     createTime = Calendar.getInstance(),
@@ -93,8 +93,8 @@ class LoginActivity : AppCompatActivity() {
         //test
         val expiredTime = Calendar.getInstance()
         expiredTime.add(Calendar.SECOND, 10000000)
-        Sms.list.add(
-            SingleSms(
+        SMSDao.list.add(
+            SingleSMS(
                 code = "111111",
                 phone = "13700000000",
                 createTime = Calendar.getInstance(),
@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
                 var checkCode = true
                 initLoadingPopup()
                 loadingPopup.show()
-                for (i in Sms.list) {
+                for (i in SMSDao.list) {
                     if (!i.used
                         && i.phone == binding.phoneNumberInput.text.toString()
                         && i.code == binding.verificationCodeInputView.text.toString()
@@ -180,7 +180,7 @@ class LoginActivity : AppCompatActivity() {
             loadingPopup.dismiss()
             when {
                 sendStatus?.code == "Ok" -> {
-                    Sms.list.add(phoneSms)
+                    SMSDao.list.add(phoneSMS)
                     object : CountDownTimer(10000 * 6, 100) {
                         override fun onTick(millisUntilFinished: Long) {
                             binding.sendSmsText.isEnabled = false

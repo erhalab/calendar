@@ -531,7 +531,6 @@ class MainActivity : AppCompatActivity() {
     fun onEvent(str: String?) {
         when (str) {
             EventType.LANGUAGE_CHANGE -> changeAppLanguage()
-            EventType.EVENT_CHANGE -> eventChangedDo()
         }
     }
 
@@ -552,18 +551,5 @@ class MainActivity : AppCompatActivity() {
                 .commitNowAllowingStateLoss()
         }
     }
-
-    private fun eventChangedDo() {
-        hasRecreatedFragments.clear()
-        for (f in fragmentObjects) {
-            f.fragment.apply {
-                //事件变化的话，只有第一二个Tab需要重新创建
-                if (this !is CalendarFragment && this !is HomeFragment) {
-                    hasRecreatedFragments.add(this)
-                }
-            }
-        }
-    }
-
 
 }
