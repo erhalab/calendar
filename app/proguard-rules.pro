@@ -30,3 +30,7 @@
 -keep class com.tencent.tbs.** {
     *;
 }
+
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }

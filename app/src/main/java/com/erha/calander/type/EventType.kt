@@ -8,6 +8,7 @@ class EventType {
         const val NOTIFICATION_SERVICE_REMOVE_NOTIFICATIONS =
             "NOTIFICATION_SERVICE_REMOVE_NOTIFICATIONS"
         const val USER_ADD_MORE_NOTIFY_TIME = "userAddMoreNotifyTime"
+        const val USER_INFO_CHANGE = "userInfoChange"
     }
 
 }

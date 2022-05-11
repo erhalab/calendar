@@ -29,22 +29,7 @@ class LauncherActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-//        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-//            if (applicationContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-//                //没有权限则申请权限
-//                ActivityCompat.requestPermissions(this@LauncherActivity,
-//                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),1);
-//            }else {
-//                //有权限直接执行,docode()不用做处理
-//                launchMainActivity()
-//
-//            }
-//        }else {
-//            //小于6.0，不用申请权限，直接执行
-//            launchMainActivity()
-//        }
         launchMainActivity()
-
     }
 
     override fun onRequestPermissionsResult(

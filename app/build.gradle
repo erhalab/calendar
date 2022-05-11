@@ -122,7 +122,7 @@ dependencies {
     //implementation project(':smoothCheckBox')
     //--------------------------------------------------------------------------
     //Login
-    implementation 'cn.authing:guard:1.2.9'
+    implementation 'cn.authing:guard:1.3.1'
     //--------------------------------------------------------------------------
     //Code input
     implementation 'com.galenleo.widgets:code-input-view:1.0.0'
@@ -138,7 +138,7 @@ dependencies {
     //--------------------------------------------------------------------------
     //SMS
     implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
-    implementation('com.tencentcloudapi:tencentcloud-sdk-java-sms:3.1.502')
+    implementation('com.tencentcloudapi:tencentcloud-sdk-java-sms:3.1.505')
     //--------------------------------------------------------------------------
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.13.2'
@@ -148,4 +148,10 @@ dependencies {
     //--------------------------------------------------------------------------
     //notify
     implementation "io.karn:notify:1.4.0"
+    //--------------------------------------------------------------------------
+    //hutool
+    implementation 'cn.hutool:hutool-all:5.8.0'
+    //--------------------------------------------------------------------------
+    //crop image
+    implementation 'com.github.yalantis:ucrop:2.2.6-native'
 }

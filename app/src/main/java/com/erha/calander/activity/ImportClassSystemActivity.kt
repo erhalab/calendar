@@ -18,7 +18,7 @@ import com.erha.calander.databinding.ActivityImportClassSystemBinding
 import com.erha.calander.model.SimpleNEUClass
 import com.erha.calander.popup.ImportClassHelpPopup
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
@@ -130,7 +130,7 @@ class ImportClassSystemActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        store.putInt(SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS, 2)
+        store.putInt(LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS, 2)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -243,11 +243,11 @@ class ImportClassSystemActivity : AppCompatActivity() {
                                         for (s in semesters) {
                                             if (s.id == semesterId) {
                                                 store.putString(
-                                                    SettingType.COURSE_FIRST_DAY,
+                                                    LocalStorageKey.COURSE_FIRST_DAY,
                                                     s.beginDay
                                                 )
                                                 store.putString(
-                                                    SettingType.FIRST_WEEK,
+                                                    LocalStorageKey.FIRST_WEEK,
                                                     "${s.beginDay.split(",")[1]},${
                                                         s.beginDay.split(
                                                             ","
@@ -264,8 +264,8 @@ class ImportClassSystemActivity : AppCompatActivity() {
                                                 overwrite = true
                                             )
                                             CourseDao.reload(
-                                                store.getString(SettingType.COURSE_FIRST_DAY),
-                                                store.getString(SettingType.COURSE_NOTIFY_TIME)
+                                                store.getString(LocalStorageKey.COURSE_FIRST_DAY),
+                                                store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)
                                             )
                                             //发布事件变化通知
                                             EventBus.getDefault().post(EventType.EVENT_CHANGE)

@@ -12,7 +12,7 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.dao.CourseDao
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.CenterPopupView
@@ -106,13 +106,13 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
                     }
                 }
             }
-            store.putString(SettingType.COURSE_NOTIFY_TIME, s)
+            store.putString(LocalStorageKey.COURSE_NOTIFY_TIME, s)
             Toasty.success(context, "更新通知成功", Toast.LENGTH_SHORT).show()
-            Log.e("save ${SettingType.COURSE_NOTIFY_TIME}", s)
+            Log.e("save ${LocalStorageKey.COURSE_NOTIFY_TIME}", s)
             Thread {
                 CourseDao.reload(
-                    store.getString(SettingType.COURSE_FIRST_DAY),
-                    store.getString(SettingType.COURSE_NOTIFY_TIME)
+                    store.getString(LocalStorageKey.COURSE_FIRST_DAY),
+                    store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)
                 )
             }.start()
             dismiss() // 关闭弹窗
@@ -128,7 +128,7 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
 
 
         //加载用户设置的选项，注意去重！
-        store.getString(SettingType.COURSE_NOTIFY_TIME)?.apply {
+        store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)?.apply {
             if (this.isNotBlank()) {
                 for (i in this.split(",")) {
                     try {
@@ -155,12 +155,12 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         dataSource = dataSourceOf(notifyTimeItems)
 
         //拿到最近自定义的时间
-        store.getInt(SettingType.ADD_TIME_HISTORY_1).apply {
+        store.getInt(LocalStorageKey.ADD_TIME_HISTORY_1).apply {
             if (this != -1) {
                 recentNotifyTimeItems.add(NotifyTimeItem(minutes = this, select = false))
             }
         }
-        store.getInt(SettingType.ADD_TIME_HISTORY_2).apply {
+        store.getInt(LocalStorageKey.ADD_TIME_HISTORY_2).apply {
             if (this != -1) {
                 recentNotifyTimeItems.add(NotifyTimeItem(minutes = this, select = false))
             }

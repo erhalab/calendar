@@ -14,7 +14,7 @@ import com.erha.calander.R
 import com.erha.calander.databinding.ActivitySettingTimeBinding
 import com.erha.calander.popup.BeginWeekPopup
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
 import com.qmuiteam.qmui.layout.QMUILayoutHelper
@@ -146,7 +146,7 @@ class SettingTimeActivity : AppCompatActivity() {
     private fun getFirstWeekSubtitle(): String {
         //通过语言确定格式
         var format: SimpleDateFormat
-        when (store.getString(SettingType.LANGUAGE)) {
+        when (store.getString(LocalStorageKey.LANGUAGE)) {
             Locale.ENGLISH.language -> {
                 format = SimpleDateFormat("MMM d", Locale.ENGLISH)
             }
@@ -154,7 +154,7 @@ class SettingTimeActivity : AppCompatActivity() {
         }
         var text = resources.getText(R.string.text_default)
 
-        var weekDate = store.getString(SettingType.FIRST_WEEK).toString()
+        var weekDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
         var calendar: Calendar? = null
         if (weekDate.isNotBlank()) {
             calendar = Calendar.getInstance().apply {

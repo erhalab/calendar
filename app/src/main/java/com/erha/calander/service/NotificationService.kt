@@ -15,9 +15,9 @@ import com.erha.calander.R
 import com.erha.calander.activity.MainActivity
 import com.erha.calander.dao.*
 import com.erha.calander.type.EventType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.type.MainActivityIntentType
 import com.erha.calander.type.NotificationChannelType
-import com.erha.calander.type.SettingType
 import com.erha.calander.util.TinyDB
 import io.karn.notify.Notify
 import io.karn.notify.internal.utils.Action
@@ -54,7 +54,7 @@ class NotificationService : Service() {
                     (applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(
                         this.getInt("userClearNotification")
                     )
-                    if (store.getBoolean(SettingType.CLEAR_ONE_NOTIFICATION_EQUAL_CLEAR_TASK_NOTIFICATIONS)) {
+                    if (store.getBoolean(LocalStorageKey.CLEAR_ONE_NOTIFICATION_EQUAL_CLEAR_TASK_NOTIFICATIONS)) {
                         NotificationDao.removeOneTaskAllNotificationsById4Service(this.getInt("userClearNotification"))
                     }
                 }
@@ -110,12 +110,12 @@ class NotificationService : Service() {
                     //初始化课程Dao
                     CourseDao.load(
                         application.filesDir,
-                        store.getString(SettingType.COURSE_FIRST_DAY),
-                        store.getString(SettingType.COURSE_NOTIFY_TIME)
+                        store.getString(LocalStorageKey.COURSE_FIRST_DAY),
+                        store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)
                     )
                     //初始化通知Dao
                     NotificationDao.repostOneTaskNotification =
-                        store.getBoolean(SettingType.REPOST_ONE_TASK_NOTIFICATION)
+                        store.getBoolean(LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION)
                     //初始化登录
                     Authing.init(applicationContext, SecretKeyDao.AuthingAppID)
                     Log.e("Authing.init", this.javaClass.name)

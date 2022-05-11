@@ -5,7 +5,7 @@ import android.view.View
 import androidx.annotation.NonNull
 import cn.carbswang.android.numberpickerview.library.NumberPickerView
 import com.erha.calander.R
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.core.CenterPopupView
 import com.qmuiteam.qmui.layout.QMUILinearLayout
@@ -51,16 +51,16 @@ class AddNotifyTimePopup  //注意：自定义弹窗本质是一个自定义View
                 this.addNotifyTimeFinished(minutes)
             }
             var store = TinyDB(appContext = context)
-            if (store.getInt(SettingType.ADD_TIME_HISTORY_1) == -1) {
-                store.putInt(SettingType.ADD_TIME_HISTORY_1, minutes)
-            } else if (store.getInt(SettingType.ADD_TIME_HISTORY_2) == -1) {
-                store.putInt(SettingType.ADD_TIME_HISTORY_2, minutes)
+            if (store.getInt(LocalStorageKey.ADD_TIME_HISTORY_1) == -1) {
+                store.putInt(LocalStorageKey.ADD_TIME_HISTORY_1, minutes)
+            } else if (store.getInt(LocalStorageKey.ADD_TIME_HISTORY_2) == -1) {
+                store.putInt(LocalStorageKey.ADD_TIME_HISTORY_2, minutes)
             } else {
                 store.putInt(
-                    SettingType.ADD_TIME_HISTORY_1,
-                    store.getInt(SettingType.ADD_TIME_HISTORY_2)
+                    LocalStorageKey.ADD_TIME_HISTORY_1,
+                    store.getInt(LocalStorageKey.ADD_TIME_HISTORY_2)
                 )
-                store.putInt(SettingType.ADD_TIME_HISTORY_2, minutes)
+                store.putInt(LocalStorageKey.ADD_TIME_HISTORY_2, minutes)
             }
             dismiss() // 关闭弹窗
         }

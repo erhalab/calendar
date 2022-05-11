@@ -21,7 +21,7 @@ import com.erha.calander.R
 import com.erha.calander.activity.*
 import com.erha.calander.databinding.FragmentSettingsBinding
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -233,7 +233,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                 }
                                 "importClass" -> {
                                     var status =
-                                        store.getInt(SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS)
+                                        store.getInt(LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS)
                                     when (status) {
                                         -1, 0 -> {
                                             //提醒用户可能发生闪退
@@ -253,7 +253,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                                 ) { dialog, index ->
                                                     dialog.dismiss()
                                                     store.putInt(
-                                                        SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS,
+                                                        LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS,
                                                         1
                                                     )
                                                     resultLauncher.launch(
@@ -286,7 +286,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                             if (!QbSdk.isNeedInitX5FirstTime() && QbSdk.isTbsCoreInited()) {
                                                 //3代表，内核表示加载完成了，启动Webview
                                                 store.putInt(
-                                                    SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS,
+                                                    LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS,
                                                     3
                                                 )
                                                 resultLauncher.launch(
@@ -335,7 +335,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                                 ) { dialog, index ->
                                                     dialog.dismiss()
                                                     store.putInt(
-                                                        SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS,
+                                                        LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS,
                                                         0
                                                     )
                                                 }
@@ -383,7 +383,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                  * @param isX5 是否使用X5内核
                  */
                 override fun onViewInitFinished(isX5: Boolean) {
-                    store.putBoolean(SettingType.X5_INIT, true)
+                    store.putBoolean(LocalStorageKey.X5_INIT, true)
                     Log.e("X5", "onViewInitFinished -> ${isX5}")
                     Log.e("X5", "getIsInitX5Environment -> ${QbSdk.getIsInitX5Environment()}")
                     Log.e("X5", "getTBSInstalling -> ${QbSdk.getTBSInstalling()}")
@@ -433,7 +433,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show()
     }
 
-    fun changeAppLanguage() {
+    private fun changeAppLanguage() {
         val sta = store.getString("language") //这是SharedPreferences工具类，用于保存设置，代码很简单，自己实现吧
         // 本地语言设置
         val myLocale = Locale(sta)

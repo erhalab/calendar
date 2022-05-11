@@ -20,8 +20,8 @@ import com.erha.calander.dao.NotificationDao
 import com.erha.calander.databinding.ActivitySettingNotificationBinding
 import com.erha.calander.popup.NotificationHelpPopup
 import com.erha.calander.popup.SelectCourseNotifyTimesPopup
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.type.NotificationChannelType
-import com.erha.calander.type.SettingType
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
 import com.qmuiteam.qmui.layout.QMUILayoutHelper
@@ -142,13 +142,13 @@ class SettingNotificationActivity : AppCompatActivity() {
             SwitcherItem(
                 title = "重复发出提醒",
                 text = "开启时，即启用通知互斥。\n具体说明请点击右上方查看",
-                storeKey = SettingType.REPOST_ONE_TASK_NOTIFICATION,
+                storeKey = LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION,
                 isFirst = true
             ),
             SwitcherItem(
                 title = "通知被划掉时",
                 text = "开启时，划掉视作该事项不再提醒，等同于点击通知按钮。阁下慎重开启，任何形式划掉他都会触发~",
-                storeKey = SettingType.CLEAR_ONE_NOTIFICATION_EQUAL_CLEAR_TASK_NOTIFICATIONS,
+                storeKey = LocalStorageKey.CLEAR_ONE_NOTIFICATION_EQUAL_CLEAR_TASK_NOTIFICATIONS,
                 isLast = true
             ),
             SpaceItem(),
@@ -316,7 +316,7 @@ class SettingNotificationActivity : AppCompatActivity() {
                     setting.switch.setOnCheckedChangeListener { buttonView, isChecked ->
                         TinyDB(binding.root.context).putBoolean(item.storeKey, isChecked)
                         when (item.storeKey) {
-                            SettingType.REPOST_ONE_TASK_NOTIFICATION -> NotificationDao.repostOneTaskNotification =
+                            LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION -> NotificationDao.repostOneTaskNotification =
                                 isChecked
                         }
                     }

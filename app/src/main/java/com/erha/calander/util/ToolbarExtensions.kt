@@ -7,7 +7,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
 import com.erha.calander.R
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.philliphsu.bottomsheetpickers.BottomSheetPickerDialog
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
 import java.util.*
@@ -64,7 +64,7 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
                 )
                 //加载用户设置的每周的第一天
                 dateDialog.firstDayOfWeek =
-                    when (TinyDB(context).getInt(SettingType.FIRSR_DAY_OF_WEEK)) {
+                    when (TinyDB(context).getInt(LocalStorageKey.FIRST_DAY_OF_WEEK)) {
                         Calendar.MONDAY -> Calendar.MONDAY
                         Calendar.SATURDAY -> Calendar.SATURDAY
                         Calendar.SUNDAY -> Calendar.SUNDAY

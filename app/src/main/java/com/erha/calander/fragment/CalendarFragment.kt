@@ -14,7 +14,7 @@ import com.erha.calander.databinding.FragmentCalenderBinding
 import com.erha.calander.model.CalendarEntity
 import com.erha.calander.model.toWeekViewEntity
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.erha.calander.util.setupWithWeekView
 import com.google.android.material.appbar.MaterialToolbar
@@ -44,7 +44,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     ): View? {
         binding = FragmentCalenderBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
-        locale = Locale(store.getString(SettingType.LANGUAGE))
+        locale = Locale(store.getString(LocalStorageKey.LANGUAGE))
         EventBus.getDefault().register(this)
         return binding.root
     }
@@ -88,7 +88,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
 
         }
         //滚动到上次的位置（记忆）
-        store.getString(SettingType.CALENDAR_LAST_FIRST_DAY)?.apply {
+        store.getString(LocalStorageKey.CALENDAR_LAST_FIRST_DAY)?.apply {
             if (this.isBlank()) return@apply
             var calendar = Calendar.getInstance()
             var s = this.split("/")
@@ -131,7 +131,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
 
     //初始化第一周的日期
     private fun initFirstWeek() {
-        var weekDate = store.getString(SettingType.FIRST_WEEK).toString()
+        var weekDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
         if (weekDate.isNotBlank()) {
             var calendar = Calendar.getInstance().apply {
                 set(Calendar.MONTH, weekDate.split(",")[0].toInt() - 1)
@@ -210,7 +210,7 @@ private class WeekViewSimpleAdapter(
     override fun onRangeChanged(firstVisibleDate: Calendar, lastVisibleDate: Calendar) {
         super.onRangeChanged(firstVisibleDate, lastVisibleDate)
         store.putString(
-            SettingType.CALENDAR_LAST_FIRST_DAY,
+            LocalStorageKey.CALENDAR_LAST_FIRST_DAY,
             SimpleDateFormat("yyyy/MM/dd", locale).format(firstVisibleDate.timeInMillis)
         )
         Log.e("日历被滑动了，现在显示的第一天是 ->", firstVisibleDate.toString())

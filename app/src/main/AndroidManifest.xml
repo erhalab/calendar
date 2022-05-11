@@ -64,6 +64,11 @@
             android:process=":erha"
             android:theme="@style/QMUI.SlideAnimation" />
         <activity
+            android:name=".activity.UserCenterActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
             android:name=".activity.LauncherActivity"
             android:exported="true"
             android:process=":erha"
@@ -100,6 +105,10 @@
             android:launchMode="singleTask"
             android:process=":erha"
             android:theme="@style/Theme.Kotlin3" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>

@@ -32,7 +32,7 @@ import com.erha.calander.fragment.HomeFragment
 import com.erha.calander.fragment.SettingsFragment
 import com.erha.calander.service.NotificationService
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.mikepenz.iconics.Iconics
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         QbSdk.unForceSysWebView()
         QbSdk.setDownloadWithoutWifi(true)
 
-        if (store.getInt(SettingType.LAST_LAUNCH_WEBVIEW_SUCCESS) == 1) {
+        if (store.getInt(LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS) == 1) {
             initX5()
         }
     }
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
              * @param isX5 是否使用X5内核
              */
             override fun onViewInitFinished(isX5: Boolean) {
-                store.putBoolean(SettingType.X5_INIT, true)
+                store.putBoolean(LocalStorageKey.X5_INIT, true)
                 Log.e("X5", "onViewInitFinished -> ${isX5}")
                 Log.e("X5", "getIsInitX5Environment -> ${getIsInitX5Environment()}")
                 Log.e("X5", "getTBSInstalling -> ${getTBSInstalling()}")

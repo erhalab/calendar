@@ -10,7 +10,7 @@ import androidx.annotation.NonNull
 import cn.carbswang.android.numberpickerview.library.NumberPickerView
 import com.erha.calander.R
 import com.erha.calander.type.EventType
-import com.erha.calander.type.SettingType
+import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.core.CenterPopupView
 import com.qmuiteam.qmui.layout.QMUILinearLayout
@@ -35,9 +35,9 @@ class BeginWeekPopup  //注意：自定义弹窗本质是一个自定义View，�
         super.onCreate()
         store = TinyDB(context)
         var customDate = ""
-        if (!store.getString(SettingType.FIRST_WEEK).isNullOrBlank()) {
+        if (!store.getString(LocalStorageKey.FIRST_WEEK).isNullOrBlank()) {
             isCustom = true
-            customDate = store.getString(SettingType.FIRST_WEEK).toString()
+            customDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
         }
         //取消按钮事件
         findViewById<View>(R.id.buttomCancle).setOnClickListener {
@@ -48,7 +48,7 @@ class BeginWeekPopup  //注意：自定义弹窗本质是一个自定义View，�
             store.apply {
                 if (isCustom) {
                     putString(
-                        SettingType.FIRST_WEEK,
+                        LocalStorageKey.FIRST_WEEK,
                         "${(findViewById<View>(R.id.monthPicker) as NumberPickerView).value + 1},${
                             (findViewById<View>(
                                 R.id.dayPicker
@@ -56,7 +56,7 @@ class BeginWeekPopup  //注意：自定义弹窗本质是一个自定义View，�
                         }"
                     )
                 } else {
-                    putString(SettingType.FIRST_WEEK, "")
+                    putString(LocalStorageKey.FIRST_WEEK, "")
                 }
             }
             EventBus.getDefault().post(EventType.FIRST_WEEK_CHANGE)
@@ -143,7 +143,7 @@ class BeginWeekPopup  //注意：自定义弹窗本质是一个自定义View，�
 
         if (isCustom) {
             //如果是自定义的话
-            val customDate = store.getString(SettingType.FIRST_WEEK).toString()
+            val customDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
             if (customDate.isNotBlank()) {
                 monthValue =
                     customDate.split(",")[0].toInt() - 1
