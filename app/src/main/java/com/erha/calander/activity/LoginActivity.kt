@@ -13,6 +13,7 @@ import com.erha.calander.dao.SMSDao
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.data.SingleSMS
 import com.erha.calander.databinding.ActivityLoginBinding
+import com.erha.calander.type.EventType
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
@@ -26,6 +27,7 @@ import com.tencentcloudapi.sms.v20190711.models.SendSmsRequest
 import com.tencentcloudapi.sms.v20190711.models.SendSmsResponse
 import com.tencentcloudapi.sms.v20190711.models.SendStatus
 import es.dmoral.toasty.Toasty
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
 import java.util.regex.Pattern
@@ -50,11 +52,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.loginPhoneQMUILinearLayout.apply {
-            setRadiusAndShadow(
-                resources.getDimensionPixelSize(R.dimen.listview_radius),
-                QMUIDisplayHelper.dp2px(binding.root.context, 5),
-                0.3F
-            )
+            radius = resources.getDimensionPixelSize(R.dimen.listview_radius)
         }
         binding.loginButtonQMUILinearLayout.apply {
             setRadiusAndShadow(
@@ -232,6 +230,7 @@ class LoginActivity : AppCompatActivity() {
                                         Toast.LENGTH_LONG,
                                         true
                                     ).show()
+                                    EventBus.getDefault().post(EventType.USER_INFO_CHANGE)
                                     finish()
                                 }
                             }
