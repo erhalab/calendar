@@ -18,6 +18,7 @@ import com.erha.calander.model.CalendarEntity
 import com.erha.calander.model.toWeekViewEntity
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
+import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.TinyDB
 import com.erha.calander.util.setupWithWeekView
 import com.google.android.material.appbar.MaterialToolbar
@@ -223,8 +224,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             if (data is CalendarEntity.Event) {
                 if (data.id.toString().startsWith("20")) {
                     TaskDao.getSimpleTaskById(data.id.toString().substring(2).toInt())?.apply {
-                        this.beginTime = newStartTime
-                        this.endTime = newEndTime
+                        this.date = CalendarUtil.getWithoutTime(newStartTime)
+                        this.beginTime = CalendarUtil.getWithoutSecond(newStartTime)
+                        this.endTime = CalendarUtil.getWithoutSecond(newEndTime)
                         calendarFragment.isPostEventChangeMyself = true
                         Thread {
                             TaskDao.updateSimpleTask(this)
