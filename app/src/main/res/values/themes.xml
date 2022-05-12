@@ -46,4 +46,9 @@
         <item name="android:colorControlNormal">@android:color/darker_gray</item>
         <item name="android:colorControlActivated">@color/default_active</item>
     </style>
+
+    <style name="NoLineEditText" parent="QMUI.SlideAnimation">
+        <item name="android:colorControlNormal">#00FFFFFF</item>
+        <item name="android:colorControlActivated">#00FFFFFF</item>
+    </style>
 </resources>

@@ -334,7 +334,7 @@ class MainActivity : AppCompatActivity() {
     private fun initFloatButton(recreate: Boolean = false) {
         binding.floatButtonShadowLayout.apply {
             setRadiusAndShadow(
-                100, QMUIDisplayHelper.dp2px(binding.root.context, 5), 0.3F
+                100, QMUIDisplayHelper.dp2px(binding.root.context, 5), 0.1F
             )
         }
         binding.floatButton.apply {
@@ -346,7 +346,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 setOnClickListener {
-                    Toast.makeText(binding.root.context, "short", Toast.LENGTH_SHORT).show()
+                    val i = Intent(this@MainActivity, AddSimpleTaskActivity::class.java)
+                    startActivity(i)
                 }
             }
 

@@ -113,6 +113,8 @@ class NotificationService : Service() {
                         store.getString(LocalStorageKey.COURSE_FIRST_DAY),
                         store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)
                     )
+                    //初始化Task Dao
+                    TaskDao.load(application.filesDir)
                     //初始化通知Dao
                     NotificationDao.repostOneTaskNotification =
                         store.getBoolean(LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION)
@@ -189,6 +191,32 @@ class NotificationService : Service() {
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "所有的课程提醒~"
+                //通知声音
+                setSound(
+                    Settings.System.DEFAULT_NOTIFICATION_URI,
+                    Notification.AUDIO_ATTRIBUTES_DEFAULT
+                )
+                //呼吸灯
+                enableLights(true)
+                lightColor = Notification.DEFAULT_LIGHTS
+                //震动
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 250, 250)
+                setShowBadge(true)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    this.setAllowBubbles(true)
+                }
+                //锁屏可见性
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+        )
+        channels.add(
+            NotificationChannel(
+                NotificationChannelType.SIMPlE_EVENT,
+                "普通任务提醒",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "普通的任务会通过此渠道发布通知"
                 //通知声音
                 setSound(
                     Settings.System.DEFAULT_NOTIFICATION_URI,

@@ -7,7 +7,7 @@
     android:background="@color/default_background_color"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".activity.SettingModelActivity">
+    tools:context=".activity.UserCenterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

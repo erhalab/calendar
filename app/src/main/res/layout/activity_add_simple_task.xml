@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_background_color"
+    android:fitsSystemWindows="true"
+    tools:context=".activity.AddSimpleTaskActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/root">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/backButton"
+                android:layout_width="50dp"
+                android:layout_height="match_parent">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    app:iiv_color="@android:color/black"
+                    app:iiv_contour_color="@color/black"
+                    app:iiv_icon="gmd-arrow-back" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:text="创建任务"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right">
+
+                <LinearLayout
+                    android:id="@+id/submitZone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:id="@+id/submitIcon"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="25dp"
+                        app:iiv_color="@color/black"
+                        app:iiv_contour_color="@color/black"
+                        app:iiv_icon="gmd-check" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:buttonTint="@color/default_active" />
+
+            <TextView
+                android:id="@+id/taskTime"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:text="设置任务时间与提醒"
+                android:textColor="@color/default_active"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/taskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:hint="准备做什么?"
+            android:paddingLeft="5dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_500"
+            android:textCursorDrawable="@drawable/cursor_color"
+            android:textSize="23dp"
+            android:theme="@style/NoLineEditText" />
+
+    </LinearLayout>
+
+    <jp.wasabeef.richeditor.RichEditor
+        android:id="@+id/editor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/default_background_color"
+        app:layout_constraintTop_toTopOf="@id/root" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toobarConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/default_background_color"
+        app:layout_constraintBottom_toBottomOf="@id/root">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            app:layout_constraintLeft_toLeftOf="@id/toobarConstraintLayout"
+            app:layout_constraintTop_toTopOf="@id/toobarConstraintLayout">
+
+            <LinearLayout
+                android:id="@+id/boldButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-format-bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/italicButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-format-italic" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/todoButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-check-box" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/imageButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-image" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingEnd="15dp"
+            app:layout_constraintRight_toRightOf="@id/toobarConstraintLayout"
+            app:layout_constraintTop_toTopOf="@id/toobarConstraintLayout">
+
+            <LinearLayout
+                android:id="@+id/undoButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:tooltipText="撤销">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-undo" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/redoButton"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:tooltipText="重做">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    app:iiv_color="@color/gray_600"
+                    app:iiv_contour_color="@color/gray_600"
+                    app:iiv_icon="gmd-redo" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

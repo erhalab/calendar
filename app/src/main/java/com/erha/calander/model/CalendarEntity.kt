@@ -20,13 +20,27 @@ sealed class CalendarEntity {
         val color: Int,
         val isAllDay: Boolean,
         val isCanceled: Boolean
-    ) : CalendarEntity()
+    ) : CalendarEntity() {
+        override fun equals(other: Any?): Boolean {
+            if (other is Event) {
+                return other.id == this.id
+            }
+            return super.equals(other)
+        }
+    }
 
     data class BlockedTimeSlot(
         val id: Long,
         val startTime: Calendar,
         val endTime: Calendar
-    ) : CalendarEntity()
+    ) : CalendarEntity() {
+        override fun equals(other: Any?): Boolean {
+            if (other is BlockedTimeSlot) {
+                return other.id == this.id
+            }
+            return super.equals(other)
+        }
+    }
 }
 
 fun CalendarEntity.toWeekViewEntity(): WeekViewEntity {

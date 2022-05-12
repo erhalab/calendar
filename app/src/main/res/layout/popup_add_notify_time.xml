@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.layout.QMUILinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/QMUILinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自定义提醒"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/customZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+
+                <cn.carbswang.android.numberpickerview.library.NumberPickerView
+                    android:id="@+id/daysPicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="150dp"
+                    app:npv_DividerColor="@color/transparent"
+                    app:npv_ItemPaddingHorizontal="5dp"
+                    app:npv_ItemPaddingVertical="5dp"
+                    app:npv_RespondChangeOnDetached="false"
+                    app:npv_TextColorNormal="@color/gray_300"
+                    app:npv_TextColorSelected="@color/black"
+                    app:npv_TextSizeNormal="16sp"
+                    app:npv_TextSizeSelected="20sp"
+                    app:npv_WrapSelectorWheel="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="天" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+
+                <cn.carbswang.android.numberpickerview.library.NumberPickerView
+                    android:id="@+id/hoursPicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="150dp"
+                    app:npv_DividerColor="@color/transparent"
+                    app:npv_ItemPaddingHorizontal="5dp"
+                    app:npv_ItemPaddingVertical="5dp"
+                    app:npv_RespondChangeOnDetached="false"
+                    app:npv_TextColorNormal="@color/gray_300"
+                    app:npv_TextColorSelected="@color/black"
+                    app:npv_TextSizeNormal="16sp"
+                    app:npv_TextSizeSelected="20sp"
+                    app:npv_WrapSelectorWheel="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="小时" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+
+                <cn.carbswang.android.numberpickerview.library.NumberPickerView
+                    android:id="@+id/minutesPicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="150dp"
+                    app:npv_DividerColor="@color/transparent"
+                    app:npv_ItemPaddingHorizontal="5dp"
+                    app:npv_ItemPaddingVertical="5dp"
+                    app:npv_RespondChangeOnDetached="false"
+                    app:npv_TextColorNormal="@color/gray_300"
+                    app:npv_TextColorSelected="@color/black"
+                    app:npv_TextSizeNormal="16sp"
+                    app:npv_TextSizeSelected="20sp"
+                    app:npv_WrapSelectorWheel="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="分钟" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttomCancle"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/text_cancel"
+            android:textColor="@color/default_active"
+            android:textSize="@dimen/text_middle" />
+
+        <Button
+            android:id="@+id/buttomFinish"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/text_finish"
+            android:textColor="@color/default_active"
+            android:textSize="@dimen/text_middle"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</com.qmuiteam.qmui.layout.QMUILinearLayout>

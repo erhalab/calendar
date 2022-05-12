@@ -18,22 +18,22 @@ object CourseDao {
     private var notifyTimes = ArrayList<Int>()
 
     //每节课的起始时间
-    var timeMap = HashMap<Int, String>()
+    private var timeMap = HashMap<Int, String>()
 
     //色板
-    var colorMap = HashMap<Int, String>()
+    private var colorMap = HashMap<Int, String>()
 
     //已加入的课程的色值
-    var courseColorMap = HashMap<String, String>()
+    private var courseColorMap = HashMap<String, String>()
 
     //一共多少种颜色捏？
-    var colorQuantity = 0
+    private var colorQuantity = 0
 
     //现在用到哪一个颜色了？
-    var colorCounter = 1
+    private var colorCounter = 1
 
     //每节课多久？
-    var classDuration = 50
+    private var classDuration = 50
 
     private var isInit = false
 
@@ -333,7 +333,7 @@ object CourseDao {
         this.courseNewNotifications.clear()
     }
 
-    fun getAll(): ArrayList<CalendarEntity> {
+    fun getAllCalendarEntities(): ArrayList<CalendarEntity> {
         if (!isInit) {
             return ArrayList<CalendarEntity>()
         }

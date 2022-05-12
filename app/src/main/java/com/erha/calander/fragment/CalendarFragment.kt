@@ -10,6 +10,7 @@ import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
 import com.erha.calander.R
 import com.erha.calander.dao.CourseDao
+import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.FragmentCalenderBinding
 import com.erha.calander.model.CalendarEntity
 import com.erha.calander.model.toWeekViewEntity
@@ -60,7 +61,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             store = store
         )
         binding.weekView.adapter = weekViewAdapter
-        weekViewAdapter.submitList(CourseDao.getAll())
+        weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
         //支持本地语言
         binding.weekView.setDateFormatter { date ->
             defaultDateFormatter(binding.weekView.numberOfVisibleDays).format(date.time)
@@ -154,7 +155,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     fun onEvent(str: String?) {
         when (str) {
             EventType.FIRST_WEEK_CHANGE -> initFirstWeek()
-            EventType.EVENT_CHANGE -> weekViewAdapter.submitList(CourseDao.getAll())
+            EventType.EVENT_CHANGE -> weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
             EventType.LANGUAGE_CHANGE -> updateLanguage()
 
         }

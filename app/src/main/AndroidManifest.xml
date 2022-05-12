@@ -109,6 +109,16 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".activity.AddSimpleTaskActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.SelectSimpleTaskTimeActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
     </application>
 
 </manifest>

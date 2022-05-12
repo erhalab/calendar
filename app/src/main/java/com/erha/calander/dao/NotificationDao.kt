@@ -49,6 +49,13 @@ open class SimpleTaskNotification {
     var notifyTimes: ArrayList<Int> = ArrayList()
     var beginTime: String = "2022-04-10 04:10"
     var channel: String = NotificationChannelType.DEFAULT
+
+    override fun equals(other: Any?): Boolean {
+        if (other is SimpleTaskNotification) {
+            return other.taskName == this.taskName
+        }
+        return super.equals(other)
+    }
 }
 
 object NotificationDao {

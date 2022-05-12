@@ -23,7 +23,7 @@ class AddNotifyTimePopup  //注意：自定义弹窗本质是一个自定义View
 
     // 返回自定义弹窗的布局
     override fun getImplLayoutId(): Int {
-        return R.layout.popup_setting_add_notify_time
+        return R.layout.popup_add_notify_time
     }
 
     // 执行初始化操作，比如：findView，设置点击，或者任何你弹窗内的业务逻辑
