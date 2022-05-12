@@ -207,11 +207,17 @@ object TaskDao {
         if (simpleTaskWithID.status == TaskStatus.FINISHED && color != null) {
             color = color.replace("#", "#50")
         }
+        val title = simpleTaskWithID.title.ifBlank { "无标题" }
+        //限制日历视图中的副标题长度
+        var location = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml)
+        if (location.length > 30) {
+            location = location.substring(0, 29)
+        }
         simpleTaskCalendarEntityList.add(
             CalendarEntity.Event(
                 id = getSimpleTaskCalendarEntityIdById(simpleTaskWithID.id),
-                title = simpleTaskWithID.title,
-                location = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml),
+                title = title,
+                location = location,
                 startTime = beginCalendar,
                 endTime = endCalendar,
                 color = Color.parseColor(color), //是否完成会改变这个颜色
@@ -244,10 +250,16 @@ object TaskDao {
             }
         }
         val simpleTaskNotification = SimpleTaskNotification()
+        val title = simpleTaskWithID.title.ifBlank { "无标题" }
+        //限制通知中的text长度
+        var text = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml)
+        if (text.length > 50) {
+            text = text.substring(0, 49)
+        }
         simpleTaskNotification.apply {
             taskName = getSimpleTaskNotificationNameById(simpleTaskWithID.id)
-            title = simpleTaskWithID.title
-            text = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml)
+            this.title = title
+            this.text = text
             this.notifyTimes = simpleTaskWithID.notifyTimes
             beginTime =
                 SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
