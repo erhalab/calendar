@@ -175,6 +175,7 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         }
         //也要排序
         recentNotifyTimeItems.sortBy { item -> item.minutes }
+        dataSource.addAll(notifyTimeItems)
         recentDataSource.addAll(recentNotifyTimeItems)
 
         //初始化列表
