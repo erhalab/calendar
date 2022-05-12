@@ -55,24 +55,13 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             binding.weekView,
             this@CalendarFragment
         )
-//        val adapter = FragmentWeekViewAdapter(
-//            loadMoreHandler = viewModel::fetchEvents,
-//            locale = this.locale,
-//            toolbar = binding.toolbarContainer.toolbar,
-//            store = store
-//        )
         weekViewAdapter = WeekViewSimpleAdapter(
             locale = this.locale,
             toolbar = binding.toolbarContainer.toolbar,
             store = store
         )
         binding.weekView.adapter = weekViewAdapter
-        // Limit WeekView to the current month
-        //binding.weekView.minDateAsLocalDate = YearMonth.now().atDay(1)
         weekViewAdapter.submitList(CourseDao.getAll())
-//        viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-//            adapter.submitList(viewState.entities)
-//        }
         //支持本地语言
         binding.weekView.setDateFormatter { date ->
             defaultDateFormatter(binding.weekView.numberOfVisibleDays).format(date.time)

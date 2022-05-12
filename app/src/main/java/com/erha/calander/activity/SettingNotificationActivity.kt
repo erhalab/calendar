@@ -11,13 +11,14 @@ import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.dataSourceTypedOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.NotificationDao
 import com.erha.calander.databinding.ActivitySettingNotificationBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.popup.NotificationHelpPopup
 import com.erha.calander.popup.SelectCourseNotifyTimesPopup
 import com.erha.calander.type.LocalStorageKey
@@ -69,7 +70,13 @@ class SettingNotificationActivity : AppCompatActivity() {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var key: String = "default"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.settingListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SwitcherItem(
         var title: String,
@@ -77,7 +84,13 @@ class SettingNotificationActivity : AppCompatActivity() {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var storeKey: String
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.settingListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpecialSwitcherItem(
         var title: String,
@@ -85,16 +98,26 @@ class SettingNotificationActivity : AppCompatActivity() {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var key: String
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.settingListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpaceItem(
         var key: String = "space"
-    )
+    ) : RecyclerViewItem() {
+        class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 
     var notificationSettingWatcherThread = NotificationSettingWatcherThread(null, null, this)
 
     //布局binding
     private lateinit var binding: ActivitySettingNotificationBinding
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingNotificationBinding.inflate(layoutInflater)
@@ -117,7 +140,7 @@ class SettingNotificationActivity : AppCompatActivity() {
         binding.appStartTime.text = "本次应用启动时间：${
             SimpleDateFormat.getDateTimeInstance().format(ConfigDao.startTime.timeInMillis)
         }"
-        val dataSource = dataSourceTypedOf(
+        dataSource.add(
             SpecialSwitcherItem(
                 title = "应用总的通知权",
                 text = "如果应用本身不能发出铃声，那么分类通知也不能发出铃声（例如课程提醒）。其他类似。",
@@ -168,26 +191,26 @@ class SettingNotificationActivity : AppCompatActivity() {
                 text = "提高通知推送成功率~",
                 isLast = true,
                 key = "AUTO_START"
-            ),
+            )
         )
         // setup{} is an extension method on RecyclerView
         binding.settingRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<SpaceItem, SpaceItemHolder>(R.layout.item_list_space_20) {
-                onBind(::SpaceItemHolder) { _, _ ->
+            withItem<SpaceItem, SpaceItem.SpaceItemHolder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::SpaceItemHolder) { _, _ ->
                 }
             }
-            withItem<SettingItem, SettingItemHolder>(R.layout.item_list_setting_notification) {
-                onBind(::SettingItemHolder) { index, item ->
-                    setting.text = item.title
-                    setting.detailText = item.text
+            withItem<SettingItem, SettingItem.Holder>(R.layout.item_list_setting_notification) {
+                onBind(SettingItem::Holder) { index, item ->
+                    qmuiCommonListItemView.text = item.title
+                    qmuiCommonListItemView.detailText = item.text
                     val radius =
                         resources.getDimensionPixelSize(R.dimen.listview_radius)
-                    setting.orientation = QMUICommonListItemView.VERTICAL
+                    qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 10)
-                    setting.setPadding(
-                        setting.paddingLeft, paddingVer,
-                        setting.paddingRight, paddingVer
+                    qmuiCommonListItemView.setPadding(
+                        qmuiCommonListItemView.paddingLeft, paddingVer,
+                        qmuiCommonListItemView.paddingRight, paddingVer
                     )
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
@@ -198,7 +221,6 @@ class SettingNotificationActivity : AppCompatActivity() {
                     }
                 }
                 onClick { index ->
-                    // item is a `val` in `this` here
                     when (item.key) {
                         "courseNotification" -> {
                             XPopup.Builder(binding.root.context)
@@ -291,18 +313,19 @@ class SettingNotificationActivity : AppCompatActivity() {
                 }
             }
 
-            withItem<SwitcherItem, SettingItemHolder>(R.layout.item_list_setting_notification) {
-                onBind(::SettingItemHolder) { index, item ->
-                    setting.text = item.title
-                    setting.detailText = item.text
+            withItem<SwitcherItem, SwitcherItem.Holder>(R.layout.item_list_setting_notification) {
+                onBind(SwitcherItem::Holder) { index, item ->
+                    qmuiCommonListItemView.text = item.title
+                    qmuiCommonListItemView.detailText = item.text
                     val radius =
                         resources.getDimensionPixelSize(R.dimen.listview_radius)
-                    setting.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
-                    setting.orientation = QMUICommonListItemView.VERTICAL
+                    qmuiCommonListItemView.accessoryType =
+                        QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
+                    qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 10)
-                    setting.setPadding(
-                        setting.paddingLeft, paddingVer,
-                        setting.paddingRight, paddingVer
+                    qmuiCommonListItemView.setPadding(
+                        qmuiCommonListItemView.paddingLeft, paddingVer,
+                        qmuiCommonListItemView.paddingRight, paddingVer
                     )
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
@@ -311,9 +334,9 @@ class SettingNotificationActivity : AppCompatActivity() {
                     } else if (item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
                     }
-                    setting.switch.isChecked =
+                    qmuiCommonListItemView.switch.isChecked =
                         TinyDB(binding.root.context).getBoolean(item.storeKey)
-                    setting.switch.setOnCheckedChangeListener { buttonView, isChecked ->
+                    qmuiCommonListItemView.switch.setOnCheckedChangeListener { buttonView, isChecked ->
                         TinyDB(binding.root.context).putBoolean(item.storeKey, isChecked)
                         when (item.storeKey) {
                             LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION -> NotificationDao.repostOneTaskNotification =
@@ -325,18 +348,19 @@ class SettingNotificationActivity : AppCompatActivity() {
                 }
             }
 
-            withItem<SpecialSwitcherItem, SettingItemHolder>(R.layout.item_list_setting_notification) {
-                onBind(::SettingItemHolder) { index, item ->
-                    setting.text = item.title
-                    setting.detailText = item.text
+            withItem<SpecialSwitcherItem, SpecialSwitcherItem.Holder>(R.layout.item_list_setting_notification) {
+                onBind(SpecialSwitcherItem::Holder) { index, item ->
+                    qmuiCommonListItemView.text = item.title
+                    qmuiCommonListItemView.detailText = item.text
                     val radius =
                         resources.getDimensionPixelSize(R.dimen.listview_radius)
-                    setting.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
-                    setting.orientation = QMUICommonListItemView.VERTICAL
+                    qmuiCommonListItemView.accessoryType =
+                        QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
+                    qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 10)
-                    setting.setPadding(
-                        setting.paddingLeft, paddingVer,
-                        setting.paddingRight, paddingVer
+                    qmuiCommonListItemView.setPadding(
+                        qmuiCommonListItemView.paddingLeft, paddingVer,
+                        qmuiCommonListItemView.paddingRight, paddingVer
                     )
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
@@ -345,10 +369,11 @@ class SettingNotificationActivity : AppCompatActivity() {
                     } else if (item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
                     }
-                    setting.switch.isClickable = false
+                    qmuiCommonListItemView.switch.isClickable = false
                     when (item.key) {
                         "ACTION_APP_NOTIFICATION_SETTINGS" -> {
-                            notificationSettingWatcherThread.checkBox = setting.switch
+                            notificationSettingWatcherThread.checkBox =
+                                qmuiCommonListItemView.switch
                             notificationSettingWatcherThread.start()
                         }
                     }
@@ -402,11 +427,3 @@ class SettingNotificationActivity : AppCompatActivity() {
     }
 
 }
-
-
-class SettingItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val setting: QMUICommonListItemView = itemView.findViewById(R.id.settingListItemView)
-    val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-}
-
-class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

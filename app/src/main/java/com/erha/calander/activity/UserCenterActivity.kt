@@ -19,12 +19,13 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.authing.guard.data.UserInfo
 import cn.authing.guard.network.AuthClient
 import cn.hutool.core.util.IdUtil
-import com.afollestad.recyclical.datasource.dataSourceOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.bumptech.glide.Glide
 import com.erha.calander.R
 import com.erha.calander.databinding.ActivityUserCenterBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.popup.SingleTextInputPopup
 import com.erha.calander.popup.SingleTextInputPopupCallback
 import com.erha.calander.type.EventType
@@ -57,7 +58,13 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
         var iconKey: IIcon,
         var isFirst: Boolean = false,
         var isLast: Boolean = false
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.modelListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SimpleItem(
         var title: String,
@@ -65,11 +72,18 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var textColor: Int,
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val textView: TextView = itemView.findViewById(R.id.textView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpaceItem(
         var key: String = "space"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 
     private var userNickname = ""
 
@@ -182,7 +196,7 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
     }
 
 
-    private var dataSource = dataSourceOf()
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -275,9 +289,9 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
         //初始化列表
         binding.userCenterRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<UserInfoItem, ModelItemHolder>(R.layout.item_list_model) {
-                onBind(::ModelItemHolder) { index, item ->
-                    model.apply {
+            withItem<UserInfoItem, UserInfoItem.Holder>(R.layout.item_list_model) {
+                onBind(UserInfoItem::Holder) { index, item ->
+                    qmuiCommonListItemView.apply {
                         text = item.title
                         detailText = item.detail
                         accessoryType = item.accessoryType
@@ -300,7 +314,7 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
                             paddingRight, paddingVer
                         )
                         when (item.key) {
-                            "nickname" -> nicknameQMUICommonListItemView = model
+                            "nickname" -> nicknameQMUICommonListItemView = qmuiCommonListItemView
                         }
                     }
                     val radius =
@@ -335,8 +349,8 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
 
                 }
             }
-            withItem<SimpleItem, SimpleItemHolder>(R.layout.item_list_simple) {
-                onBind(::SimpleItemHolder) { _, item ->
+            withItem<SimpleItem, SimpleItem.Holder>(R.layout.item_list_simple) {
+                onBind(SimpleItem::Holder) { _, item ->
                     textView.apply {
                         text = item.title
                         setTextColor(item.textColor)
@@ -365,8 +379,8 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
                     }
                 }
             }
-            withItem<SpaceItem, SpaceItemHolder>(R.layout.item_list_space_20) {
-                onBind(::SpaceItemHolder) { _, _ ->
+            withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::Holder) { _, _ ->
                 }
             }
         }
@@ -399,19 +413,6 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
         } catch (e: java.lang.Exception) {
         }
     }
-
-    class ModelItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val model: QMUICommonListItemView = itemView.findViewById(R.id.modelListItemView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SimpleItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.textView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
 
     override fun userFinished(input: String) {
         Thread {

@@ -13,11 +13,12 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.dataSourceOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.databinding.ActivityAboutBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.util.TinyDB
 import com.qmuiteam.qmui.layout.QMUILayoutHelper
 import com.qmuiteam.qmui.layout.QMUILinearLayout
@@ -33,22 +34,38 @@ class AboutActivity : AppCompatActivity() {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var imageResId: Int
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.aboutListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class AboutSimpleItem(
         var key: String,
         var titleResId: Int,
         var isFirst: Boolean = false,
         var isLast: Boolean = false
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.aboutListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpaceItem(
         var key: String = "space"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 
     //布局binding
     private lateinit var binding: ActivityAboutBinding
     private lateinit var store: TinyDB
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAboutBinding.inflate(layoutInflater)
@@ -72,7 +89,7 @@ class AboutActivity : AppCompatActivity() {
                 finish()
             }
         }
-        var dataSource = dataSourceOf(
+        dataSource.add(
             AboutItem(
                 key = "site",
                 titleResId = R.string.about_visit_site,
@@ -125,14 +142,14 @@ class AboutActivity : AppCompatActivity() {
         //初始化列表
         binding.aboutRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<SpaceItem, SpaceItemHolder>(R.layout.item_list_space_20) {
-                onBind(AboutActivity::SpaceItemHolder) { _, _ ->
+            withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::Holder) { _, _ ->
                 }
             }
-            withItem<AboutItem, AboutItemHolder>(R.layout.item_list_about) {
-                onBind(AboutActivity::AboutItemHolder) { index, item ->
+            withItem<AboutItem, AboutItem.Holder>(R.layout.item_list_about) {
+                onBind(AboutItem::Holder) { index, item ->
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 15)
-                    this.about.apply {
+                    this.qmuiCommonListItemView.apply {
                         text = getString(item.titleResId)
                         accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON
                         item.subtitleResId?.apply {
@@ -143,16 +160,13 @@ class AboutActivity : AppCompatActivity() {
                             paddingLeft, paddingVer,
                             paddingRight, paddingVer
                         )
-                        var imageView = ImageView(binding.root.context)
-
-                        var bmp: Bitmap
+                        val imageView = ImageView(binding.root.context)
                         val width = QMUIDisplayHelper.dp2px(binding.root.context, 25)
-                        val height = width
-                        bmp = BitmapFactory.decodeResource(
+                        var bmp: Bitmap = BitmapFactory.decodeResource(
                             resources,
                             item.imageResId
-                        ) //image is your image
-                        bmp = Bitmap.createScaledBitmap(bmp, width, height, true)
+                        )
+                        bmp = Bitmap.createScaledBitmap(bmp, width, width, true)
                         imageView.setImageBitmap(bmp)
                         setImageDrawable(imageView.drawable)
                     }
@@ -195,10 +209,10 @@ class AboutActivity : AppCompatActivity() {
                     }
                 }
             }
-            withItem<AboutSimpleItem, AboutItemHolder>(R.layout.item_list_about) {
-                onBind(AboutActivity::AboutItemHolder) { index, item ->
+            withItem<AboutSimpleItem, AboutSimpleItem.Holder>(R.layout.item_list_about) {
+                onBind(AboutSimpleItem::Holder) { index, item ->
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 20)
-                    this.about.apply {
+                    this.qmuiCommonListItemView.apply {
                         text = getString(item.titleResId)
                         accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON
                         orientation = QMUICommonListItemView.HORIZONTAL
@@ -232,12 +246,5 @@ class AboutActivity : AppCompatActivity() {
         }
 
     }
-
-    class AboutItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val about: QMUICommonListItemView = itemView.findViewById(R.id.aboutListItemView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
 }

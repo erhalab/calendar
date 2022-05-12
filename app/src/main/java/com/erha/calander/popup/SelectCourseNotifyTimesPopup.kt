@@ -6,12 +6,12 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.DataSource
-import com.afollestad.recyclical.datasource.dataSourceOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.dao.CourseDao
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
@@ -24,18 +24,18 @@ import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import es.dmoral.toasty.Toasty
 
 
-class NotifyTimeItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val checkBox: CheckBox = itemView.findViewById(R.id.checkBox)
-}
-
-data class NotifyTimeItem(
-    var minutes: Int,
-    var select: Boolean
-)
-
-
 class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView(context!!),
     AddNotifyTimeCallBack {
+
+    data class NotifyTimeItem(
+        var minutes: Int,
+        var select: Boolean
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val checkBox: CheckBox = itemView.findViewById(R.id.checkBox)
+        }
+    }
+
     // 返回自定义弹窗的布局
     override fun getImplLayoutId(): Int {
         return R.layout.popup_select_notify_times
@@ -63,10 +63,10 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         }
     }
 
-    lateinit var dataSource: DataSource<Any>
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
 
     var recentNotifyTimeItems = ArrayList<NotifyTimeItem>()
-    var recentDataSource = dataSourceOf()
+    private val recentDataSource = emptyDataSourceTyped<RecyclerViewItem>()
 
     lateinit var recyclerView: RecyclerView
     lateinit var recentRecyclerView: RecyclerView
@@ -152,7 +152,6 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         //对所有要显示的进行排序
         notifyTimeItems.sortBy { item -> item.minutes }
         Log.e("notifyTimeItems", notifyTimeItems.size.toString())
-        dataSource = dataSourceOf(notifyTimeItems)
 
         //拿到最近自定义的时间
         store.getInt(LocalStorageKey.ADD_TIME_HISTORY_1).apply {
@@ -181,8 +180,8 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         //初始化列表
         recyclerView.setup {
             withDataSource(dataSource)
-            withItem<NotifyTimeItem, NotifyTimeItemHolder>(R.layout.item_list_notify_time) {
-                onBind(::NotifyTimeItemHolder) { index, item ->
+            withItem<NotifyTimeItem, NotifyTimeItem.Holder>(R.layout.item_list_notify_time) {
+                onBind(NotifyTimeItem::Holder) { index, item ->
                     this.checkBox.apply {
                         text = getTimeText(item.minutes)
                         this.isChecked = item.select
@@ -206,8 +205,8 @@ class SelectCourseNotifyTimesPopup(@NonNull context: Context?) : CenterPopupView
         }
         recentRecyclerView.setup {
             withDataSource(recentDataSource)
-            withItem<NotifyTimeItem, NotifyTimeItemHolder>(R.layout.item_list_notify_time) {
-                onBind(::NotifyTimeItemHolder) { index, item ->
+            withItem<NotifyTimeItem, NotifyTimeItem.Holder>(R.layout.item_list_notify_time) {
+                onBind(NotifyTimeItem::Holder) { index, item ->
                     this.checkBox.apply {
                         text = getTimeText(item.minutes)
                         this.isChecked = item.select

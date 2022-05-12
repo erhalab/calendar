@@ -12,11 +12,12 @@ import android.widget.CompoundButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.dataSourceOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.databinding.ActivitySettingModelBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.util.TinyDB
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -34,11 +35,17 @@ class SettingModelActivity : AppCompatActivity() {
         var iconKey: IIcon,
         var titleResId: Int,
         var subtitleResId: Int
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.modelListItemView)
+        }
+    }
 
     //布局binding
     private lateinit var binding: ActivitySettingModelBinding
     private lateinit var store: TinyDB
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingModelBinding.inflate(layoutInflater)
@@ -63,7 +70,7 @@ class SettingModelActivity : AppCompatActivity() {
         }
         binding.modelRecyclerViewQMUILinearLayout.radius =
             resources.getDimensionPixelSize(R.dimen.listview_radius)
-        var dataSource = dataSourceOf(
+        dataSource.add(
             ModelItem(
                 key = "calendar",
                 titleResId = R.string.setting_model_calendar,
@@ -86,10 +93,9 @@ class SettingModelActivity : AppCompatActivity() {
         //初始化列表
         binding.modelRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<ModelItem, ModelItemHolder>(R.layout.item_list_model) {
-                onBind(SettingModelActivity::ModelItemHolder) { index, item ->
-
-                    this.model.apply {
+            withItem<ModelItem, ModelItem.Holder>(R.layout.item_list_model) {
+                onBind(ModelItem::Holder) { index, item ->
+                    this.qmuiCommonListItemView.apply {
                         text = getString(item.titleResId)
                         detailText = getString(item.subtitleResId)
                         accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
@@ -130,16 +136,11 @@ class SettingModelActivity : AppCompatActivity() {
                     i.switch.isChecked = !(i.switch.isChecked)
                 }
                 onLongClick { index ->
-                    // item is a `val` in `this` here
                 }
             }
         }
 
 
-    }
-
-    class ModelItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val model: QMUICommonListItemView = itemView.findViewById(R.id.modelListItemView)
     }
 
 }

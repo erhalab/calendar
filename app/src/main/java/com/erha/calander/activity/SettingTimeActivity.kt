@@ -7,11 +7,12 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.dataSourceOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.databinding.ActivitySettingTimeBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.popup.BeginWeekPopup
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
@@ -36,15 +37,24 @@ class SettingTimeActivity : AppCompatActivity() {
         var isSwitch: Boolean = false,
         var isFirst: Boolean = false,
         var isLast: Boolean = false
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.timeListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpaceItem(
         var key: String = "space"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 
     //布局binding
     private lateinit var binding: ActivitySettingTimeBinding
     private lateinit var store: TinyDB
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingTimeBinding.inflate(layoutInflater)
@@ -68,7 +78,7 @@ class SettingTimeActivity : AppCompatActivity() {
                 finish()
             }
         }
-        var dataSource = dataSourceOf(
+        dataSource.add(
             TimeItem(
                 key = "beginWeek",
                 titleResId = R.string.setting_time_the_first_week,
@@ -86,14 +96,14 @@ class SettingTimeActivity : AppCompatActivity() {
         //初始化列表
         binding.timeRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<SpaceItem, SpaceItemHolder>(R.layout.item_list_space_20) {
-                onBind(SettingTimeActivity::SpaceItemHolder) { _, _ ->
+            withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::Holder) { _, _ ->
                 }
             }
-            withItem<TimeItem, TimeItemHolder>(R.layout.item_list_time) {
-                onBind(SettingTimeActivity::TimeItemHolder) { index, item ->
+            withItem<TimeItem, TimeItem.Holder>(R.layout.item_list_time) {
+                onBind(TimeItem::Holder) { index, item ->
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 10)
-                    this.time.apply {
+                    this.qmuiCommonListItemView.apply {
                         when (item.key) {
                             "beginWeek" -> detailText = getFirstWeekSubtitle()
                             else -> detailText = getString(item.subtitleResId)
@@ -128,7 +138,6 @@ class SettingTimeActivity : AppCompatActivity() {
                         .show()
                 }
                 onLongClick { index ->
-                    // item is a `val` in `this` here
                 }
             }
         }
@@ -168,13 +177,6 @@ class SettingTimeActivity : AppCompatActivity() {
         }
         return text.toString()
     }
-
-    class TimeItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val time: QMUICommonListItemView = itemView.findViewById(R.id.timeListItemView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(str: String?) {

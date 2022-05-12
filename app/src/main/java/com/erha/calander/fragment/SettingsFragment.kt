@@ -14,12 +14,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.recyclical.datasource.dataSourceTypedOf
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.erha.calander.R
 import com.erha.calander.activity.*
 import com.erha.calander.databinding.FragmentSettingsBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
@@ -50,7 +51,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         var isLast: Boolean = false,
         var activity: Class<out AppCompatActivity>? = null,
         var key: String = "default"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.settingListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SimpleItem(
         var titleResId: Int,
@@ -58,11 +65,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
         var textColor: Int,
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val textView: TextView = itemView.findViewById(R.id.textView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
 
     data class SpaceItem(
         var key: String = "space"
-    )
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 
     data class Icon(
         var key: IIcon,
@@ -72,6 +86,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var store: TinyDB
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,8 +94,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     ): View? {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
-        // dataSourceTypedOf(...) here creates a DataSource<Person>
-        val dataSource = dataSourceTypedOf(
+
+        dataSource.add(
             SettingItem(
                 titleResId = R.string.setting_import_class,
                 icon = Icon(
@@ -162,13 +177,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         // setup{} is an extension method on RecyclerView
         binding.settingRecyclerView.setup {
             withDataSource(dataSource)
-            withItem<SpaceItem, SpaceItemHolder>(R.layout.item_list_space_20) {
-                onBind(::SpaceItemHolder) { _, _ ->
+            withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::Holder) { _, _ ->
 
                 }
             }
-            withItem<SimpleItem, SimpleItemHolder>(R.layout.item_list_simple) {
-                onBind(::SimpleItemHolder) { _, item ->
+            withItem<SimpleItem, SimpleItem.Holder>(R.layout.item_list_simple) {
+                onBind(SimpleItem::Holder) { _, item ->
                     textView.apply {
                         text = getString(item.titleResId)
                         setTextColor(item.textColor)
@@ -199,10 +214,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     }
                 }
             }
-            withItem<SettingItem, SettingItemHolder>(R.layout.item_list_setting) {
-                onBind(::SettingItemHolder) { index, item ->
-                    setting.text = getString(item.titleResId)
-                    setting.setImageDrawable(
+            withItem<SettingItem, SettingItem.Holder>(R.layout.item_list_setting) {
+                onBind(SettingItem::Holder) { index, item ->
+                    qmuiCommonListItemView.text = getString(item.titleResId)
+                    qmuiCommonListItemView.setImageDrawable(
                         IconicsDrawable(
                             binding.root.context,
                             item.icon.key
@@ -391,18 +406,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             })
     }
-
-    class SettingItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val setting: QMUICommonListItemView = itemView.findViewById(R.id.settingListItemView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SimpleItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.textView)
-        val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
-    }
-
-    class SpaceItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private fun showLanguageChoiceDialog() {
         val items = arrayOf(
