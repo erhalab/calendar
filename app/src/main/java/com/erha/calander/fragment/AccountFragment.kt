@@ -36,6 +36,7 @@ import com.qmuiteam.qmui.layout.QMUILayoutHelper
 import com.qmuiteam.qmui.layout.QMUILinearLayout
 import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
+import es.dmoral.toasty.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,6 +50,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         var icon: Icon,
         var isFirst: Boolean = false,
         var isLast: Boolean = false,
+        var requireLogin: Boolean = true,
         var activity: Class<out AppCompatActivity>? = null,
         var key: String = "default"
     ) : RecyclerViewItem() {
@@ -165,6 +167,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             //加载用户信息缓存
             var loadPhoto = false
             if (getBoolean(LocalStorageKey.USER_IS_LOGIN)) {
+                isLogin = true
                 getString(LocalStorageKey.USER_NICKNAME)?.apply {
                     binding.userNicknameTextView.text = this
                 }
@@ -176,6 +179,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                         loadPhoto = true
                         Glide.with(this@AccountFragment)
                             .load(File(File(binding.root.context.filesDir, "avator"), this))
+                            .error(R.mipmap.image_default_avator)
                             .circleCrop()
                             .into(binding.avatorImageView)
                     }
@@ -183,7 +187,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
             } else {
                 binding.userNicknameTextView.text = "未登录"
-                binding.userPhoneTextvView.text = ""
+                binding.userPhoneTextvView.text = "轻触快速登录"
             }
             if (!loadPhoto) {
                 Glide.with(this@AccountFragment)
@@ -202,6 +206,23 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     sizeCorrect = 0
                 ),
                 isFirst = true,
+                key = "userCenter"
+            ),
+            AccountItem(
+                title = "登录设备管理",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_devices,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
+            ),
+            AccountItem(
+                title = "账户安全",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_shield_check,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
                 isLast = true
             ),
             SpaceItem(),
@@ -209,16 +230,16 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 title = "备份至云端",
                 icon = Icon(
                     key = MaterialDesignIconic.Icon.gmi_cloud_upload,
-                    color = Color.parseColor("#4d70fa"),
+                    color = Color.parseColor("#0ccd9c"),
                     sizeCorrect = 0
                 ),
                 isFirst = true
             ),
             AccountItem(
-                title = "恢复自云端",
+                title = "从云端恢复",
                 icon = Icon(
                     key = MaterialDesignIconic.Icon.gmi_cloud_download,
-                    color = Color.parseColor("#4d70fa"),
+                    color = Color.parseColor("#0ccd9c"),
                     sizeCorrect = 0
                 ),
                 isLast = true,
@@ -228,11 +249,13 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 title = "校园论坛",
                 icon = Icon(
                     key = MaterialDesignIconic.Icon.gmi_comments,
-                    color = Color.parseColor("#4d70fa"),
+                    color = Color.parseColor("#ffb001"),
                     sizeCorrect = 0
                 ),
                 isFirst = true,
                 isLast = true,
+                key = "discuss",
+                requireLogin = false
             )
         )
 
@@ -310,6 +333,19 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     }
                 }
                 onClick { index ->
+                    if (item.requireLogin && !isLogin) {
+                        Toasty.info(binding.root.context, "请先登录").show()
+                        resultLauncher.launch(Intent(activity, LoginActivity::class.java))
+                        return@onClick
+                    }
+                    when (item.key) {
+                        "userCenter" -> {
+                            resultLauncher.launch(Intent(activity, UserCenterActivity::class.java))
+                        }
+                        else -> {
+                            Toasty.info(binding.root.context, R.string.text_developing).show()
+                        }
+                    }
                 }
                 onLongClick { index ->
                 }
