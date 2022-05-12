@@ -1,24 +1,41 @@
 package com.erha.calander.fragment
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import cn.authing.guard.network.AuthClient
 import cn.hutool.core.util.IdUtil
 import cn.hutool.http.HttpUtil
+import com.afollestad.recyclical.datasource.emptyDataSourceTyped
+import com.afollestad.recyclical.setup
+import com.afollestad.recyclical.withItem
 import com.bumptech.glide.Glide
 import com.erha.calander.R
 import com.erha.calander.activity.LoginActivity
 import com.erha.calander.activity.UserCenterActivity
 import com.erha.calander.databinding.FragmentAccountBinding
+import com.erha.calander.model.RecyclerViewItem
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.TinyDB
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
+import com.mikepenz.iconics.utils.colorInt
+import com.mikepenz.iconics.utils.sizeDp
+import com.qmuiteam.qmui.layout.QMUILayoutHelper
+import com.qmuiteam.qmui.layout.QMUILinearLayout
+import com.qmuiteam.qmui.util.QMUIDisplayHelper
+import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -26,6 +43,47 @@ import java.io.File
 
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
+
+    data class AccountItem(
+        var title: String,
+        var icon: Icon,
+        var isFirst: Boolean = false,
+        var isLast: Boolean = false,
+        var activity: Class<out AppCompatActivity>? = null,
+        var key: String = "default"
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val qmuiCommonListItemView: QMUICommonListItemView =
+                itemView.findViewById(R.id.settingListItemView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
+
+    data class SimpleItem(
+        var titleResId: Int,
+        var key: String,
+        var isFirst: Boolean = false,
+        var isLast: Boolean = false,
+        var textColor: Int,
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val textView: TextView = itemView.findViewById(R.id.textView)
+            val qmuiLinearLayout: QMUILinearLayout = itemView.findViewById(R.id.QMUILinearLayout)
+        }
+    }
+
+    data class SpaceItem(
+        var key: String = "space"
+    ) : RecyclerViewItem() {
+        class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
+
+    data class Icon(
+        var key: IIcon,
+        var color: Int,
+        var sizeCorrect: Int = 0
+    )
+
     private lateinit var binding: FragmentAccountBinding
     private var isLogin = false
     private lateinit var store: TinyDB
@@ -94,6 +152,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         super.onCreate(savedInstanceState)
     }
 
+    private val dataSource = emptyDataSourceTyped<RecyclerViewItem>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -132,6 +192,49 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     .into(binding.avatorImageView)
             }
         }
+        dataSource.clear()
+        dataSource.add(
+            AccountItem(
+                title = "个人中心",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_account,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
+                isFirst = true,
+                isLast = true
+            ),
+            SpaceItem(),
+            AccountItem(
+                title = "备份至云端",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_cloud_upload,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
+                isFirst = true
+            ),
+            AccountItem(
+                title = "恢复自云端",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_cloud_download,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
+                isLast = true,
+            ),
+            SpaceItem(),
+            AccountItem(
+                title = "校园论坛",
+                icon = Icon(
+                    key = MaterialDesignIconic.Icon.gmi_comments,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 0
+                ),
+                isFirst = true,
+                isLast = true,
+            )
+        )
 
         //创建ActivityResultLauncher
         val resultLauncher =
@@ -152,8 +255,70 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             start()
         }
 
+        binding.recyclerView.setup {
+            withDataSource(dataSource)
+            withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
+                onBind(SpaceItem::Holder) { _, _ ->
+                }
+            }
+            withItem<SimpleItem, SimpleItem.Holder>(R.layout.item_list_simple) {
+                onBind(SimpleItem::Holder) { _, item ->
+                    textView.apply {
+                        text = getString(item.titleResId)
+                        setTextColor(item.textColor)
+                    }
+                    qmuiLinearLayout.apply {
+                        val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 15)
+                        setPadding(
+                            paddingLeft, paddingVer,
+                            paddingRight, paddingVer
+                        )
+                    }
+
+                    val radius =
+                        resources.getDimensionPixelSize(R.dimen.listview_radius)
+                    if (item.isFirst && item.isLast) {
+                        qmuiLinearLayout.radius = radius
+                    } else if (item.isLast) {
+                        qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
+                    } else if (item.isFirst) {
+                        qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    }
+                }
+                onClick { index ->
+                }
+            }
+            withItem<AccountItem, AccountItem.Holder>(R.layout.item_list_setting) {
+                onBind(AccountItem::Holder) { index, item ->
+                    qmuiCommonListItemView.text = item.title
+                    qmuiCommonListItemView.setImageDrawable(
+                        IconicsDrawable(
+                            binding.root.context,
+                            item.icon.key
+                        ).apply {
+                            colorInt = item.icon.color
+                            sizeDp = 19 + item.icon.sizeCorrect
+                        })
+                    val radius =
+                        resources.getDimensionPixelSize(R.dimen.listview_radius)
+                    if (item.isFirst && item.isLast) {
+                        qmuiLinearLayout.radius = radius
+                    } else if (item.isLast) {
+                        qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
+                    } else if (item.isFirst) {
+                        qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    }
+                }
+                onClick { index ->
+                }
+                onLongClick { index ->
+                }
+            }
+        }
+
         return binding.root
     }
+
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(str: String?) {
