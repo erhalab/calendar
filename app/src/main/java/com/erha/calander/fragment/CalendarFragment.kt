@@ -30,7 +30,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
 
     //    private val viewModel by genericViewModel()
     private lateinit var store: TinyDB
-    private lateinit var locale: Locale
+    private var locale = Locale.getDefault()
     private lateinit var weekViewAdapter: WeekViewSimpleAdapter
 
     init {
@@ -44,7 +44,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     ): View? {
         binding = FragmentCalenderBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
-        locale = Locale(store.getString(LocalStorageKey.LANGUAGE))
         EventBus.getDefault().register(this)
         return binding.root
     }
@@ -74,7 +73,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 19 -> SimpleDateFormat("日落", locale).format(date.time)
                 else -> defaultTimeFormatter().format(date.time)
             }
-
         }
         //滚动到上次的位置（记忆）
         store.getString(LocalStorageKey.CALENDAR_LAST_FIRST_DAY)?.apply {
@@ -134,9 +132,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     private fun defaultDateFormatter(
         numberOfDays: Int
     ) = when (numberOfDays) {
-        1 -> SimpleDateFormat("EEEE dd", locale)
-        in 2..6 -> SimpleDateFormat("EEE dd", locale)
-        else -> SimpleDateFormat("EEEEE dd", locale)
+        1 -> SimpleDateFormat("EEEE yyyy/MM/dd", locale)
+        in 2..6 -> SimpleDateFormat("EEE d", locale)
+        else -> SimpleDateFormat("EEEEE d", locale)
     }
 
     //侧边栏格式
@@ -155,12 +153,22 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(str: String?) {
         when (str) {
-            EventType.FIRST_WEEK_CHANGE -> {
-                initFirstWeek()
-            }
-            EventType.EVENT_CHANGE -> {
-                weekViewAdapter.submitList(CourseDao.getAll())
-            }
+            EventType.FIRST_WEEK_CHANGE -> initFirstWeek()
+            EventType.EVENT_CHANGE -> weekViewAdapter.submitList(CourseDao.getAll())
+            EventType.LANGUAGE_CHANGE -> updateLanguage()
+
+        }
+    }
+
+    private fun updateLanguage() {
+        locale = Locale.getDefault()
+        binding.weekView.setDateFormatter { date ->
+            defaultDateFormatter(binding.weekView.numberOfVisibleDays).format(date.time)
+        }
+        binding.toolbarContainer.toolbar.apply {
+            title = SimpleDateFormat("MMMM", locale).format(binding.weekView.firstVisibleDate.time)
+            subtitle =
+                SimpleDateFormat("yyyy", locale).format(binding.weekView.firstVisibleDate.time)
         }
     }
 

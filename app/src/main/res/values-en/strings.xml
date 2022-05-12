@@ -58,4 +58,10 @@
     <string name="text_developing">Developing....</string>
     <string name="about_version">Version  %1$s</string>
     <string name="login">Login</string>
+    <string name="text_exit_app">Exit App</string>
+    <string name="setting_import_class">Import Classes</string>
+    <string name="setting_import_class_confirm">Login</string>
+    <string name="string_import_class_fail">Import Failed</string>
+    <string name="login_phone">Phone number</string>
+    <string name="setting_time_first_day_of_week">First day of Week</string>
 </resources>

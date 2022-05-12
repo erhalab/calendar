@@ -2,8 +2,10 @@ package com.erha.calander.fragment
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -95,86 +97,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
 
-        dataSource.add(
-            SettingItem(
-                titleResId = R.string.setting_import_class,
-                icon = Icon(
-                    key = FontAwesome.Icon.faw_chalkboard_teacher,
-                    color = Color.parseColor("#4d70fa"),
-                    sizeCorrect = 2
-                ),
-                isFirst = true,
-                isLast = true,
-                key = "importClass"
-            ).apply {
-            },
-            SpaceItem(),
-            SettingItem(
-                titleResId = R.string.setting_componment,
-                icon = Icon(
-                    key = FontAwesome.Icon.faw_list_ol, color = Color.parseColor("#4d70fa"),
-                    sizeCorrect = 2
-                ),
-                isFirst = true,
-                isLast = true
-            ).apply {
-                activity = SettingModelActivity::class.java
-            },
-            SpaceItem(),
-            SettingItem(
-                titleResId = R.string.setting_language,
-                icon = Icon(
-                    key = FontAwesome.Icon.faw_language,
-                    color = Color.parseColor("#4d70fa")
-                ),
-                isFirst = true,
-                key = "language"
-            ),
-            SettingItem(
-                titleResId = R.string.setting_time,
-                icon = Icon(key = FontAwesome.Icon.faw_clock, color = Color.parseColor("#4d70fa"))
-            ).apply {
-                activity = SettingTimeActivity::class.java
-            },
-            SettingItem(
-                titleResId = R.string.setting_notify,
-                icon = Icon(key = FontAwesome.Icon.faw_music, color = Color.parseColor("#4d70fa")),
-                isLast = true
-            ).apply {
-                activity = SettingNotificationActivity::class.java
-            },
-            SpaceItem(),
-            SettingItem(
-                titleResId = R.string.setting_about,
-                icon = Icon(
-                    key = FontAwesome.Icon.faw_info_circle,
-                    color = Color.parseColor("#ffb001")
-                ),
-                isFirst = true,
-                isLast = true,
-            ).apply {
-                activity = AboutActivity::class.java
-            },
-            SpaceItem(),
-            SimpleItem(
-                titleResId = R.string.text_exit_app,
-                key = "exitApp",
-                isFirst = true,
-                isLast = true,
-                textColor = resources.getColor(R.color.qmui_config_color_red)
-            ),
-        )
-
         //创建ActivityResultLauncher
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 Log.e("registerForActivityResult", it.resultCode.toString())
-//            if(it.resultCode == Activity.RESULT_OK){
-//                val result = it.data?.getStringExtra("testBean") ?: null
-//            }
             }
 
-        // setup{} is an extension method on RecyclerView
         binding.settingRecyclerView.setup {
             withDataSource(dataSource)
             withItem<SpaceItem, SpaceItem.Holder>(R.layout.item_list_space_20) {
@@ -236,7 +164,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     }
                 }
                 onClick { index ->
-                    // item is a `val` in `this` here
                     when {
                         item.activity != null -> {
                             resultLauncher.launch(Intent(activity, item.activity))
@@ -371,8 +298,82 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             }
         }
+        initDataSource()
 
         return binding.root
+    }
+
+    private fun initDataSource() {
+        dataSource.clear()
+        dataSource.add(
+            SettingItem(
+                titleResId = R.string.setting_import_class,
+                icon = Icon(
+                    key = FontAwesome.Icon.faw_chalkboard_teacher,
+                    color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 2
+                ),
+                isFirst = true,
+                isLast = true,
+                key = "importClass"
+            ).apply {
+            },
+            SpaceItem(),
+            SettingItem(
+                titleResId = R.string.setting_componment,
+                icon = Icon(
+                    key = FontAwesome.Icon.faw_list_ol, color = Color.parseColor("#4d70fa"),
+                    sizeCorrect = 2
+                ),
+                isFirst = true,
+                isLast = true
+            ).apply {
+                activity = SettingModelActivity::class.java
+            },
+            SpaceItem(),
+            SettingItem(
+                titleResId = R.string.setting_language,
+                icon = Icon(
+                    key = FontAwesome.Icon.faw_language,
+                    color = Color.parseColor("#4d70fa")
+                ),
+                isFirst = true,
+                key = "language"
+            ),
+            SettingItem(
+                titleResId = R.string.setting_time,
+                icon = Icon(key = FontAwesome.Icon.faw_clock, color = Color.parseColor("#4d70fa"))
+            ).apply {
+                activity = SettingTimeActivity::class.java
+            },
+            SettingItem(
+                titleResId = R.string.setting_notify,
+                icon = Icon(key = FontAwesome.Icon.faw_music, color = Color.parseColor("#4d70fa")),
+                isLast = true
+            ).apply {
+                activity = SettingNotificationActivity::class.java
+            },
+            SpaceItem(),
+            SettingItem(
+                titleResId = R.string.setting_about,
+                icon = Icon(
+                    key = FontAwesome.Icon.faw_info_circle,
+                    color = Color.parseColor("#ffb001")
+                ),
+                isFirst = true,
+                isLast = true,
+            ).apply {
+                activity = AboutActivity::class.java
+            },
+            SpaceItem(),
+            SimpleItem(
+                titleResId = R.string.text_exit_app,
+                key = "exitApp",
+                isFirst = true,
+                isLast = true,
+                textColor = resources.getColor(R.color.qmui_config_color_red)
+            ),
+        )
     }
 
     private fun initX5() {
@@ -411,9 +412,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val items = arrayOf(
             getString(R.string.language_zh), getString(R.string.language_en)
         )
-        val locals = arrayOf(Locale.SIMPLIFIED_CHINESE, Locale.ENGLISH)
+        val locales = arrayOf(Locale.SIMPLIFIED_CHINESE, Locale.ENGLISH)
         var checkedIndex = 0
-        val sta = store.getString("language")
+        val sta = store.getString(LocalStorageKey.LANGUAGE)
         sta?.apply {
             when (this) {
                 Locale.SIMPLIFIED_CHINESE.language -> checkedIndex = 0
@@ -425,27 +426,27 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             .setSkinManager(QMUISkinManager.defaultInstance(context))
             .addItems(items) { dialog, which ->
                 Toast.makeText(activity, "你选择了 " + items[which], Toast.LENGTH_SHORT).show()
-                store.putString("language", locals[which].language)
-                val intent = Intent()
-                intent.putExtra("msg", "EVENT_REFRESH_LANGUAGE")
-                binding.root.context.sendBroadcast(intent)
-                changeAppLanguage()
-                EventBus.getDefault().post(EventType.LANGUAGE_CHANGE)
+                changeAppLanguage(locales[which])
                 dialog.dismiss()
             }
             .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show()
     }
 
-    private fun changeAppLanguage() {
-        val sta = store.getString("language") //这是SharedPreferences工具类，用于保存设置，代码很简单，自己实现吧
+    private fun changeAppLanguage(locale: Locale) {
+        store.putString(LocalStorageKey.LANGUAGE, locale.language)
         // 本地语言设置
-        val myLocale = Locale(sta)
-        val res = resources
-        val dm = res.displayMetrics
+        val res: Resources = resources
+        val dm: DisplayMetrics = res.displayMetrics
         val conf: Configuration = res.configuration
-        conf.locale = myLocale
+        conf.locale = locale
         res.updateConfiguration(conf, dm)
-        (activity as MainActivity).recreateFragment(this)
+        Locale.setDefault(locale)
+        onConfigurationChanged(conf)
+        //更新当前视图中的组件
+        binding.settingTitle.text = resources.getText(R.string.menu_setting_text)
+        initDataSource()
+        //发布 语言变化 事件
+        EventBus.getDefault().post(EventType.LANGUAGE_CHANGE)
     }
 
 

@@ -1,22 +1,23 @@
 package com.erha.calander.activity
 
 
-import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import cn.authing.guard.Authing
 import cn.authing.guard.data.UserInfo
 import cn.authing.guard.network.AuthClient
@@ -64,28 +65,16 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     data class FragmentObject(
         var fragment: Fragment,
-        var identity: Int,
-        var frameLayout: FrameLayout
+        var identity: Int
     ) {
         var showAddButton = true
         var allowSideDrawer = true
-        var isDefault = false
-
-        //        set(value){
-//            field = value
-//            //如果这个页面是默认页面，那么这个页面一定是当前fragment的默认页面
-//            if (value){
-//                isFragmentDefault = true
-//            }
-//        }
-        var isFragmentDefault = false
     }
 
     //布局binding
     private lateinit var binding: ActivityMainBinding
     private val fragmentObjects = ArrayList<FragmentObject>()
     private lateinit var store: TinyDB
-    private lateinit var nowDisplayFrameLayout: FrameLayout
     private var userInfo: UserInfo? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.e("onCreate Activity创建", this.javaClass.name)
@@ -113,25 +102,24 @@ class MainActivity : AppCompatActivity() {
         //注册事件，监听语言变化
         EventBus.getDefault().register(this)
 
-        //通知管理器
-        val notificationManager =
-            binding.root.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         //加载用户设置的语言或者默认语言
-        var sta = store.getString("language")
+        var sta = store.getString(LocalStorageKey.LANGUAGE)
         if (sta == null || sta.isBlank()) {
-            store.putString("language", Locale.getDefault().language)
-            sta = store.getString("language")
+            store.putString(LocalStorageKey.LANGUAGE, Locale.getDefault().language)
+            sta = store.getString(LocalStorageKey.LANGUAGE)
         }
         sta?.apply {
             when (this) {
                 //只有支持的语言才能加载
                 Locale.SIMPLIFIED_CHINESE.language, Locale.ENGLISH.language -> {
-                    val myLocale = Locale(this)
-                    val res = resources
-                    val dm = res.displayMetrics
+                    val locale = Locale(this)
+                    val res: Resources = resources
+                    val dm: DisplayMetrics = res.displayMetrics
                     val conf: Configuration = res.configuration
-                    conf.locale = myLocale
+                    conf.locale = locale
                     res.updateConfiguration(conf, dm)
+                    Locale.setDefault(locale)
+                    onConfigurationChanged(conf)
                 }
                 else -> {
                     //不支持的语言把这个设置项清空
@@ -162,6 +150,12 @@ class MainActivity : AppCompatActivity() {
         if (store.getInt(LocalStorageKey.LAST_LAUNCH_WEBVIEW_SUCCESS) == 1) {
             initX5()
         }
+        var list = ArrayList<Fragment>()
+        for (i in fragmentObjects) {
+            list.add(i.fragment)
+        }
+        binding.viewPager2.adapter = MonitorPagerAdapter(this, list)
+        binding.viewPager2.isUserInputEnabled = false
     }
 
     private fun initX5() {
@@ -196,7 +190,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initNotificationService() {
         //启用通知Service
-        var serviceIntent = Intent(this@MainActivity, NotificationService::class.java)
+        val serviceIntent = Intent(this@MainActivity, NotificationService::class.java)
         startService(serviceIntent)
     }
 
@@ -239,26 +233,18 @@ class MainActivity : AppCompatActivity() {
             listOf(
                 FragmentObject(
                     fragment = HomeFragment(),
-                    identity = R.id.menu_home,
-                    frameLayout = binding.frameHome
-                )
-                    .apply {
-                        isFragmentDefault = true
-                        isDefault = true
-                    },
+                    identity = R.id.menu_home
+                ),
                 FragmentObject(
                     fragment = CalendarFragment(),
-                    identity = R.id.menu_calendar,
-                    frameLayout = binding.frameCalendar
+                    identity = R.id.menu_calendar
                 )
                     .apply {
                         allowSideDrawer = false
-                        isFragmentDefault = true
                     },
                 FragmentObject(
                     fragment = AccountFragment(),
-                    identity = R.id.menu_account,
-                    frameLayout = binding.frameHome
+                    identity = R.id.menu_account
                 )
                     .apply {
                         allowSideDrawer = false
@@ -266,8 +252,7 @@ class MainActivity : AppCompatActivity() {
                     },
                 FragmentObject(
                     fragment = SettingsFragment(),
-                    identity = R.id.menu_setting,
-                    frameLayout = binding.frameHome
+                    identity = R.id.menu_setting
                 )
                     .apply {
                         allowSideDrawer = false
@@ -275,26 +260,6 @@ class MainActivity : AppCompatActivity() {
                     }
             )
         )
-        //加载fragment
-        //if (savedInstanceState == null) {
-        for (f in fragmentObjects) {
-            if (f.isDefault) {
-                nowDisplayFrameLayout = f.frameLayout
-            }
-        }
-        for (f in fragmentObjects) {
-            hasRecreatedFragments.add(f.fragment)
-            if (f.isFragmentDefault) {
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(f.frameLayout.id, f.fragment)
-                    .commit()
-            }
-            if (nowDisplayFrameLayout != f.frameLayout) {
-                f.frameLayout.visibility = View.INVISIBLE
-            }
-        }
-        //}
     }
 
     //初始化侧边栏
@@ -439,74 +404,26 @@ class MainActivity : AppCompatActivity() {
             if (lastSelectedMenuId > 0) {
                 menu.select(lastSelectedMenuId)
             } else {
-                for (f in fragmentObjects) {
-                    if (f.isDefault) {
-                        for (m in menu.items) {
-                            if (m.id == f.identity) {
-                                menu.select(m.id)
-                                break
-                            }
-
-                        }
-                        break
-                    }
-                }
+                menu.select(menu.items.first().id)
             }
 
             //监听底部菜单点击事件（切换页面）
             onItemSelectedListener =
                 { view: View, menuItem: MenuItem, b: Boolean ->
-                    var i = 0
-                    for (m in binding.expandableBottomBar.menu.items) {
-                        if (m.id == menuItem.id) {
-                            lastSelectedMenuId = m.id
-                            //切换fragment
-                            fragmentObjects[i].apply {
-
-                                //如果需要重建的话，在切换语言之后
-                                hasRecreatedFragments.run {
-                                    if (!this.contains(fragmentObjects[i].fragment)) {
-                                        //单独处理特殊的Fragment
-                                        if (fragmentObjects[i].fragment is CalendarFragment) {
-                                            fragmentObjects[i].fragment = CalendarFragment()
-                                            // 修改BUG，如果这种类型的fragment（实例需要重建的），那么直接
-                                            // 替换。不需要detach和attach
-                                            hasRecreatedFragments.add(fragmentObjects[i].fragment)
-                                        }
-                                    }
-                                    supportFragmentManager
-                                        .beginTransaction()
-                                        .replace(
-                                            fragmentObjects[i].frameLayout.id,
-                                            fragmentObjects[i].fragment
-                                        )
-                                        .commitNowAllowingStateLoss()
-                                    if (!this.contains(fragmentObjects[i].fragment)) {
-                                        recreateFragment(fragmentObjects[i].fragment)
-                                    }
-                                }
-
-                                if (nowDisplayFrameLayout == this.frameLayout) {
-                                    //是同一个框架，那么直接加载
-                                } else {
-                                    //不是同一个，隐藏当前这个
-                                    nowDisplayFrameLayout.visibility = View.INVISIBLE
-                                    //显示现在这个
-                                    this.frameLayout.visibility = View.VISIBLE
-                                    nowDisplayFrameLayout = this.frameLayout
-                                }
-
+                    lastSelectedMenuId = menuItem.id
+                    for (i in 0 until fragmentObjects.size) {
+                        fragmentObjects[i].apply {
+                            if (identity == menuItem.id) {
+                                binding.viewPager2.setCurrentItem(i, false)
                                 binding.root.setDrawerLockMode(
-                                    if (allowSideDrawer) LOCK_MODE_UNLOCKED else LOCK_MODE_LOCKED_CLOSED
+                                    if (allowSideDrawer) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
                                 )
                                 binding.floatButtonShadowLayout.visibility =
                                     if (showAddButton) View.VISIBLE else View.INVISIBLE
-
                             }
-                            break
                         }
-                        i++
                     }
+
                 }
         }
     }
@@ -518,19 +435,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(startMain)
     }
 
-    //已经重建过的fragment
-    private var hasRecreatedFragments: ArrayList<Fragment> = ArrayList()
-    private fun changeAppLanguage() {
-        hasRecreatedFragments = ArrayList()
-        initExpandableBottomBar(recreate = true)
-        initFloatButton(recreate = true)
-        initDrawer(recreate = true)
-    }
-
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(str: String?) {
         when (str) {
-            EventType.LANGUAGE_CHANGE -> changeAppLanguage()
+            EventType.LANGUAGE_CHANGE -> updateLanguage()
         }
     }
 
@@ -539,17 +447,31 @@ class MainActivity : AppCompatActivity() {
         EventBus.getDefault().unregister(this)
     }
 
-    //重建fragment
-    fun recreateFragment(fragment: Fragment) {
-        Log.e("重建fragment", fragment.javaClass.name)
-        hasRecreatedFragments.add(fragment)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            supportFragmentManager.beginTransaction().detach(fragment).commitNowAllowingStateLoss()
-            supportFragmentManager.beginTransaction().attach(fragment).commitNowAllowingStateLoss()
-        } else {
-            supportFragmentManager.beginTransaction().detach(fragment).attach(fragment)
-                .commitNowAllowingStateLoss()
-        }
+    private fun updateLanguage() {
+        initExpandableBottomBar(recreate = true)
     }
 
+}
+
+class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) :
+    FragmentStateAdapter(context) {
+    var context: Context
+    var fragments: List<Fragment> = ArrayList()
+
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
+    }
+
+    fun getFragment(position: Int): Fragment {
+        return fragments[position]
+    }
+
+    override fun getItemCount(): Int {
+        return fragments.size
+    }
+
+    init {
+        this.context = context
+        this.fragments = fragments
+    }
 }
