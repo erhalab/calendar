@@ -2,3 +2,4 @@ include ':app'
 rootProject.name = "Kotlin3"
 include ':base'
 include ':core'
+include ':indeterminate-checkbox'

@@ -136,10 +136,20 @@ class AddSimpleTaskActivity : AppCompatActivity() {
         }
         binding.submitZone.apply {
             setOnClickListener {
-                var i = SimpleTaskWithoutID(
-                    status = TaskStatus.ONGOING,
+                var html = ""
+                try {
+                    html = binding.editor.html
+                }catch (e:Exception){}
+                catch (e:java.lang.Exception){}
+                val status = when (binding.checkbox.state){
+                    null -> TaskStatus.CANCELED
+                    true -> TaskStatus.FINISHED
+                    else -> TaskStatus.ONGOING
+                }
+                val i = SimpleTaskWithoutID(
+                    status = status,
                     title = binding.taskTitle.text.toString(),
-                    detailHtml = binding.editor.html,
+                    detailHtml = html,
                     hashTime = taskTimeAndNotify.hasTime,
                     date = CalendarUtil.getWithoutTime(taskTimeAndNotify.date),
                     isAllDay = taskTimeAndNotify.isAllDay,
@@ -157,6 +167,19 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 Toasty.success(binding.root.context, "添加成功", Toast.LENGTH_SHORT, false).show()
                 finish()
             }
+        }
+        binding.checkbox.setOnClickListener {
+            binding.checkbox.apply {
+                if (isIndeterminate){
+                    isIndeterminate = false
+                    isChecked = false
+                }
+            }
+        }
+        binding.checkbox.setOnLongClickListener {
+            Toasty.info(binding.root.context,"任务状态 -> 已放弃",Toast.LENGTH_SHORT,false).show()
+            binding.checkbox.isIndeterminate = true
+            true
         }
         initLoadingPopup()
         progressUploadFile = ProgressUploadFile(binding.root.context, this)

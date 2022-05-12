@@ -73,12 +73,14 @@
             android:layout_height="40dp"
             android:layout_marginLeft="10dp">
 
-            <CheckBox
+            <com.buildware.widget.indeterm.IndeterminateCheckBox
+                android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:background="@null"
-                android:buttonTint="@color/default_active" />
+                app:buttonTint="@color/default_active"
+                app:colorControlIndeterminate="@color/default_active"/>
 
             <TextView
                 android:id="@+id/taskTime"
@@ -89,7 +91,6 @@
                 android:text="设置任务时间与提醒"
                 android:textColor="@color/default_active"
                 android:textSize="18sp" />
-
         </LinearLayout>
 
         <EditText
@@ -98,6 +99,7 @@
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:hint="准备做什么?"
+            android:textStyle="bold"
             android:paddingLeft="5dp"
             android:textColor="@color/black"
             android:textColorHint="@color/gray_500"
