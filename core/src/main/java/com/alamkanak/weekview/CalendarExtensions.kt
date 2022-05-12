@@ -1,9 +1,7 @@
 package com.alamkanak.weekview
 
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 import kotlin.math.roundToInt
 
 internal const val DAY_IN_MILLIS = 1000L * 60L * 60L * 24L
@@ -83,6 +81,18 @@ internal operator fun Calendar.minusAssign(days: Days) {
     add(Calendar.DATE, days.days * (-1))
 }
 
+internal operator fun Calendar.plus(minutes: Minutes): Calendar {
+    return copy().apply {
+        add(Calendar.MINUTE, minutes.minutes)
+    }
+}
+
+internal operator fun Calendar.minus(minutes: Minutes): Calendar {
+    return copy().apply {
+        add(Calendar.MINUTE, minutes.minutes * (-1))
+    }
+}
+
 internal operator fun Calendar.minusAssign(minutes: Minutes) {
     add(Calendar.MINUTE, minutes.minutes * (-1))
 }
@@ -138,6 +148,11 @@ internal val Calendar.isToday: Boolean
     get() = isSameDate(today())
 
 internal fun Calendar.toEpochDays(): Int = (atStartOfDay.timeInMillis / DAY_IN_MILLIS).toInt()
+
+internal infix fun Calendar.minutesUntil(other: Calendar): Minutes {
+    val diff = (timeInMillis - other.timeInMillis) / 60_000
+    return Minutes(diff.toInt())
+}
 
 internal val Calendar.lengthOfMonth: Int
     get() = getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -201,9 +216,7 @@ internal fun firstDayOfYear(): Calendar {
     }
 }
 
-internal typealias DateRange = List<Calendar>
-
-internal fun DateRange.validate(viewState: ViewState): List<Calendar> {
+internal fun List<Calendar>.validate(viewState: ViewState): List<Calendar> {
     val minDate = viewState.minDate
     val maxDate = viewState.maxDate
 
@@ -230,7 +243,7 @@ internal fun DateRange.validate(viewState: ViewState): List<Calendar> {
             viewState.createDateRange(minDate!!)
         }
         mustAdjustEnd -> {
-            val start = maxDate!! - Days(numberOfDays - 1)
+            val start = maxDate!! - Days(viewState.numberOfVisibleDays - 1)
             viewState.createDateRange(start)
         }
         else -> {
@@ -294,4 +307,31 @@ internal fun defaultTimeFormatter(): SimpleDateFormat =
 internal fun Calendar.format(): String {
     val sdf = SimpleDateFormat.getDateTimeInstance()
     return sdf.format(time)
+}
+
+fun Calendar.computeDifferenceWithFirstDayOfWeek(): Int {
+    val firstDayOfWeek = firstDayOfWeek
+    return if (firstDayOfWeek == Calendar.MONDAY && dayOfWeek == Calendar.SUNDAY) {
+        // Special case, because Calendar.MONDAY has constant value 2 and Calendar.SUNDAY has
+        // constant value 1. The correct result to return is 6 days, not -1 days.
+        6
+    } else {
+        dayOfWeek - firstDayOfWeek
+    }
+}
+
+fun Calendar.previousFirstDayOfWeek(): Calendar {
+    val result = this - Days(1)
+    while (result.dayOfWeek != firstDayOfWeek) {
+        result.add(Calendar.DATE, -1)
+    }
+    return result
+}
+
+fun Calendar.nextFirstDayOfWeek(): Calendar {
+    val result = this + Days(1)
+    while (result.dayOfWeek != firstDayOfWeek) {
+        result.add(Calendar.DATE, 1)
+    }
+    return result
 }

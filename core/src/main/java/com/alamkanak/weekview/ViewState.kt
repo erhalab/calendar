@@ -10,8 +10,15 @@ import android.text.TextPaint
 import android.view.View
 import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
+
+internal data class DragState(
+    val eventId: Long,
+    val dragStartTime: Calendar,
+    val draggedEventStartTime: Calendar,
+)
 
 internal class ViewState {
 
@@ -30,9 +37,12 @@ internal class ViewState {
     // Calendar configuration
     var numberOfVisibleDays: Int = 3
     var restoreNumberOfVisibleDays: Boolean = true
-    var showFirstDayOfWeekFirst: Boolean = false
     var showCurrentTimeFirst: Boolean = false
     var arrangeAllDayEventsVertically: Boolean = true
+    var stickToActualWeek: Boolean = true
+
+    @Deprecated(message = "Deprecated")
+    var showFirstDayOfWeekFirst: Boolean = false
 
     // Drawing context
     private var startPixel: Float = 0f
@@ -40,6 +50,9 @@ internal class ViewState {
     val dateRange: MutableList<Calendar> =
         createDateRange(firstVisibleDate).validate(this).toMutableList()
     val dateRangeWithStartPixels: MutableList<Pair<Calendar, Float>> = mutableListOf()
+
+    // Drag & drop
+    var dragState: DragState? = null
 
     //第一周的日期
     var customFirstWeekEnable = false
@@ -81,18 +94,6 @@ internal class ViewState {
     var showHeaderBottomShadow: Boolean = false
 
     var horizontalScrollingEnabled: Boolean = false
-
-    @Deprecated("No longer used")
-    var xScrollingSpeed: Float = 0f
-
-    @Deprecated("No longer used")
-    var verticalFlingEnabled: Boolean = false
-
-    @Deprecated("No longer used")
-    var horizontalFlingEnabled: Boolean = false
-
-    @Deprecated("No longer used")
-    var scrollDuration: Int = 0
 
     var minHour: Int = 0
     var maxHour: Int = 24
@@ -203,15 +204,17 @@ internal class ViewState {
     }
 
     val minX: Float
-        get() {
-            return maxDate?.let {
-                val date = it - Days(numberOfVisibleDays - 1)
-                getXOriginForDate(date)
-            } ?: Float.NEGATIVE_INFINITY
+        get() = maxDate?.let {
+            val date = it - Days(numberOfVisibleDays - 1)
+            getXOriginForDate(date)
+        } ?: run {
+            if (isLtr) Float.NEGATIVE_INFINITY else Float.POSITIVE_INFINITY
         }
 
     val maxX: Float
-        get() = minDate?.let { getXOriginForDate(it) } ?: Float.POSITIVE_INFINITY
+        get() = minDate?.let { getXOriginForDate(it) } ?: run {
+            if (isLtr) Float.POSITIVE_INFINITY else Float.NEGATIVE_INFINITY
+        }
 
     val isSingleDay: Boolean
         get() = numberOfVisibleDays == 1
@@ -292,9 +295,34 @@ internal class ViewState {
     val displayedHours: IntProgression
         get() = timeRange step timeColumnHoursInterval
 
+    private val _firstVisibleHour: Float
+        get() = minHour + (currentOrigin.y * -1 / hourHeight)
+
+    private val visibleHours: Float
+        get() = calendarGridBounds.height() / hourHeight
+
+    val firstVisibleHour: Int
+        get() = _firstVisibleHour.toInt()
+
+    val firstFullyVisibleHour: Int
+        get() = ceil(_firstVisibleHour).toInt()
+
+    val lastVisibleHour: Int
+        get() = ceil(_firstVisibleHour + visibleHours).toInt()
+
+    val lastFullyVisibleHour: Int
+        get() = (_firstVisibleHour + visibleHours).toInt()
+
     fun getXOriginForDate(date: Calendar): Float {
         return if (isLtr) (date.daysFromToday * dayWidth * -1f) else (date.daysFromToday * dayWidth)
     }
+
+    val currentDate: Calendar
+        get() {
+            val factor = if (isLtr) -1f else 1f
+            val daysFromToday = currentOrigin.x / (dayWidth * factor)
+            return today() + Days(floor(daysFromToday).toInt())
+        }
 
     private fun scrollToFirstDayOfWeek(navigationListener: Navigator.NavigationListener) {
         // If the week view is being drawn for the first time, consider the first day of the week.
@@ -322,7 +350,6 @@ internal class ViewState {
         }
 
         desired.hour = desired.hour.coerceIn(minimumValue = minHour, maximumValue = maxHour)
-        desired.minute = 0
 
         val fraction = desired.minute / 60f
         val verticalOffset = hourHeight * (desired.hour + fraction)
@@ -345,22 +372,11 @@ internal class ViewState {
             minDate
         } else if (candidate.isAfter(maxDate)) {
             maxDate - Days(numberOfVisibleDays - 1)
-        } else if (numberOfVisibleDays >= 7 && showFirstDayOfWeekFirst) {
+        } else if (numberOfVisibleDays >= 7 && stickToActualWeek) {
             val diff = candidate.computeDifferenceWithFirstDayOfWeek()
             candidate - Days(diff)
         } else {
             candidate
-        }
-    }
-
-    private fun Calendar.computeDifferenceWithFirstDayOfWeek(): Int {
-        val firstDayOfWeek = firstDayOfWeek
-        return if (firstDayOfWeek == Calendar.MONDAY && dayOfWeek == Calendar.SUNDAY) {
-            // Special case, because Calendar.MONDAY has constant value 2 and Calendar.SUNDAY has
-            // constant value 1. The correct result to return is 6 days, not -1 days.
-            6
-        } else {
-            dayOfWeek - firstDayOfWeek
         }
     }
 
@@ -423,6 +439,44 @@ internal class ViewState {
     }
 
     fun calculateHeaderHeight(): Float {
+        return if (numberOfVisibleDays > 1) {
+            calculateHeaderHeightInMultiDayView()
+        } else {
+            calculateHeaderHeightInSingleDayView()
+        }
+    }
+
+    private fun calculateHeaderHeightInSingleDayView(): Float {
+        val labelHeight = headerPadding + dateLabelHeight + headerPadding
+        var chipsHeight = 0f
+
+        if (maxNumberOfAllDayEvents > 0) {
+            val numberOfRows = if (arrangeAllDayEventsVertically && allDayEventsExpanded) {
+                maxNumberOfAllDayEvents
+            } else if (arrangeAllDayEventsVertically) {
+                min(maxNumberOfAllDayEvents, 2)
+            } else {
+                1
+            }
+
+            val heightOfChips = numberOfRows * currentAllDayEventHeight
+            val heightOfSpacing = (numberOfRows - 1) * eventMarginVertical
+            chipsHeight += heightOfChips + heightOfSpacing
+
+            // Add padding below the event chips
+            chipsHeight += headerPadding
+        }
+
+        val height = max(labelHeight, chipsHeight)
+
+        return if (showHeaderBottomLine) {
+            height + headerBottomLinePaint.strokeWidth
+        } else {
+            height
+        }
+    }
+
+    private fun calculateHeaderHeightInMultiDayView(): Float {
         var newHeight = headerPadding + dateLabelHeight + headerPadding
 
         if (maxNumberOfAllDayEvents > 0) {
@@ -475,12 +529,13 @@ internal class ViewState {
         updateVerticalOrigin()
     }
 
+    // TODO Better name!
     private fun updateViewState(navigationListener: Navigator.NavigationListener) {
         if (!isFirstDraw) {
             return
         }
 
-        if (showFirstDayOfWeekFirst) {
+        if (showFirstDayOfWeekFirst || stickToActualWeek) {
             scrollToFirstDayOfWeek(navigationListener)
         }
 
@@ -546,5 +601,10 @@ internal class ViewState {
         if (Build.VERSION.SDK_INT >= 17) {
             isLtr = newConfig.layoutDirection == View.LAYOUT_DIRECTION_LTR
         }
+    }
+
+    fun minutesFromStart(eventStartTime: Calendar): Int {
+        val hoursFromStart = eventStartTime.hour - minHour
+        return hoursFromStart * 60 + eventStartTime.minute
     }
 }

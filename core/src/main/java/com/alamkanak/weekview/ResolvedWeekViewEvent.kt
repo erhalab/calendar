@@ -1,7 +1,7 @@
 package com.alamkanak.weekview
 
 import android.content.Context
-import java.util.Calendar
+import java.util.*
 import kotlin.math.roundToInt
 
 internal sealed class ResolvedWeekViewEntity {
@@ -13,6 +13,10 @@ internal sealed class ResolvedWeekViewEntity {
     internal abstract val endTime: Calendar
     internal abstract val isAllDay: Boolean
     internal abstract val style: Style
+
+    internal val period: Period by lazy {
+        Period.fromDate(startTime)
+    }
 
     data class Event<T>(
         override val id: Long,
@@ -79,14 +83,6 @@ internal sealed class ResolvedWeekViewEntity {
 
         return !startTime.isAfter(other.endTime) && !endTime.isBefore(other.startTime)
     }
-
-    internal fun startsOnEarlierDay(
-        originalEvent: ResolvedWeekViewEntity
-    ): Boolean = startTime.isNotEqual(originalEvent.startTime)
-
-    internal fun endsOnLaterDay(
-        originalEvent: ResolvedWeekViewEntity
-    ): Boolean = endTime.isNotEqual(originalEvent.endTime)
 
     internal fun createCopy(
         startTime: Calendar = this.startTime,

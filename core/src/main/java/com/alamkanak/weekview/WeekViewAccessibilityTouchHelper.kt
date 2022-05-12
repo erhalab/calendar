@@ -9,7 +9,7 @@ import androidx.customview.widget.ExploreByTouchHelper
 import java.text.DateFormat.LONG
 import java.text.DateFormat.SHORT
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
 import kotlin.math.roundToInt
 
 internal class WeekViewAccessibilityTouchHelper(
@@ -73,15 +73,15 @@ internal class WeekViewAccessibilityTouchHelper(
     ): Boolean = when (action) {
         AccessibilityNodeInfoCompat.ACTION_CLICK -> {
             touchHandler.adapter?.onEventClick(
-                id = eventChip.originalEvent.id,
+                id = eventChip.eventId,
                 bounds = eventChip.bounds
             )
             sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_CLICKED)
             true
         }
         AccessibilityNodeInfoCompat.ACTION_LONG_CLICK -> {
-            touchHandler.adapter?.onEventLongClick(
-                id = eventChip.originalEvent.id,
+            touchHandler.adapter?.handleLongClick(
+                id = eventChip.eventId,
                 bounds = eventChip.bounds
             )
             sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED)
@@ -131,7 +131,7 @@ internal class WeekViewAccessibilityTouchHelper(
         eventChip: EventChip,
         node: AccessibilityNodeInfoCompat
     ) {
-        node.contentDescription = createDescriptionForVirtualView(eventChip.originalEvent)
+        node.contentDescription = createDescriptionForVirtualView(eventChip.event)
         node.addAction(AccessibilityActionCompat.ACTION_CLICK)
         node.addAction(AccessibilityActionCompat.ACTION_LONG_CLICK)
 

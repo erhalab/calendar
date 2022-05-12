@@ -5,7 +5,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.text.StaticLayout
 import androidx.collection.ArrayMap
-import java.util.Calendar
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -69,6 +69,7 @@ private class SingleEventsUpdater(
     private fun List<EventChip>.calculateBounds(startPixel: Float) {
         for (eventChip in this) {
             val chipRect = boundsCalculator.calculateSingleEvent(eventChip, startPixel)
+
             if (chipRect.isValid) {
                 eventChip.bounds.set(chipRect)
             } else {
@@ -244,10 +245,19 @@ private class SingleEventsDrawer(
     }
 
     private fun Canvas.drawEventsForDate(date: Calendar) {
-        val eventChips = chipsCacheProvider()?.normalEventChipsByDate(date).orEmpty()
-        val validEventChips = eventChips.filterNot { it.bounds.isEmpty }
+        val eventChips = chipsCacheProvider()?.normalEventChipsByDate(date)
+            .orEmpty()
+            .filterNot { it.bounds.isEmpty }
 
-        for (eventChip in validEventChips) {
+        if (eventChips.isEmpty()) {
+            return
+        }
+
+        val sortedEventChips = eventChips.sortedBy {
+            it.event.id == viewState.dragState?.eventId
+        }
+
+        for (eventChip in sortedEventChips) {
             val textLayout = eventLabels[eventChip.id]
             eventChipDrawer.draw(eventChip, canvas = this, textLayout)
         }

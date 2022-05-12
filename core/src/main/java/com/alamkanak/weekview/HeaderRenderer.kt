@@ -21,7 +21,6 @@ internal class HeaderRenderer(
     onHeaderHeightChanged: () -> Unit
 ) : Renderer, DateFormatterDependent {
 
-
     private val allDayEventLabels = ArrayMap<EventChip, StaticLayout>()
     private val dateLabelLayouts = SparseArray<StaticLayout>()
 
@@ -140,20 +139,43 @@ private class DateLabelsDrawer(
 ) : Drawer {
 
     override fun draw(canvas: Canvas) {
-        canvas.drawInBounds(viewState.headerBounds) {
+        if (viewState.numberOfVisibleDays > 1) {
+            canvas.drawDateLabelInMultiDayView()
+        } else {
+            canvas.drawDateLabelInSingleDayView()
+        }
+    }
+
+    private fun Canvas.drawDateLabelInSingleDayView() {
+        val bounds = viewState.weekNumberBounds
+        val date = viewState.dateRange.first()
+
+        val key = date.toEpochDays()
+        val textLayout = dateLabelLayouts[key]
+
+        withTranslation(
+            x = bounds.centerX(),
+            y = viewState.headerPadding,
+        ) {
+            draw(textLayout)
+        }
+    }
+
+    private fun Canvas.drawDateLabelInMultiDayView() {
+        drawInBounds(viewState.headerBounds) {
             viewState.dateRangeWithStartPixels.forEach { (date, startPixel) ->
                 drawLabel(date, startPixel)
             }
         }
     }
 
-    private fun Canvas.drawLabel(day: Calendar, startPixel: Float) {
-        val key = day.toEpochDays()
+    private fun Canvas.drawLabel(date: Calendar, startPixel: Float) {
+        val key = date.toEpochDays()
         val textLayout = dateLabelLayouts[key]
 
         withTranslation(
             x = startPixel + viewState.dayWidth / 2f,
-            y = viewState.headerPadding
+            y = viewState.headerPadding,
         ) {
             draw(textLayout)
         }
@@ -323,7 +345,6 @@ private class HeaderDrawer(
     private val viewState: ViewState
 ) : Drawer {
 
-
     private val upArrow: Drawable by lazy {
         checkNotNull(ContextCompat.getDrawable(context, R.drawable.ic_arrow_up))
     }
@@ -343,8 +364,12 @@ private class HeaderDrawer(
 
         canvas.drawRect(0f, 0f, width, viewState.headerHeight, backgroundPaint)
 
-        if (viewState.showWeekNumber) {
+        if (viewState.showWeekNumber && viewState.numberOfVisibleDays > 1) {
             canvas.drawWeekNumber()
+        }
+
+        if (viewState.showTimeColumnSeparator) {
+            canvas.drawTimeColumnSeparatorExtension()
         }
 
         if (viewState.showAllDayEventsToggleArrow) {
@@ -358,44 +383,7 @@ private class HeaderDrawer(
     }
 
     private fun Canvas.drawWeekNumber() {
-
-        var weekNumber = viewState.dateRange.first().weekOfYear.toString()
-        var firstWeekCalendar = viewState.firstWeekCalendar
-        if (viewState.customFirstWeekEnable) {
-            // 自己适配周数
-            firstWeekCalendar.apply {
-                var now = viewState.dateRange.first().copy()
-                now.apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-
-                var begin2 = Calendar.getInstance()
-                begin2.apply {
-                    set(Calendar.YEAR, now.get(Calendar.YEAR))
-                    set(Calendar.DAY_OF_MONTH, firstWeekCalendar.get(Calendar.DAY_OF_MONTH))
-                    set(Calendar.MONTH, firstWeekCalendar.get(Calendar.MONTH))
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                    add(Calendar.DAY_OF_YEAR, (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY) * -1)
-                }
-                if (begin2.compareTo(now) > 0) {
-                    begin2.apply {
-                        set(Calendar.YEAR, get(Calendar.YEAR) - 1)
-                    }
-                }
-
-                val between_days: Long =
-                    (now.timeInMillis - begin2.timeInMillis) / (1000 * 3600 * 24)
-                var i: Int = (between_days / 7).toInt() + 1
-                weekNumber = i.toString()
-            }
-        }
-
+        val weekNumber = viewState.dateRange.first().weekOfYear.toString()
 
         val bounds = viewState.weekNumberBounds
         val textPaint = viewState.weekNumberTextPaint
@@ -422,6 +410,18 @@ private class HeaderDrawer(
         drawText(weekNumber, bounds.centerX(), bounds.centerY() + textOffset, textPaint)
     }
 
+    private fun Canvas.drawTimeColumnSeparatorExtension() {
+        val startX = if (viewState.isLtr) {
+            viewState.timeColumnWidth - viewState.timeColumnSeparatorPaint.strokeWidth / 2
+        } else {
+            viewState.viewWidth - viewState.timeColumnWidth
+        }
+
+        val startY = viewState.headerPadding
+        val stopY = viewState.headerHeight
+
+        drawLine(startX, startY, startX, stopY, viewState.timeColumnSeparatorPaint)
+    }
 
     private fun Canvas.drawAllDayEventsToggleArrow() = with(viewState) {
         val bottom = (headerHeight - headerPadding).roundToInt()

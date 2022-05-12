@@ -161,6 +161,7 @@ internal object ViewStateFactory {
             showCurrentTimeFirst = a.getBoolean(R.styleable.WeekView_showCurrentTimeFirst, false)
             arrangeAllDayEventsVertically =
                 a.getBoolean(R.styleable.WeekView_arrangeAllDayEventsVertically, true)
+            stickToActualWeek = a.getBoolean(R.styleable.WeekView_stickToWeekInWeekView, true)
         }
 
         viewState.apply {
@@ -248,11 +249,6 @@ internal object ViewStateFactory {
         viewState.apply {
             horizontalScrollingEnabled =
                 a.getBoolean(R.styleable.WeekView_horizontalScrollingEnabled, true)
-
-            xScrollingSpeed = a.getFloat(R.styleable.WeekView_xScrollingSpeed, 1f)
-            horizontalFlingEnabled = a.getBoolean(R.styleable.WeekView_horizontalFlingEnabled, true)
-            verticalFlingEnabled = a.getBoolean(R.styleable.WeekView_verticalFlingEnabled, true)
-            scrollDuration = a.getInt(R.styleable.WeekView_scrollDuration, 250)
         }
 
         a.recycle()

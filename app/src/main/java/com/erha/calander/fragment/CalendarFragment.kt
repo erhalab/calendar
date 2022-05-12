@@ -1,10 +1,12 @@
 package com.erha.calander.fragment
 
+import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
@@ -20,6 +22,7 @@ import com.erha.calander.util.TinyDB
 import com.erha.calander.util.setupWithWeekView
 import com.google.android.material.appbar.MaterialToolbar
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
+import es.dmoral.toasty.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,6 +52,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         return binding.root
     }
 
+    var isPostEventChangeMyself = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.toolbarContainer.toolbar.setupWithWeekView(
@@ -56,6 +60,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             this@CalendarFragment
         )
         weekViewAdapter = WeekViewSimpleAdapter(
+            calendarFragment = this,
             locale = this.locale,
             toolbar = binding.toolbarContainer.toolbar,
             store = store
@@ -108,11 +113,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             subtitle =
                 SimpleDateFormat("yyyy", locale).format(binding.weekView.firstVisibleDate.time)
         }
-        //禁止查看的时间范围
         binding.weekView.apply {
-            minHour = 6
-            maxHour = 23
             hourHeight = 200
+            stickToActualWeek = true
         }
         initFirstWeek()
     }
@@ -155,9 +158,15 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     fun onEvent(str: String?) {
         when (str) {
             EventType.FIRST_WEEK_CHANGE -> initFirstWeek()
-            EventType.EVENT_CHANGE -> weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
+            EventType.EVENT_CHANGE -> {
+                //如果是自己发布了事件变化Event，不要刷新视图，减少开销。
+                if (isPostEventChangeMyself) {
+                    isPostEventChangeMyself = false
+                } else {
+                    weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
+                }
+            }
             EventType.LANGUAGE_CHANGE -> updateLanguage()
-
         }
     }
 
@@ -194,27 +203,74 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         }
         binding.weekView.scrollToDateTime(calendar)
     }
-}
 
-private class WeekViewSimpleAdapter(
-    private val store: TinyDB,
-    private val toolbar: MaterialToolbar? = null,
-    private val locale: Locale
-) : WeekView.SimpleAdapter<CalendarEntity>() {
-    override fun onCreateEntity(item: CalendarEntity): WeekViewEntity {
-        return item.toWeekViewEntity()
-    }
+    private class WeekViewSimpleAdapter(
+        private val calendarFragment: CalendarFragment,
+        private val store: TinyDB,
+        private val toolbar: MaterialToolbar? = null,
+        private val locale: Locale
+    ) : WeekView.SimpleAdapter<CalendarEntity>() {
+        override fun onCreateEntity(item: CalendarEntity): WeekViewEntity {
+            return item.toWeekViewEntity()
+        }
 
-    override fun onRangeChanged(firstVisibleDate: Calendar, lastVisibleDate: Calendar) {
-        super.onRangeChanged(firstVisibleDate, lastVisibleDate)
-        store.putString(
-            LocalStorageKey.CALENDAR_LAST_FIRST_DAY,
-            SimpleDateFormat("yyyy/MM/dd", locale).format(firstVisibleDate.timeInMillis)
-        )
-        Log.e("日历被滑动了，现在显示的第一天是 ->", firstVisibleDate.toString())
-        toolbar?.apply {
-            title = SimpleDateFormat("MMMM", locale).format(firstVisibleDate.timeInMillis)
-            subtitle = SimpleDateFormat("yyyy", locale).format(firstVisibleDate.timeInMillis)
+        //响应非全天事件的普通事件的拖放
+        override fun onDragAndDropFinished(
+            data: CalendarEntity,
+            newStartTime: Calendar,
+            newEndTime: Calendar
+        ) {
+            if (data is CalendarEntity.Event) {
+                if (data.id.toString().startsWith("20")) {
+                    TaskDao.getSimpleTaskById(data.id.toString().substring(2).toInt())?.apply {
+                        this.beginTime = newStartTime
+                        this.endTime = newEndTime
+                        calendarFragment.isPostEventChangeMyself = true
+                        Thread {
+                            TaskDao.updateSimpleTask(this)
+                            EventBus.getDefault().post(EventType.EVENT_CHANGE)
+                        }.start()
+                        Toasty.info(
+                            calendarFragment.binding.root.context,
+                            "移动成功",
+                            Toast.LENGTH_SHORT,
+                            false
+                        ).show()
+                    }
+                }
+            }
+            super.onDragAndDropFinished(data, newStartTime, newEndTime)
+        }
+
+        override fun onEventLongClick(data: CalendarEntity, bounds: RectF): Boolean {
+            //禁止课程被滑动，禁止全天事件被移动
+            if (data is CalendarEntity.Event) {
+                if (data.id.toString().startsWith("20")) {
+                    TaskDao.getSimpleTaskById(data.id.toString().substring(2).toInt())?.apply {
+                        return isAllDay
+                    }
+                }
+                if (data.id.toString().startsWith("10")) {
+                    return true
+                }
+            } else {
+                return true
+            }
+            return super.onEventLongClick(data, bounds)
+        }
+
+        override fun onRangeChanged(firstVisibleDate: Calendar, lastVisibleDate: Calendar) {
+            super.onRangeChanged(firstVisibleDate, lastVisibleDate)
+            store.putString(
+                LocalStorageKey.CALENDAR_LAST_FIRST_DAY,
+                SimpleDateFormat("yyyy/MM/dd", locale).format(firstVisibleDate.timeInMillis)
+            )
+            Log.e("日历被滑动了，现在显示的第一天是 ->", firstVisibleDate.toString())
+            toolbar?.apply {
+                title = SimpleDateFormat("MMMM", locale).format(firstVisibleDate.timeInMillis)
+                subtitle = SimpleDateFormat("yyyy", locale).format(firstVisibleDate.timeInMillis)
+            }
         }
     }
 }
+

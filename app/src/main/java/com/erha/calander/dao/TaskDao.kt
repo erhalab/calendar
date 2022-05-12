@@ -2,6 +2,7 @@ package com.erha.calander.dao
 
 import ando.file.core.FileUtils
 import android.graphics.Color
+import android.util.Log
 import androidx.core.net.toUri
 import com.erha.calander.model.CalendarEntity
 import com.erha.calander.model.SimpleTaskWithID
@@ -82,6 +83,7 @@ object TaskDao {
         removeSimpleTask(oldTask)
         //重新添加进去
         addSimpleTask(oldTask.toSimpleTaskWithoutID(), false, oldTask.id)
+        Log.e(this.javaClass.name, "更新SimpleTask")
     }
 
     fun getSimpleTaskById(id: Int): SimpleTaskWithID? {

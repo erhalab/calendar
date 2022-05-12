@@ -30,7 +30,7 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
     setOnMenuItemClickListener { item ->
         when (item.itemId) {
             //响应 跳转到今天的按钮
-            R.id.action_today -> {
+            R.id.action_time -> {
                 var time = Calendar.getInstance()
                 if (weekView.numberOfVisibleDays == 7) {
                     time.add(
@@ -41,7 +41,7 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
                 weekView.scrollToDateTime(dateTime = time)
                 true
             }
-            R.id.action_time -> {
+            R.id.action_today -> {
                 val min = Calendar.getInstance()
                 val max = Calendar.getInstance()
                 max.add(Calendar.YEAR, 1)
