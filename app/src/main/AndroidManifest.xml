@@ -119,6 +119,11 @@
             android:exported="false"
             android:process=":erha"
             android:theme="@style/QMUI.SlideAnimation" />
+        <activity
+            android:name=".activity.ModifySimpleTaskActivity"
+            android:exported="false"
+            android:process=":erha"
+            android:theme="@style/QMUI.SlideAnimation" />
     </application>
 
 </manifest>

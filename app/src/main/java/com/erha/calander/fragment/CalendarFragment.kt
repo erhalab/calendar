@@ -1,5 +1,6 @@
 package com.erha.calander.fragment
 
+import android.content.Intent
 import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
 import com.erha.calander.R
+import com.erha.calander.activity.ModifySimpleTaskActivity
 import com.erha.calander.dao.CourseDao
 import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.FragmentCalenderBinding
@@ -116,6 +118,8 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         }
         binding.weekView.apply {
             hourHeight = 200
+            minHourHeight = 200
+            maxHourHeight = 200
             stickToActualWeek = true
         }
         initFirstWeek()
@@ -242,6 +246,20 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 }
             }
             super.onDragAndDropFinished(data, newStartTime, newEndTime)
+        }
+
+        override fun onEventClick(data: CalendarEntity, bounds: RectF) {
+            super.onEventClick(data, bounds)
+            if (data is CalendarEntity.Event) {
+                if (data.id.toString().startsWith("20")) {
+                    var i = Intent(
+                        calendarFragment.binding.root.context,
+                        ModifySimpleTaskActivity::class.java
+                    )
+                    i.putExtra("simpleTaskId", data.id.toString().substring(2).toInt())
+                    calendarFragment.startActivity(i)
+                }
+            }
         }
 
         override fun onEventLongClick(data: CalendarEntity, bounds: RectF): Boolean {
