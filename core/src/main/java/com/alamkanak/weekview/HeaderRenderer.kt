@@ -383,7 +383,42 @@ private class HeaderDrawer(
     }
 
     private fun Canvas.drawWeekNumber() {
-        val weekNumber = viewState.dateRange.first().weekOfYear.toString()
+        var weekNumber = viewState.dateRange.first().weekOfYear.toString()
+        var firstWeekCalendar = viewState.firstWeekCalendar
+        if (viewState.customFirstWeekEnable) {
+            // 自己适配周数
+            firstWeekCalendar.apply {
+                var now = viewState.dateRange.first().copy()
+                now.apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+
+                var begin2 = Calendar.getInstance()
+                begin2.apply {
+                    set(Calendar.YEAR, now.get(Calendar.YEAR))
+                    set(Calendar.DAY_OF_MONTH, firstWeekCalendar.get(Calendar.DAY_OF_MONTH))
+                    set(Calendar.MONTH, firstWeekCalendar.get(Calendar.MONTH))
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                    add(Calendar.DAY_OF_YEAR, (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY) * -1)
+                }
+                if (begin2.compareTo(now) > 0) {
+                    begin2.apply {
+                        set(Calendar.YEAR, get(Calendar.YEAR) - 1)
+                    }
+                }
+
+                val between_days: Long =
+                    (now.timeInMillis - begin2.timeInMillis) / (1000 * 3600 * 24)
+                var i: Int = (between_days / 7).toInt() + 1
+                weekNumber = i.toString()
+            }
+        }
 
         val bounds = viewState.weekNumberBounds
         val textPaint = viewState.weekNumberTextPaint
