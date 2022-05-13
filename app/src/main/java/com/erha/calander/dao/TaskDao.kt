@@ -300,6 +300,23 @@ object TaskDao {
         return simpleTaskCalendarEntityList
     }
 
+    fun getAllDeadlines(): ArrayList<SimpleTaskWithID> {
+        if (!hasInit) {
+            return ArrayList<SimpleTaskWithID>()
+        }
+        val final = ArrayList<SimpleTaskWithID>()
+        for (i in simpleTaskList) {
+            if (i.isDDL && i.status != TaskStatus.CANCELED) final.add(i)
+        }
+        final.sortBy {
+            CalendarUtil.getWithoutTime(it.date).apply {
+                this.set(Calendar.HOUR_OF_DAY, it.beginTime.get(Calendar.HOUR_OF_DAY))
+                this.set(Calendar.MINUTE, it.beginTime.get(Calendar.MINUTE))
+            }
+        }
+        return final
+    }
+
     private fun getSimpleTaskNotificationNameById(id: Int): String {
         return "task${id}"
     }

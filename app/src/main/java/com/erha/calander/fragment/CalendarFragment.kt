@@ -153,9 +153,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
 
     //初始化第一周的日期
     private fun initFirstWeek() {
-        var weekDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
+        val weekDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
         if (weekDate.isNotBlank()) {
-            var calendar = Calendar.getInstance().apply {
+            val calendar = CalendarUtil.getWithoutTime().apply {
                 set(Calendar.MONTH, weekDate.split(",")[0].toInt() - 1)
                 set(Calendar.DAY_OF_MONTH, weekDate.split(",")[1].toInt())
             }

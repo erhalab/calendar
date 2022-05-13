@@ -26,40 +26,32 @@
             android:id="@+id/viewPager2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="70dp" />
+            android:layout_marginBottom="60dp"
+            android:background="@color/default_background_color" />
 
-        <github.com.st235.lib_expandablebottombar.ExpandableBottomBar
-            android:id="@+id/expandable_bottom_bar"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:layout_margin="0dp"
-            android:theme="@style/Theme.Material3.Light.NoActionBar"
-            app:exb_backgroundColor="#F1F1F1"
-            app:exb_backgroundCornerRadius="0dp"
-            app:exb_itemInactiveColor="#0E0E0E"
+        <devlight.io.library.ntb.NavigationTabBar
+            android:id="@+id/ntb"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:ntb_active_color="@color/default_active"
+            app:ntb_animation_duration="300"
+            app:ntb_bg_color="@color/default_background_color"
+            app:ntb_corners_radius="0dp"
+            app:ntb_icon_size_fraction="0.45"
+            app:ntb_inactive_color="#b7b7b7"
+            app:ntb_scaled="false"
+            app:ntb_title_mode="active" />
 
-
-        <!--        <com.dd.ShadowLayout-->
-        <!--            android:id="@+id/floatButtonShadowLayout"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/expandable_bottom_bar"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:sl_cornerRadius="5dp"-->
-        <!--            app:sl_dx="0dp"-->
-        <!--            app:sl_dy="0dp"-->
-        <!--            app:sl_shadowColor="#393131"-->
-        <!--            app:sl_shadowRadius="4dp">-->
         <com.qmuiteam.qmui.layout.QMUILinearLayout
             android:id="@+id/floatButtonShadowLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/expandable_bottom_bar"
+            app:layout_constraintBottom_toTopOf="@+id/ntb"
             app:layout_constraintEnd_toEndOf="parent">
 
             <com.github.clans.fab.FloatingActionButton
@@ -69,13 +61,12 @@
                 android:layout_gravity="bottom|end"
                 android:src="@drawable/ic_baseline_add_35_white"
                 android:theme="@style/Theme.Material3.Light.NoActionBar"
-                app:fab_colorNormal="@color/myBlue"
-                app:fab_colorPressed="#007BB3"
-                app:fab_colorRipple="#3D9ECA" />
+                android:foreground="?selectableItemBackground"
+                app:fab_colorNormal="@color/default_active"
+                app:fab_colorPressed="@color/default_active"
+                app:fab_colorRipple="@color/default_active" />
 
         </com.qmuiteam.qmui.layout.QMUILinearLayout>
-
-        <!--        </com.dd.ShadowLayout>-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="default_background_color">#F1F1F1</color>
+    <color name="default_background_color">#e5e6ea</color>
     <color name="default_menu_active">#03A9F4</color>
     <color name="default_active">#4d70fa</color>
     <color name="transparent">#00000000</color>

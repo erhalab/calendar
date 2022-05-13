@@ -27,10 +27,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.erha.calander.R
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.databinding.ActivityMainBinding
-import com.erha.calander.fragment.AccountFragment
-import com.erha.calander.fragment.CalendarFragment
-import com.erha.calander.fragment.HomeFragment
-import com.erha.calander.fragment.SettingsFragment
+import com.erha.calander.fragment.*
 import com.erha.calander.service.NotificationService
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
@@ -51,9 +48,8 @@ import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.tencent.smtt.export.external.TbsCoreSettings
 import com.tencent.smtt.sdk.QbSdk
 import com.tencent.smtt.sdk.QbSdk.*
+import devlight.io.library.ntb.NavigationTabBar
 import es.dmoral.toasty.Toasty
-import github.com.st235.lib_expandablebottombar.MenuItem
-import github.com.st235.lib_expandablebottombar.MenuItemDescriptor
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -62,10 +58,10 @@ import java.io.InputStream
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndexListener {
     data class FragmentObject(
         var fragment: Fragment,
-        var identity: Int
+        var identity: String
     ) {
         var showAddButton = true
         var allowSideDrawer = true
@@ -133,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         Log.e("Authing.init", this.javaClass.name)
 
         initFragment()
-        initExpandableBottomBar()
+        initNavigation()
         initFloatButton()
         initToast()
         initDrawer()
@@ -233,18 +229,26 @@ class MainActivity : AppCompatActivity() {
             listOf(
                 FragmentObject(
                     fragment = HomeFragment(),
-                    identity = R.id.menu_home
+                    identity = "任务"
                 ),
                 FragmentObject(
                     fragment = CalendarFragment(),
-                    identity = R.id.menu_calendar
+                    identity = "日历"
                 )
                     .apply {
                         allowSideDrawer = false
                     },
                 FragmentObject(
+                    fragment = DeadlineFragment(),
+                    identity = "里程碑"
+                )
+                    .apply {
+                        allowSideDrawer = false
+                        showAddButton = true
+                    },
+                FragmentObject(
                     fragment = AccountFragment(),
-                    identity = R.id.menu_account
+                    identity = "账户"
                 )
                     .apply {
                         allowSideDrawer = false
@@ -252,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                     },
                 FragmentObject(
                     fragment = SettingsFragment(),
-                    identity = R.id.menu_setting
+                    identity = "设置"
                 )
                     .apply {
                         allowSideDrawer = false
@@ -354,79 +358,69 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private var lastSelectedMenuId = -1
-
     //初始化底部菜单
-    private fun initExpandableBottomBar(recreate: Boolean = false) {
-        binding.expandableBottomBar.apply {
-            if (recreate) {
-                binding.expandableBottomBar.removeAllViews()
-                menu.removeAll()
-                onItemSelectedListener = null
-            }
-            var color = resources.getColor(R.color.default_active)
+    private fun initNavigation() {
+        val navigationTabBar = binding.ntb
+        val models: ArrayList<NavigationTabBar.Model> = ArrayList()
+        models.add(
+            NavigationTabBar.Model.Builder(
+                resources.getDrawable(R.drawable.ic_baseline_check_box_24),
+                resources.getColor(R.color.default_background_color)
+            ).title("任务")
+                .build()
+        )
+        models.add(
+            NavigationTabBar.Model.Builder(
+                resources.getDrawable(R.drawable.ic_round_calendar_month_24),
+                resources.getColor(R.color.default_background_color)
+            ).title("日历")
+                .build()
+        )
+        models.add(
+            NavigationTabBar.Model.Builder(
+                resources.getDrawable(R.drawable.ic_round_flag_24),
+                resources.getColor(R.color.default_background_color)
+            ).title("里程碑")
+                .build()
+        )
+        models.add(
+            NavigationTabBar.Model.Builder(
+                resources.getDrawable(R.drawable.ic_baseline_account_circle_24),
+                resources.getColor(R.color.default_background_color)
+            ).title("账户")
+                .build()
+        )
+        models.add(
+            NavigationTabBar.Model.Builder(
+                resources.getDrawable(R.drawable.ic_baseline_settings_24),
+                resources.getColor(R.color.default_background_color)
+            ).title("设置")
+                .build()
+        )
+        navigationTabBar.models = models
+        navigationTabBar.modelIndex = 0
+        navigationTabBar.onTabBarSelectedIndexListener = this@MainActivity
+    }
 
-            menu.add(
-                MenuItemDescriptor.Builder(
-                    itemId = R.id.menu_home,
-                    activeColor = color,
-                    context = binding.root.context,
-                    iconId = R.drawable.ic_baseline_home_24,
-                    textId = R.string.menu_home_text
-                ).build()
-            )
-            menu.add(
-                MenuItemDescriptor.Builder(
-                    itemId = R.id.menu_calendar,
-                    activeColor = color,
-                    context = binding.root.context,
-                    iconId = R.drawable.ic_baseline_calendar_today_24,
-                    textId = R.string.menu_calendar_text
-                ).build()
-            )
-            menu.add(
-                MenuItemDescriptor.Builder(
-                    itemId = R.id.menu_account,
-                    activeColor = color,
-                    context = binding.root.context,
-                    iconId = R.drawable.ic_baseline_account_circle_24,
-                    textId = R.string.menu_account_text
-                ).build()
-            )
-            menu.add(
-                MenuItemDescriptor.Builder(
-                    itemId = R.id.menu_setting,
-                    activeColor = color,
-                    context = binding.root.context,
-                    iconId = R.drawable.ic_baseline_settings_24,
-                    textId = R.string.menu_setting_text
-                ).build()
-            )
-            if (lastSelectedMenuId > 0) {
-                menu.select(lastSelectedMenuId)
-            } else {
-                menu.select(menu.items.first().id)
-            }
-
-            //监听底部菜单点击事件（切换页面）
-            onItemSelectedListener =
-                { view: View, menuItem: MenuItem, b: Boolean ->
-                    lastSelectedMenuId = menuItem.id
-                    for (i in 0 until fragmentObjects.size) {
-                        fragmentObjects[i].apply {
-                            if (identity == menuItem.id) {
-                                binding.viewPager2.setCurrentItem(i, false)
-                                binding.root.setDrawerLockMode(
-                                    if (allowSideDrawer) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-                                )
-                                binding.floatButtonShadowLayout.visibility =
-                                    if (showAddButton) View.VISIBLE else View.INVISIBLE
-                            }
-                        }
+    //监听底部菜单点击事件（切换页面）
+    override fun onStartTabSelected(model: NavigationTabBar.Model?, index: Int) {
+        model?.apply {
+            for (i in 0 until fragmentObjects.size) {
+                fragmentObjects[i].apply {
+                    if (model.title == this.identity) {
+                        binding.viewPager2.setCurrentItem(i, true)
+                        binding.root.setDrawerLockMode(
+                            if (allowSideDrawer) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+                        )
+                        binding.floatButtonShadowLayout.visibility =
+                            if (showAddButton) View.VISIBLE else View.INVISIBLE
                     }
-
                 }
+            }
         }
+    }
+
+    override fun onEndTabSelected(model: NavigationTabBar.Model?, index: Int) {
     }
 
     override fun onBackPressed() {
@@ -449,7 +443,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateLanguage() {
-        initExpandableBottomBar(recreate = true)
     }
 
 }
