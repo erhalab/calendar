@@ -5,14 +5,18 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Icon
 import android.os.*
 import android.provider.Settings
 import android.util.Log
 import cn.authing.guard.Authing
 import com.erha.calander.BuildConfig
 import com.erha.calander.R
-import com.erha.calander.activity.MainActivity
+import com.erha.calander.activity.HomeActivity
+import com.erha.calander.activity.SplashActivity
 import com.erha.calander.dao.*
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
@@ -27,6 +31,7 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class NotificationService : Service() {
     private var mNM: NotificationManager? = null
@@ -130,25 +135,45 @@ class NotificationService : Service() {
                         }
                         alerting(NotificationChannelType.DEFAULT) {}
                     }
-                    //告诉用户服务已创建
-                    var i = Notify
-                        .with(applicationContext)
-                        .content {
-                            title = "Hello~"
-                            text = "悄悄告诉你，清单服务已启动。可以正常接收通知啦！"
-                        }
-                        .asBuilder().build()
-                    val intent = Intent(this, MainActivity::class.java)
-                    val pendingIntent: PendingIntent =
-                        PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-                    i.contentIntent = pendingIntent
-                    notificationManager.notify(0, i)
                     Thread(r).start()
-
-                } else {
+                    //加载动态快捷方式
+                    setupShortcuts()
                 }
             }
         }.start()
+    }
+
+    private fun setupShortcuts() {
+        getSystemService(ShortcutManager::class.java).addDynamicShortcuts(
+            listOf(
+                createCalendarShortcutInfo(),
+                createDeadlineShortcutInfo()
+            )
+        )
+    }
+
+    private fun createCalendarShortcutInfo(): ShortcutInfo {
+        val intent = Intent(this, SplashActivity::class.java)
+        intent.action = Intent.ACTION_VIEW
+        intent.putExtra("defaultPage", "日历")
+        return ShortcutInfo.Builder(this, "calendarShortcut")
+            .setShortLabel("日历")
+            .setLongLabel("日历视图")
+            .setIcon(Icon.createWithResource(this, R.drawable.ic_round_calendar_month_24))
+            .setIntent(intent)
+            .build()
+    }
+
+    private fun createDeadlineShortcutInfo(): ShortcutInfo {
+        val intent = Intent(this, SplashActivity::class.java)
+        intent.action = Intent.ACTION_VIEW
+        intent.putExtra("defaultPage", "里程碑")
+        return ShortcutInfo.Builder(this, "deadlineShortcut")
+            .setShortLabel("DDL")
+            .setLongLabel("DDL时间线")
+            .setIcon(Icon.createWithResource(this, R.drawable.ic_round_flag_24))
+            .setIntent(intent)
+            .build()
     }
 
     private fun initNotificationChannel(
@@ -352,7 +377,7 @@ class NotificationService : Service() {
         notifications["POST"]?.apply {
             for (n in this) {
                 if (n is SimpleNotification) {
-                    val intent = Intent(this@NotificationService, MainActivity::class.java)
+                    val intent = Intent(this@NotificationService, HomeActivity::class.java)
                     val bundle = Bundle()
                     bundle.putString("type", MainActivityIntentType.CLICK_EVENT_NOTIFICATION)
                     bundle.putInt("id", n.notificationId)

@@ -69,13 +69,12 @@
             android:process=":erha"
             android:theme="@style/QMUI.SlideAnimation" />
         <activity
-            android:name=".activity.LauncherActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true"
             android:process=":erha"
             android:theme="@style/Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -100,7 +99,7 @@
             android:process=":erha"
             android:theme="@style/QMUI.SlideAnimation" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.HomeActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:process=":erha"
