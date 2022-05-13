@@ -204,20 +204,22 @@ class SettingNotificationActivity : AppCompatActivity() {
                 onBind(SettingItem::Holder) { index, item ->
                     qmuiCommonListItemView.text = item.title
                     qmuiCommonListItemView.detailText = item.text
-                    val radius =
-                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
                     val paddingVer = QMUIDisplayHelper.dp2px(binding.root.context, 10)
                     qmuiCommonListItemView.setPadding(
                         qmuiCommonListItemView.paddingLeft, paddingVer,
                         qmuiCommonListItemView.paddingRight, paddingVer
                     )
+                    val radius =
+                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
-                    } else if (item.isLast) {
+                    } else if (item.isLast && !item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
-                    } else if (item.isFirst) {
+                    } else if (item.isFirst && !item.isLast) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                 }
                 onClick { index ->
@@ -317,8 +319,6 @@ class SettingNotificationActivity : AppCompatActivity() {
                 onBind(SwitcherItem::Holder) { index, item ->
                     qmuiCommonListItemView.text = item.title
                     qmuiCommonListItemView.detailText = item.text
-                    val radius =
-                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     qmuiCommonListItemView.accessoryType =
                         QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
                     qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
@@ -327,12 +327,16 @@ class SettingNotificationActivity : AppCompatActivity() {
                         qmuiCommonListItemView.paddingLeft, paddingVer,
                         qmuiCommonListItemView.paddingRight, paddingVer
                     )
+                    val radius =
+                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
-                    } else if (item.isLast) {
+                    } else if (item.isLast && !item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
-                    } else if (item.isFirst) {
+                    } else if (item.isFirst && !item.isLast) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                     qmuiCommonListItemView.switch.isChecked =
                         TinyDB(binding.root.context).getBoolean(item.storeKey)
@@ -352,8 +356,6 @@ class SettingNotificationActivity : AppCompatActivity() {
                 onBind(SpecialSwitcherItem::Holder) { index, item ->
                     qmuiCommonListItemView.text = item.title
                     qmuiCommonListItemView.detailText = item.text
-                    val radius =
-                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     qmuiCommonListItemView.accessoryType =
                         QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
                     qmuiCommonListItemView.orientation = QMUICommonListItemView.VERTICAL
@@ -362,12 +364,16 @@ class SettingNotificationActivity : AppCompatActivity() {
                         qmuiCommonListItemView.paddingLeft, paddingVer,
                         qmuiCommonListItemView.paddingRight, paddingVer
                     )
+                    val radius =
+                        resources.getDimensionPixelSize(R.dimen.listview_radius)
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
-                    } else if (item.isLast) {
+                    } else if (item.isLast && !item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
-                    } else if (item.isFirst) {
+                    } else if (item.isFirst && !item.isLast) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                     qmuiCommonListItemView.switch.isClickable = false
                     when (item.key) {

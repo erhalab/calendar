@@ -321,10 +321,12 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
                         resources.getDimensionPixelSize(R.dimen.listview_radius)
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
-                    } else if (item.isLast) {
+                    } else if (item.isLast && !item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
-                    } else if (item.isFirst) {
+                    } else if (item.isFirst && !item.isLast) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                 }
                 onClick { index ->
@@ -367,10 +369,12 @@ class UserCenterActivity : AppCompatActivity(), SingleTextInputPopupCallback {
                         resources.getDimensionPixelSize(R.dimen.listview_radius)
                     if (item.isFirst && item.isLast) {
                         qmuiLinearLayout.radius = radius
-                    } else if (item.isLast) {
+                    } else if (item.isLast && !item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
-                    } else if (item.isFirst) {
+                    } else if (item.isFirst && !item.isLast) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                 }
                 onClick { index ->
