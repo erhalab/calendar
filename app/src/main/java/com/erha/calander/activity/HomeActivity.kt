@@ -155,18 +155,27 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
         intent?.apply {
             getStringExtra("defaultPage")?.apply {
                 Log.e("intent", "is safe")
-                for (i in 0 until fragmentObjects.size) {
-                    if (fragmentObjects[i].identity == this) {
-                        binding.viewPager2.setCurrentItem(i, false)
-                        break
-                    }
-                }
-                for (i in 0 until binding.ntb.models.size) {
-                    if (binding.ntb.models[i].title == this) {
-                        binding.ntb.modelIndex = i
-                        break
-                    }
-                }
+                gotoTab(this)
+            }
+        }
+    }
+
+    private fun gotoTab(tabName: String) {
+        for (i in 0 until fragmentObjects.size) {
+            if (fragmentObjects[i].identity == tabName) {
+                binding.viewPager2.setCurrentItem(i, false)
+                binding.root.setDrawerLockMode(
+                    if (fragmentObjects[i].allowSideDrawer) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+                )
+                binding.floatButtonShadowLayout.visibility =
+                    if (fragmentObjects[i].showAddButton) View.VISIBLE else View.INVISIBLE
+                break
+            }
+        }
+        for (i in 0 until binding.ntb.models.size) {
+            if (binding.ntb.models[i].title == tabName) {
+                binding.ntb.modelIndex = i
+                break
             }
         }
     }
@@ -232,19 +241,7 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
         super.onNewIntent(intent)
         intent?.apply {
             getStringExtra("defaultPage")?.apply {
-                Log.e("intent", "is safe")
-                for (i in 0 until fragmentObjects.size) {
-                    if (fragmentObjects[i].identity == this) {
-                        binding.viewPager2.setCurrentItem(i, false)
-                        break
-                    }
-                }
-                for (i in 0 until binding.ntb.models.size) {
-                    if (binding.ntb.models[i].title == this) {
-                        binding.ntb.modelIndex = i
-                        break
-                    }
-                }
+                gotoTab(this)
             }
         }
     }
