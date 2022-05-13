@@ -26,7 +26,10 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
 import com.mikepenz.iconics.utils.colorInt
 import com.mikepenz.iconics.utils.contourColorInt
+import com.qmuiteam.qmui.skin.QMUISkinManager
 import com.qmuiteam.qmui.util.QMUIDisplayHelper
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog.MessageDialogBuilder
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction
 import com.squareup.okhttp.*
 import com.yalantis.ucrop.UCrop
 import dev.sasikanth.colorsheet.ColorSheet
@@ -220,41 +223,29 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
                 startActivityForResult(i, SelectSimpleTaskTime.requestCode)
             }
         }
-        binding.submitZone.apply {
-            setOnClickListener {
-                var html = ""
-                try {
-                    html = binding.editor.html
-                } catch (e: Exception) {
-                } catch (e: java.lang.Exception) {
-                }
-                val status = when (binding.checkbox.state) {
-                    null -> TaskStatus.CANCELED
-                    true -> TaskStatus.FINISHED
-                    else -> TaskStatus.ONGOING
-                }
-                val i = SimpleTaskWithID(
-                    id = simpleTaskId,
-                    status = status,
-                    title = binding.taskTitle.text.toString(),
-                    detailHtml = html,
-                    hashTime = taskTimeAndNotify.hasTime,
-                    date = CalendarUtil.getWithoutTime(taskTimeAndNotify.date),
-                    isAllDay = taskTimeAndNotify.isAllDay,
-                    beginTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.beginTime),
-                    endTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.endTime),
-                    isDDL = taskTimeAndNotify.isDDL,
-                    notifyTimes = taskTimeAndNotify.notifyTimes,
-                    customColor = isCustomColor,
-                    color = customColor
-                )
-                Thread {
-                    //更新普通事件
-                    TaskDao.updateSimpleTask(i)
-                    EventBus.getDefault().post(EventType.EVENT_CHANGE)
-                }.start()
-                Toasty.success(binding.root.context, "修改成功", Toast.LENGTH_SHORT, false).show()
-                finish()
+        binding.deleteZone.apply {
+            setOnLongClickListener {
+                //打开确认删除弹窗
+                MessageDialogBuilder(this@ModifySimpleTaskActivity)
+                    .setTitle("提醒")
+                    .setMessage("确定要删除吗？")
+                    .setSkinManager(QMUISkinManager.defaultInstance(context))
+                    .addAction(
+                        "取消"
+                    ) { dialog, index -> dialog.dismiss() }
+                    .addAction(
+                        0, "删除", QMUIDialogAction.ACTION_PROP_NEGATIVE
+                    ) { dialog, index ->
+                        Thread {
+                            TaskDao.getSimpleTaskById(simpleTaskId)
+                                ?.let { it1 -> TaskDao.removeSimpleTask(it1) }
+                            EventBus.getDefault().post(EventType.EVENT_CHANGE)
+                        }.start()
+                        dialog.dismiss()
+                        finish()
+                    }
+                    .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show()
+                true
             }
         }
         binding.checkbox.setOnClickListener {
@@ -315,6 +306,42 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
         initLoadingPopup()
         progressUploadFile = ProgressUploadFile(binding.root.context, this)
         updateTimeTextview()
+    }
+
+    override fun onBackPressed() {
+        var html = ""
+        try {
+            html = binding.editor.html
+        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
+        }
+        val status = when (binding.checkbox.state) {
+            null -> TaskStatus.CANCELED
+            true -> TaskStatus.FINISHED
+            else -> TaskStatus.ONGOING
+        }
+        val i = SimpleTaskWithID(
+            id = simpleTaskId,
+            status = status,
+            title = binding.taskTitle.text.toString(),
+            detailHtml = html,
+            hashTime = taskTimeAndNotify.hasTime,
+            date = CalendarUtil.getWithoutTime(taskTimeAndNotify.date),
+            isAllDay = taskTimeAndNotify.isAllDay,
+            beginTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.beginTime),
+            endTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.endTime),
+            isDDL = taskTimeAndNotify.isDDL,
+            notifyTimes = taskTimeAndNotify.notifyTimes,
+            customColor = isCustomColor,
+            color = customColor
+        )
+        Thread {
+            //更新普通事件
+            TaskDao.updateSimpleTask(i)
+            EventBus.getDefault().post(EventType.EVENT_CHANGE)
+        }.start()
+        Toasty.success(binding.root.context, "修改成功", Toast.LENGTH_SHORT, false).show()
+        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

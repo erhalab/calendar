@@ -50,20 +50,20 @@
                 android:gravity="right">
 
                 <LinearLayout
-                    android:id="@+id/submitZone"
+                    android:id="@+id/deleteZone"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
 
                     <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/submitIcon"
+                        android:id="@+id/deleteIcon"
                         android:layout_width="15dp"
                         android:layout_height="15dp"
                         android:layout_gravity="center"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="25dp"
-                        app:iiv_color="@color/gray_600"
-                        app:iiv_contour_color="@color/gray_600"
-                        app:iiv_icon="gmd-check" />
+                        app:iiv_color="@color/dark_orange"
+                        app:iiv_contour_color="@color/dark_orange"
+                        app:iiv_icon="gmd-delete" />
                 </LinearLayout>
 
             </LinearLayout>
