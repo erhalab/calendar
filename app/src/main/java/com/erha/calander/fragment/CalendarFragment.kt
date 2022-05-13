@@ -70,7 +70,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             store = store
         )
         binding.weekView.adapter = weekViewAdapter
-        weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
         //支持本地语言
         binding.weekView.setDateFormatter { date ->
             defaultDateFormatter(binding.weekView.numberOfVisibleDays).format(date.time)
@@ -124,6 +123,11 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             stickToActualWeek = true
         }
         initFirstWeek()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
     }
 
     //初始化第一周的日期
