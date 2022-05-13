@@ -99,6 +99,24 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 finish()
             }
         }
+        intent?.apply {
+            if (getBooleanExtra("calendarLongClickAddTask", false)) {
+                var calendar = getSerializableExtra("date") as Calendar
+                var date = CalendarUtil.getWithoutTime(calendar)
+                var beginTime = CalendarUtil.getWithoutSecond(calendar)
+                var endTime = CalendarUtil.getWithoutSecond(calendar)
+                taskTimeAndNotify.hasTime = true
+                taskTimeAndNotify.date = date
+                endTime.apply {
+                    add(Calendar.MINUTE, 120)
+                }
+                if (CalendarUtil.compareOnlyTime(beginTime, endTime) > 0) {
+                    endTime = beginTime
+                }
+                taskTimeAndNotify.beginTime = beginTime
+                taskTimeAndNotify.endTime = endTime
+            }
+        }
         binding.editor.apply {
             setPadding(5, 10, 10, 10)
             setTextColor(resources.getColor(R.color.black))

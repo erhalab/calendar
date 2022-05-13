@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
 import com.erha.calander.R
+import com.erha.calander.activity.AddSimpleTaskActivity
 import com.erha.calander.activity.ModifySimpleTaskActivity
 import com.erha.calander.dao.CourseDao
 import com.erha.calander.dao.TaskDao
@@ -117,9 +118,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 SimpleDateFormat("yyyy", locale).format(binding.weekView.firstVisibleDate.time)
         }
         binding.weekView.apply {
-            hourHeight = 200
+            hourHeight = 300
             minHourHeight = 200
-            maxHourHeight = 200
+            maxHourHeight = 500
             stickToActualWeek = true
         }
         initFirstWeek()
@@ -217,6 +218,14 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     ) : WeekView.SimpleAdapter<CalendarEntity>() {
         override fun onCreateEntity(item: CalendarEntity): WeekViewEntity {
             return item.toWeekViewEntity()
+        }
+
+        override fun onEmptyViewLongClick(time: Calendar) {
+            super.onEmptyViewLongClick(time)
+            val i = Intent(calendarFragment.binding.root.context, AddSimpleTaskActivity::class.java)
+            i.putExtra("calendarLongClickAddTask", true)
+            i.putExtra("date", time)
+            calendarFragment.startActivity(i)
         }
 
         //响应非全天事件的普通事件的拖放

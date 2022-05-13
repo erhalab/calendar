@@ -340,7 +340,6 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
             TaskDao.updateSimpleTask(i)
             EventBus.getDefault().post(EventType.EVENT_CHANGE)
         }.start()
-        Toasty.success(binding.root.context, "修改成功", Toast.LENGTH_SHORT, false).show()
         finish()
     }
 
