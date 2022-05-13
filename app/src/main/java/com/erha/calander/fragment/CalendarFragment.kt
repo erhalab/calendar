@@ -49,7 +49,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         inflater: LayoutInflater,
         container: ViewGroup?,
         saveInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCalenderBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
         EventBus.getDefault().register(this)
@@ -86,15 +86,13 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         //滚动到上次的位置（记忆）
         store.getString(LocalStorageKey.CALENDAR_LAST_FIRST_DAY)?.apply {
             if (this.isBlank()) return@apply
-            var calendar = Calendar.getInstance()
-            var s = this.split("/")
+            val calendar = CalendarUtil.getWithoutSecond()
+            val s = this.split("/")
             try {
                 calendar.apply {
                     set(Calendar.YEAR, s[0].toInt())
                     set(Calendar.MONTH, s[1].toInt() - 1)
                     set(Calendar.DAY_OF_MONTH, s[2].toInt())
-                    set(Calendar.HOUR_OF_DAY, 8)
-                    set(Calendar.MINUTE, 0)
                     if (binding.weekView.numberOfVisibleDays == 7) {
                         add(
                             Calendar.DAY_OF_MONTH,
