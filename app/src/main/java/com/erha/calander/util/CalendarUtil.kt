@@ -41,4 +41,31 @@ object CalendarUtil {
         }
         return b.compareTo(c)
     }
+
+    //返回周数
+    fun getWeekNumber(calendar: Calendar): Int {
+        return calendar.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    fun getWeekNumber(calendar: Calendar, firstWeekCalendar: Calendar): Int {
+        // 自己适配周数
+        firstWeekCalendar.apply {
+            val now = getWithoutTime(calendar)
+            val begin2 = getWithoutTime()
+            begin2.apply {
+                set(Calendar.YEAR, now.get(Calendar.YEAR))
+                set(Calendar.DAY_OF_MONTH, firstWeekCalendar.get(Calendar.DAY_OF_MONTH))
+                set(Calendar.MONTH, firstWeekCalendar.get(Calendar.MONTH))
+                add(Calendar.DAY_OF_YEAR, (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY) * -1)
+            }
+            if (begin2 > now) {
+                begin2.apply {
+                    set(Calendar.YEAR, get(Calendar.YEAR) - 1)
+                }
+            }
+            val betweenDays: Long =
+                (now.timeInMillis - begin2.timeInMillis) / (1000 * 3600 * 24)
+            return (betweenDays / 7).toInt() + 1
+        }
+    }
 }
