@@ -209,7 +209,7 @@ object TaskDao {
         }
         val title = simpleTaskWithID.title.ifBlank { "无标题" }
         //限制日历视图中的副标题长度
-        var location = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml)
+        var location = HtmlUtil.getHtmlFirstLineOnlyText(simpleTaskWithID.detailHtml)
         if (location.length > 30) {
             location = location.substring(0, 29)
         }
@@ -252,7 +252,7 @@ object TaskDao {
         val simpleTaskNotification = SimpleTaskNotification()
         val title = simpleTaskWithID.title.ifBlank { "无标题" }
         //限制通知中的text长度
-        var text = HtmlUtil.convertHtmlToOnlyText(simpleTaskWithID.detailHtml)
+        var text = HtmlUtil.getHtmlFirstLineOnlyText(simpleTaskWithID.detailHtml)
         if (text.length > 50) {
             text = text.substring(0, 49)
         }
