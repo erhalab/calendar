@@ -124,10 +124,12 @@ object TaskDao {
         isNew: Boolean = true,
         id: Int = -1
     ) {
-        var newId = -1
+        var newId: Int
         if (isNew) {
             newId = 1
             if (simpleTaskList.isNotEmpty()) {
+                simpleTaskList.sortBy { i -> i.id }
+                //新的id必须是列表中最大的id+1
                 newId = simpleTaskList.last().id + 1
             }
         } else {

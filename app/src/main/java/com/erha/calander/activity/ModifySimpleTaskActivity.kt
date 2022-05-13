@@ -73,6 +73,8 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
 
     private var simpleTaskId = -1
 
+    private var isLoadFinished = false //如果用户快速打开页面（还没加载完成任务详情），然后又快速关闭，会导致关闭时自动保存了新任务
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityModifySimpleTaskBinding.inflate(layoutInflater)
@@ -133,6 +135,7 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
                     isCustomColor = customColor
                     this@ModifySimpleTaskActivity.customColor = this.color
                 }
+                isLoadFinished = true
             }
         }
         binding.editor.apply {
@@ -309,6 +312,11 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (!isLoadFinished) {
+            Log.e(this.javaClass.name, "用户快速打开又快速关闭了页面")
+            finish()
+            return
+        }
         var html = ""
         try {
             html = binding.editor.html
