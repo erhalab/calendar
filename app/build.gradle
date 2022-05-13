@@ -163,4 +163,7 @@ dependencies {
     //three state checkbox
     //implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
     implementation project(':indeterminate-checkbox')
+    //--------------------------------------------------------------------------
+    //color picker
+    implementation "dev.sasikanth:colorsheet:1.0.1"
 }

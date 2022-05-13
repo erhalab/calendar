@@ -3,6 +3,7 @@ package com.erha.calander.activity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -23,8 +24,12 @@ import com.erha.calander.util.FileUtil
 import com.erha.calander.util.TinyDB
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
+import com.mikepenz.iconics.utils.colorInt
+import com.mikepenz.iconics.utils.contourColorInt
+import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.squareup.okhttp.*
 import com.yalantis.ucrop.UCrop
+import dev.sasikanth.colorsheet.ColorSheet
 import es.dmoral.toasty.Toasty
 import okio.Buffer
 import okio.BufferedSink
@@ -56,6 +61,22 @@ class AddSimpleTaskActivity : AppCompatActivity() {
     private var taskTimeAndNotify = TaskTimeAndNotify()
 
     private lateinit var progressUploadFile: ProgressUploadFile
+
+    private var isCustomColor = false
+    private var customColor = "#FFFFFF"
+    private val colorStrings = listOf(
+        "#ec6666",
+        "#f2b04b",
+        "#ffd966",
+        "#dde358",
+        "#93c47d",
+        "#5dd1a8",
+        "#52b8d2",
+        "#5992f8",
+        "#9f4cef",
+        "#d25294"
+    )
+    private var editorTextColorInt = Color.parseColor("#000000")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,6 +140,37 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 }
             }
         }
+        binding.editorColorButton.apply {
+            setOnClickListener {
+                val colors = IntArray(colorStrings.size) { index ->
+                    when (index) {
+                        0 -> Color.BLACK
+                        else -> Color.parseColor(colorStrings[index - 1])
+                    }
+                }
+                ColorSheet().colorPicker(
+                    colors = colors,
+                    selectedColor = editorTextColorInt,
+                    noColorOption = false,
+                    listener = { color ->
+                        binding.editor.setTextColor(color)
+                        editorTextColorInt = color
+                        binding.editorColorButtonIcon.apply {
+                            this.icon?.apply {
+                                this.colorInt = editorTextColorInt
+                                this.contourColorInt = editorTextColorInt
+                            }
+                        }
+                    })
+                    .show(supportFragmentManager)
+            }
+        }
+        binding.editorColorButtonIcon.apply {
+            this.icon?.apply {
+                this.colorInt = editorTextColorInt
+                this.contourColorInt = editorTextColorInt
+            }
+        }
         binding.taskTime.apply {
             setOnClickListener {
                 val i = Intent(this@AddSimpleTaskActivity, SelectSimpleTaskTimeActivity::class.java)
@@ -139,9 +191,10 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 var html = ""
                 try {
                     html = binding.editor.html
-                }catch (e:Exception){}
-                catch (e:java.lang.Exception){}
-                val status = when (binding.checkbox.state){
+                } catch (e: Exception) {
+                } catch (e: java.lang.Exception) {
+                }
+                val status = when (binding.checkbox.state) {
                     null -> TaskStatus.CANCELED
                     true -> TaskStatus.FINISHED
                     else -> TaskStatus.ONGOING
@@ -157,8 +210,8 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                     endTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.endTime),
                     isDDL = taskTimeAndNotify.isDDL,
                     notifyTimes = taskTimeAndNotify.notifyTimes,
-                    customColor = false,
-                    color = "#FFFFFF"
+                    customColor = isCustomColor,
+                    color = customColor
                 )
                 Thread {
                     TaskDao.addSimpleTask(i)
@@ -170,16 +223,58 @@ class AddSimpleTaskActivity : AppCompatActivity() {
         }
         binding.checkbox.setOnClickListener {
             binding.checkbox.apply {
-                if (isIndeterminate){
+                if (isIndeterminate) {
                     isIndeterminate = false
                     isChecked = false
                 }
             }
         }
         binding.checkbox.setOnLongClickListener {
-            Toasty.info(binding.root.context,"任务状态 -> 已放弃",Toast.LENGTH_SHORT,false).show()
+            Toasty.info(binding.root.context, "任务状态 -> 已放弃", Toast.LENGTH_SHORT, false).show()
             binding.checkbox.isIndeterminate = true
             true
+        }
+        binding.colorQMUILinearLayout.apply {
+            setOnClickListener {
+                val colors = IntArray(colorStrings.size) { index ->
+                    Color.parseColor(colorStrings[index])
+                }
+                ColorSheet().colorPicker(
+                    colors = colors,
+                    noColorOption = true,
+                    selectedColor = if (isCustomColor) Color.parseColor(customColor) else null,
+                    listener = { color ->
+                        if (color == ColorSheet.NO_COLOR) {
+                            isCustomColor = false
+                        } else {
+                            isCustomColor = true
+                            customColor = java.lang.String.format("#%06X", 0xFFFFFF and color)
+                        }
+                        if (isCustomColor) {
+                            binding.colorQMUILinearLayout.setBackgroundColor(
+                                Color.parseColor(
+                                    customColor
+                                )
+                            )
+                            radius = QMUIDisplayHelper.dp2px(binding.root.context, 30)
+                            binding.colorIcon.visibility = View.INVISIBLE
+                        } else {
+                            binding.colorQMUILinearLayout.setBackgroundColor(resources.getColor(R.color.white))
+                            radius = QMUIDisplayHelper.dp2px(binding.root.context, 30)
+                            binding.colorIcon.visibility = View.VISIBLE
+                        }
+                    })
+                    .show(supportFragmentManager)
+            }
+            if (isCustomColor) {
+                setBackgroundColor(Color.parseColor(customColor))
+                radius = QMUIDisplayHelper.dp2px(binding.root.context, 30)
+                binding.colorIcon.visibility = View.INVISIBLE
+            } else {
+                binding.colorQMUILinearLayout.setBackgroundColor(resources.getColor(R.color.white))
+                radius = QMUIDisplayHelper.dp2px(binding.root.context, 30)
+                binding.colorIcon.visibility = View.VISIBLE
+            }
         }
         initLoadingPopup()
         progressUploadFile = ProgressUploadFile(binding.root.context, this)

@@ -41,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="15dp"
                 android:gravity="center"
-                android:text="创建任务"
+                android:text="任务详情"
                 android:textSize="20sp" />
 
             <LinearLayout

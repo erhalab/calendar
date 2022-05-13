@@ -13,6 +13,10 @@ object HtmlUtil {
             Regex("<img src=\".{0,200}?\" alt=\".{0,30}\" width=\"[0-9]{0,5}\">"),
             ""
         )
+        s = s.replace(
+            Regex("<font color=\"#[0-9A-Za-z]{6}\">"),
+            ""
+        )
         return s
     }
 
