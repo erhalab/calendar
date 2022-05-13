@@ -64,14 +64,16 @@ fun CalendarEntity.Event.toWeekViewEntity(): WeekViewEntity {
 
     val title = SpannableStringBuilder(title).apply {
         val titleSpan = TypefaceSpan("sans-serif-medium")
-        setSpan(titleSpan, 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        if (isCanceled) {
+        if (title.isNotEmpty()) {
+            setSpan(titleSpan, 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        if (isCanceled && title.isNotEmpty()) {
             setSpan(StrikethroughSpan(), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 
     val subtitle = SpannableStringBuilder(location).apply {
-        if (isCanceled) {
+        if (isCanceled && location.isNotEmpty()) {
             setSpan(StrikethroughSpan(), 0, location.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
