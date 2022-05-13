@@ -199,17 +199,14 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     }
 
     override fun onDateSet(p0: DatePickerDialog?, p1: Int, p2: Int, p3: Int) {
-        var calendar = Calendar.getInstance()
+        val calendar = CalendarUtil.getWithoutSecond()
         calendar.apply {
             set(Calendar.YEAR, p1)
             set(Calendar.MONTH, p2)
             set(Calendar.DAY_OF_MONTH, p3)
-            set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 0)
             if (binding.weekView.numberOfVisibleDays == 7) {
                 add(Calendar.DAY_OF_MONTH, -1 * (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY))
             }
-
         }
         binding.weekView.scrollToDateTime(calendar)
     }
