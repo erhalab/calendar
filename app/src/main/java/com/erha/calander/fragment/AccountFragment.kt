@@ -215,6 +215,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     color = Color.parseColor("#4d70fa"),
                     sizeCorrect = 0
                 ),
+                isFirst = false,
+                isLast = false
             ),
             AccountItem(
                 title = "账户安全",
@@ -306,6 +308,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
                     } else if (item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                 }
                 onClick { index ->
@@ -330,6 +334,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_TOP)
                     } else if (item.isFirst) {
                         qmuiLinearLayout.setRadius(radius, QMUILayoutHelper.HIDE_RADIUS_SIDE_BOTTOM)
+                    } else {
+                        qmuiLinearLayout.radius = 0
                     }
                 }
                 onClick { index ->
