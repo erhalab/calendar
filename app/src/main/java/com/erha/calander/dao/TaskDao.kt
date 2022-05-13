@@ -9,6 +9,7 @@ import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.SimpleTaskWithoutID
 import com.erha.calander.model.TaskStatus
 import com.erha.calander.type.NotificationChannelType
+import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.HtmlUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -170,7 +171,7 @@ object TaskDao {
 
     private fun createSimpleTaskCalendarEntity(simpleTaskWithID: SimpleTaskWithID) {
         //获取起始时间
-        val beginCalendar = simpleTaskWithID.date.clone() as Calendar
+        var beginCalendar = simpleTaskWithID.date.clone() as Calendar
         if (simpleTaskWithID.isAllDay) {
             beginCalendar.apply {
                 set(Calendar.HOUR_OF_DAY, 0)
@@ -186,7 +187,7 @@ object TaskDao {
                 set(Calendar.MILLISECOND, 0)
             }
         }
-        val endCalendar = beginCalendar.clone() as Calendar
+        var endCalendar = beginCalendar.clone() as Calendar
         if (simpleTaskWithID.isAllDay) {
             endCalendar.apply {
                 set(Calendar.HOUR_OF_DAY, 23)
@@ -200,6 +201,26 @@ object TaskDao {
                 set(Calendar.MINUTE, simpleTaskWithID.endTime.get(Calendar.MINUTE))
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
+            }
+        }
+        //如果任务持续时间太短，将导致日历视图无法显示此事件
+        val minMinutes = 15
+        if (endCalendar.timeInMillis - beginCalendar.timeInMillis < minMinutes * 60 * 1000) {
+            endCalendar = beginCalendar.clone() as Calendar
+            endCalendar.apply {
+                add(Calendar.MINUTE, minMinutes)
+            }
+            if (CalendarUtil.compareOnlyTime(beginCalendar, endCalendar) > 1) {
+                //说明现在任务结束时间已经超过了23:59
+                endCalendar = CalendarUtil.getWithoutTime(beginCalendar)
+                endCalendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                }
+                beginCalendar = endCalendar.clone() as Calendar
+                beginCalendar.apply {
+                    add(Calendar.MINUTE, minMinutes * -1)
+                }
             }
         }
         var color = colorMap[(simpleTaskWithID.id % colorQuantity) + 1]
