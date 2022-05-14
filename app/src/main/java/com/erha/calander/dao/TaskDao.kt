@@ -63,7 +63,7 @@ object TaskDao {
                 (object : TypeToken<List<SimpleTaskWithID>>() {}.type)
             )?.apply {
                 for (i in this) {
-                    addSimpleTask(i.toSimpleTaskWithoutID(), false, i.id)
+                    addSimpleTask(i.toSimpleTaskWithoutID(), false, i.id, true)
                 }
             }
         } catch (e: Exception) {
@@ -123,7 +123,8 @@ object TaskDao {
     fun addSimpleTask(
         simpleTaskWithoutID: SimpleTaskWithoutID,
         isNew: Boolean = true,
-        id: Int = -1
+        id: Int = -1,
+        isInti: Boolean = false
     ): Int {
         var newId: Int
         if (isNew) {
@@ -160,7 +161,9 @@ object TaskDao {
         //把所有新的通知传递给通知Dao
         postAllNewNotifications()
         //保存到本地
-        saveToLocal()
+        if (!isInti) {
+            saveToLocal()
+        }
         //返回id
         return newId
     }
