@@ -1,9 +1,12 @@
 package com.erha.calander.dao
 
-import ando.file.core.FileUtils
+import SimpleTaskSQL
+import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
+import android.database.Cursor
 import android.graphics.Color
 import android.util.Log
-import androidx.core.net.toUri
 import com.erha.calander.model.CalendarEntity
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.SimpleTaskWithoutID
@@ -13,10 +16,9 @@ import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.HtmlUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.ByteArrayInputStream
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 object TaskDao {
 
@@ -32,16 +34,15 @@ object TaskDao {
     //一共多少种颜色捏？
     private var colorQuantity = 0
 
-    private lateinit var file: File
-    private lateinit var simpleTaskFile: File
+    private lateinit var simpleTaskSQL: SimpleTaskSQL
 
-    fun load(file: File) {
+    @SuppressLint("Range")
+    fun load(context: Context) {
         if (hasInit) {
             TODO("不能重复load")
         } else {
             hasInit = true
-            this.file = file
-            this.simpleTaskFile = File(File(file, "task"), "simple.json")
+            this.simpleTaskSQL = SimpleTaskSQL(context, "simpleTask.db", 1)
         }
         //初始化色板
         colorMap.clear()
@@ -58,32 +59,32 @@ object TaskDao {
         simpleTaskList.clear()
         //读取到一个列表，然后循环添加他们
         try {
-            Gson().fromJson<List<SimpleTaskWithID>?>(
-                FileUtils.readFileText(simpleTaskFile.toUri()),
-                (object : TypeToken<List<SimpleTaskWithID>>() {}.type)
-            )?.apply {
-                for (i in this) {
-                    addSimpleTask(i.toSimpleTaskWithoutID(), false, i.id, true)
-                }
+            val db = this.simpleTaskSQL.readableDatabase
+            val cursor: Cursor = db.query("info", null, null, null, null, null, null)
+            if (cursor.moveToFirst()) {
+                do {
+                    val json: String = cursor.getString(cursor.getColumnIndex("json"))
+                    Log.e("read SQL", json)
+                    Gson().fromJson<SimpleTaskWithID?>(
+                        json,
+                        (object : TypeToken<SimpleTaskWithID>() {}.type)
+                    )?.apply {
+                        addSimpleTask(this.toSimpleTaskWithoutID(), false, this.id, true)
+                    }
+                } while (cursor.moveToNext())
             }
+            cursor.close()
+            db.close()
         } catch (e: Exception) {
         } catch (e: Exception) {
         }
     }
 
-    private fun saveToLocal() {
-        FileUtils.write2File(
-            input = ByteArrayInputStream(Gson().toJson(simpleTaskList).toByteArray()),
-            file = simpleTaskFile,
-            overwrite = true
-        )
-    }
-
     fun updateSimpleTask(oldTask: SimpleTaskWithID) {
-        //移除旧的通知
+        //移除旧的
         removeSimpleTask(oldTask, isRemove4Update = true)
         //重新添加进去
-        addSimpleTask(oldTask.toSimpleTaskWithoutID(), false, oldTask.id)
+        addSimpleTask(oldTask.toSimpleTaskWithoutID(), false, oldTask.id, is4Update = true)
         Log.e(this.javaClass.name, "更新SimpleTask")
     }
 
@@ -118,7 +119,9 @@ object TaskDao {
             }
         }
         if (!isRemove4Update) {
-            saveToLocal()
+            val db = this.simpleTaskSQL.writableDatabase
+            db.delete("info", "id = ?", listOf(oldTask.id.toString()).toTypedArray())
+            db.close()
         }
     }
 
@@ -126,7 +129,8 @@ object TaskDao {
         simpleTaskWithoutID: SimpleTaskWithoutID,
         isNew: Boolean = true,
         id: Int = -1,
-        isInti: Boolean = false
+        isInti: Boolean = false,
+        is4Update: Boolean = false
     ): Int {
         var newId: Int
         if (isNew) {
@@ -163,8 +167,19 @@ object TaskDao {
         //把所有新的通知传递给通知Dao
         postAllNewNotifications()
         //保存到本地
-        if (!isInti) {
-            saveToLocal()
+        if (is4Update) {
+            val db = this.simpleTaskSQL.writableDatabase
+            val values = ContentValues()
+            values.put("json", Gson().toJson(task))
+            db.update("info", values, "id = ?", listOf(newId.toString()).toTypedArray())
+            db.close()
+        } else if (!isInti) {
+            val db = this.simpleTaskSQL.writableDatabase
+            val values = ContentValues()
+            values.put("id", newId)
+            values.put("json", Gson().toJson(task))
+            db.insert("info", null, values)
+            db.close()
         }
         //返回id
         return newId

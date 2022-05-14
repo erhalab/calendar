@@ -119,7 +119,7 @@ class NotificationService : Service() {
                         store.getString(LocalStorageKey.COURSE_NOTIFY_TIME)
                     )
                     //初始化Task Dao
-                    TaskDao.load(application.filesDir)
+                    TaskDao.load(applicationContext)
                     //初始化通知Dao
                     NotificationDao.repostOneTaskNotification =
                         store.getBoolean(LocalStorageKey.REPOST_ONE_TASK_NOTIFICATION)
