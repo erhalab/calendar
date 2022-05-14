@@ -77,6 +77,9 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
     private val fragmentObjects = ArrayList<FragmentObject>()
     private lateinit var store: TinyDB
     private var userInfo: UserInfo? = null
+
+    private val depthPageTransformer = DepthPageTransformer()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.e("onCreate Activity创建", this.javaClass.name)
 
@@ -156,7 +159,7 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
         }
         binding.viewPager2.adapter = MonitorPagerAdapter(this, list)
         binding.viewPager2.isUserInputEnabled = false
-        binding.viewPager2.setPageTransformer(DepthPageTransformer())
+        binding.viewPager2.setPageTransformer(depthPageTransformer)
 
         intent?.apply {
             getStringExtra("defaultPage")?.apply {
@@ -487,7 +490,12 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
             for (i in 0 until fragmentObjects.size) {
                 fragmentObjects[i].apply {
                     if (model.title == this.identity) {
-                        binding.viewPager2.setCurrentItem(i, true)
+                        binding.viewPager2.apply {
+                            binding.viewPager2.setCurrentItem(
+                                i,
+                                (i == currentItem + 1 || i == currentItem - 1)
+                            )
+                        }
                         binding.root.setDrawerLockMode(
                             if (allowSideDrawer) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
                         )
@@ -549,11 +557,9 @@ class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) 
     }
 }
 
-private const val MIN_SCALE = 0.75f
-
 @RequiresApi(21)
 class DepthPageTransformer : ViewPager2.PageTransformer {
-
+    private val MIN_SCALE = 0.75f
     override fun transformPage(view: View, position: Float) {
         view.apply {
             val pageWidth = width

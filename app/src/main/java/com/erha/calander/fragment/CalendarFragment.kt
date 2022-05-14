@@ -196,13 +196,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        loadGuide()
-    }
-
     override fun onResume() {
         super.onResume()
+        loadGuide()
         reloadAllCalendarEvents()
     }
 
