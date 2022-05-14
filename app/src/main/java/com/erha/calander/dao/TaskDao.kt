@@ -262,6 +262,10 @@ object TaskDao {
         if (simpleTaskWithID.status != TaskStatus.ONGOING) {
             return
         }
+        //如果没有设置时间，也不可能有通知
+        if (!simpleTaskWithID.hashTime) {
+            return
+        }
         //获取起始时间
         val calendar = simpleTaskWithID.date.clone() as Calendar
         if (simpleTaskWithID.isAllDay) {
@@ -305,6 +309,13 @@ object TaskDao {
             return ArrayList<CalendarEntity.Event>()
         }
         return simpleTaskCalendarEntityList
+    }
+
+    fun getAllSimpleTasks(): ArrayList<SimpleTaskWithID> {
+        if (!hasInit) {
+            return ArrayList()
+        }
+        return this.simpleTaskList
     }
 
     fun getAllDeadlines(): ArrayList<SimpleTaskWithID> {
