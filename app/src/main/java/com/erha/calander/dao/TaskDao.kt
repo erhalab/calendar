@@ -81,7 +81,7 @@ object TaskDao {
 
     fun updateSimpleTask(oldTask: SimpleTaskWithID) {
         //移除旧的通知
-        removeSimpleTask(oldTask)
+        removeSimpleTask(oldTask, isRemove4Update = true)
         //重新添加进去
         addSimpleTask(oldTask.toSimpleTaskWithoutID(), false, oldTask.id)
         Log.e(this.javaClass.name, "更新SimpleTask")
@@ -96,7 +96,7 @@ object TaskDao {
         return null
     }
 
-    fun removeSimpleTask(oldTask: SimpleTaskWithID) {
+    fun removeSimpleTask(oldTask: SimpleTaskWithID, isRemove4Update: Boolean = false) {
         //先从任务列表中删除
         simpleTaskList.remove(oldTask)
         //从已发布的通知列表中删除
@@ -117,7 +117,9 @@ object TaskDao {
                 simpleTaskCalendarEntityList.remove(i)
             }
         }
-        saveToLocal()
+        if (!isRemove4Update) {
+            saveToLocal()
+        }
     }
 
     fun addSimpleTask(
