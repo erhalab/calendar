@@ -10,6 +10,16 @@
     tools:context=".activity.AddSimpleTaskActivity">
 
     <LinearLayout
+        android:id="@+id/modifyTaskGuideZone"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/transparent"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@id/root"
+        app:layout_constraintTop_toTopOf="@id/root" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:orientation="vertical"

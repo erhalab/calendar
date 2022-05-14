@@ -124,7 +124,7 @@ object TaskDao {
         simpleTaskWithoutID: SimpleTaskWithoutID,
         isNew: Boolean = true,
         id: Int = -1
-    ) {
+    ): Int {
         var newId: Int
         if (isNew) {
             newId = 1
@@ -161,6 +161,8 @@ object TaskDao {
         postAllNewNotifications()
         //保存到本地
         saveToLocal()
+        //返回id
+        return newId
     }
 
     private fun postAllNewNotifications() {

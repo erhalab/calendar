@@ -41,6 +41,7 @@ import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import com.tencent.smtt.export.external.TbsCoreSettings
 import com.tencent.smtt.sdk.QbSdk
+import es.dmoral.toasty.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
@@ -140,6 +141,32 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     when (item.key) {
                         "exitApp" -> {
                             activity?.finishAffinity()
+                        }
+                        "resetGuide" -> {
+                            MessageDialogBuilder(binding.root.context)
+                                .setTitle("提醒")
+                                .setMessage("重置后需要重启App才能再次看见教程。确定要重置所有页面的教程吗？")
+                                .setSkinManager(QMUISkinManager.defaultInstance(context))
+                                .addAction(
+                                    "取消"
+                                ) { dialog, _ -> dialog.dismiss() }
+                                .addAction(
+                                    0, "重置", QMUIDialogAction.ACTION_PROP_NEGATIVE
+                                ) { dialog, _ ->
+                                    for (i in store.all.keys) {
+                                        if (i.startsWith(LocalStorageKey.USER_GUIDE_STATE_PREFIX)) {
+                                            store.remove(i)
+                                        }
+                                    }
+                                    Toasty.info(
+                                        binding.root.context,
+                                        "重置成功",
+                                        Toast.LENGTH_SHORT,
+                                        false
+                                    ).show()
+                                    dialog.dismiss()
+                                }
+                                .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show()
                         }
                     }
                 }
@@ -295,10 +322,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
                     }
 
-//                    activity?.overridePendingTransition(R.anim.slide_right_in,R.anim.slide_left_out)
                 }
                 onLongClick { index ->
-                    // item is a `val` in `this` here
                 }
             }
         }
@@ -371,12 +396,20 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             },
             SpaceItem(),
             SimpleItem(
-                titleResId = R.string.text_exit_app,
-                key = "exitApp",
+                titleResId = R.string.text_reset_guide,
+                key = "resetGuide",
                 isFirst = true,
                 isLast = true,
-                textColor = resources.getColor(R.color.qmui_config_color_red)
+                textColor = resources.getColor(R.color.dark_orange)
             ),
+//            SpaceItem(),
+//            SimpleItem(
+//                titleResId = R.string.text_exit_app,
+//                key = "exitApp",
+//                isFirst = true,
+//                isLast = true,
+//                textColor = resources.getColor(R.color.qmui_config_color_red)
+//            ),
         )
     }
 

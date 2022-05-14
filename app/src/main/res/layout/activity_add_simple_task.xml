@@ -92,10 +92,11 @@
 
                 <TextView
                     android:id="@+id/taskTime"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:gravity="center"
+                    android:layout_marginEnd="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
                     android:text="设置任务时间与提醒"
                     android:textColor="@color/default_active"
                     android:textSize="18sp" />
@@ -156,15 +157,33 @@
 
     </LinearLayout>
 
-    <jp.wasabeef.richeditor.RichEditor
-        android:id="@+id/editor"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editorConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="150dp"
         android:layout_marginBottom="40dp"
-        android:background="@color/default_background_color"
-        app:layout_constraintTop_toTopOf="@id/root" />
+        app:layout_constraintTop_toTopOf="@id/root">
+
+        <jp.wasabeef.richeditor.RichEditor
+            android:id="@+id/editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/default_background_color" />
+
+        <LinearLayout
+            android:id="@+id/editorGuideZone"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/transparent"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/editorConstraintLayout"
+            app:layout_constraintTop_toTopOf="@id/editorConstraintLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toobarConstraintLayout"
@@ -174,6 +193,7 @@
         app:layout_constraintBottom_toBottomOf="@id/root">
 
         <LinearLayout
+            android:id="@+id/editorLeftButtonsLinearLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"

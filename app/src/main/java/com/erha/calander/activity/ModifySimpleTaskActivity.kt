@@ -13,15 +13,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.erha.calander.R
+import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.ActivityModifySimpleTaskBinding
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.TaskStatus
 import com.erha.calander.type.EventType
-import com.erha.calander.util.CalendarUtil
-import com.erha.calander.util.FileUtil
-import com.erha.calander.util.TinyDB
+import com.erha.calander.util.*
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
 import com.mikepenz.iconics.utils.colorInt
@@ -309,6 +308,48 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
         initLoadingPopup()
         progressUploadFile = ProgressUploadFile(binding.root.context, this)
         updateTimeTextview()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadGuide()
+    }
+
+    private fun loadGuide() {
+        val guideVersion = 1
+        if (!ConfigDao.isDisplayingAnyGuide && !GuideUtil.getGuideStatus(
+                binding.root.context,
+                this.javaClass.name,
+                guideVersion
+            )
+        ) {
+            ConfigDao.isDisplayingAnyGuide = true
+            val list = listOf(
+                GuideEntity(
+                    view = binding.modifyTaskGuideZone,
+                    title = "任务详情",
+                    text = "退出此页面时，\n所有修改会自动保存"
+                ),
+                GuideEntity(
+                    view = binding.deleteZone,
+                    title = "删除任务",
+                    text = "长按触发"
+                )
+            )
+            ConfigDao.isDisplayingAnyGuide = false
+            var i = 0
+            GuideUtil.getDefaultBuilder(this, list[i++])
+                .setGuideListener {
+                    GuideUtil.getDefaultBuilder(this, list[i++])
+                        .setGuideListener {
+                            GuideUtil.updateGuideStatus(
+                                binding.root.context,
+                                this.javaClass.name,
+                                guideVersion
+                            )
+                        }.build().show()
+                }.build().show()
+        }
     }
 
     override fun onBackPressed() {

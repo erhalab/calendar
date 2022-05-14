@@ -13,15 +13,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.erha.calander.R
+import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.ActivityAddSimpleTaskBinding
 import com.erha.calander.model.SimpleTaskWithoutID
 import com.erha.calander.model.TaskStatus
 import com.erha.calander.type.EventType
-import com.erha.calander.util.CalendarUtil
-import com.erha.calander.util.FileUtil
-import com.erha.calander.util.TinyDB
+import com.erha.calander.util.*
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
 import com.mikepenz.iconics.utils.colorInt
@@ -120,7 +119,7 @@ class AddSimpleTaskActivity : AppCompatActivity() {
         binding.editor.apply {
             setPadding(5, 10, 10, 10)
             setTextColor(resources.getColor(R.color.black))
-            setPlaceholder("可以在此添加任务说明")
+            setPlaceholder("任务说明")
             setOnTextChangeListener { html ->
                 Log.e("editor", html)
             }
@@ -297,6 +296,88 @@ class AddSimpleTaskActivity : AppCompatActivity() {
         initLoadingPopup()
         progressUploadFile = ProgressUploadFile(binding.root.context, this)
         updateTimeTextview()
+        loadGuide()
+    }
+
+    private fun loadGuide() {
+        val guideVersion = 1
+        if (!ConfigDao.isDisplayingAnyGuide && !GuideUtil.getGuideStatus(
+                binding.root.context,
+                this.javaClass.name,
+                guideVersion
+            )
+        ) {
+            ConfigDao.isDisplayingAnyGuide = true
+            val list = listOf(
+                GuideEntity(
+                    view = binding.taskTitle,
+                    title = "创建任务",
+                    text = "从填写任务标题开始\n它可以为空"
+                ),
+                GuideEntity(
+                    view = binding.editorGuideZone,
+                    title = "任务说明",
+                    text = "在这里添加任务说明、细节等"
+                ),
+                GuideEntity(
+                    view = binding.editorLeftButtonsLinearLayout,
+                    title = "任务说明",
+                    text = "支持富文本编辑~"
+                ),
+                GuideEntity(
+                    view = binding.checkbox,
+                    title = "任务状态",
+                    text = "点按 -> 改变完成状态\n长按 -> 取消（放弃）状态"
+                ),
+                GuideEntity(
+                    view = binding.taskTime,
+                    title = "任务时间与提醒",
+                    text = "你可以设置它的时间\n以及此任务的提醒时机等"
+                ),
+                GuideEntity(
+                    view = binding.colorConstraintLayout,
+                    title = "颜色",
+                    text = "这个任务在日历中的颜色\n默认为随机抽取"
+                ),
+                GuideEntity(
+                    view = binding.submitZone,
+                    title = "大功告成",
+                    text = "创建完不要忘记点它哟~"
+                )
+            )
+            ConfigDao.isDisplayingAnyGuide = false
+            var i = 0
+            GuideUtil.getDefaultBuilder(this, list[i++])
+                .setGuideListener {
+                    GuideUtil.getDefaultBuilder(this, list[i++])
+                        .setGuideListener {
+                            GuideUtil.getDefaultBuilder(this, list[i++])
+                                .setGuideListener {
+                                    GuideUtil.getDefaultBuilder(this, list[i++])
+                                        .setGuideListener {
+                                            GuideUtil.getDefaultBuilder(this, list[i++])
+                                                .setGuideListener {
+                                                    GuideUtil.getDefaultBuilder(this, list[i++])
+                                                        .setGuideListener {
+                                                            GuideUtil.getDefaultBuilder(
+                                                                this,
+                                                                list[i++]
+                                                            )
+                                                                .setGuideListener {
+                                                                    GuideUtil.updateGuideStatus(
+                                                                        binding.root.context,
+                                                                        this.javaClass.name,
+                                                                        guideVersion
+                                                                    )
+                                                                }.build().show()
+
+                                                        }.build().show()
+                                                }.build().show()
+                                        }.build().show()
+                                }.build().show()
+                        }.build().show()
+                }.build().show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

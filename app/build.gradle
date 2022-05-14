@@ -142,7 +142,6 @@ dependencies {
     }
     //--------------------------------------------------------------------------
     //three state checkbox
-    //implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
     implementation project(':indeterminate-checkbox')
     //--------------------------------------------------------------------------
     //color picker
@@ -154,4 +153,7 @@ dependencies {
     //--------------------------------------------------------------------------
     //navigation
     implementation 'devlight.io:navigationtabbar:1.2.5'
+    //--------------------------------------------------------------------------
+    //guide view
+    implementation 'com.github.mreram:showcaseview:1.4.0'
 }

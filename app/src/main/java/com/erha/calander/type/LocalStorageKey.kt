@@ -20,6 +20,7 @@ class LocalStorageKey {
         const val USER_IS_LOGIN = "userIsLogin"
         const val USER_PHOTO_CACHE_ID = "userPhotoCacheId"
         const val USER_PHOTO_CACHE_URL = "userPhotoCacheUrl"
+        const val USER_GUIDE_STATE_PREFIX = "userGuideShown_"
     }
 
 }

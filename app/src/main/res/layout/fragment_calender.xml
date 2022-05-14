@@ -24,43 +24,72 @@
         android:textColor="@color/gray_600"
         android:textSize="14sp" />
 
-    <com.alamkanak.weekview.WeekView
-        android:id="@+id/weekView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/weekViewConstraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:adaptiveEventTextSize="true"
-        app:allDayEventTextSize="13sp"
-        app:columnGap="1dp"
-        app:eventCornerRadius="4dp"
-        app:dayBackgroundColor="#DDFFFFFF"
-        app:daySeparatorColor="#f2f2f2"
-        app:hourSeparatorColor="#f2f2f2"
-        app:eventTextColor="@android:color/white"
-        app:headerBackgroundColor="@color/default_background_color"
-        app:headerBottomLineColor="@color/gray_300"
-        app:headerBottomLineWidth="1dp"
-        app:headerPadding="12dp"
-        app:headerTextColor="@color/gray_600"
-        app:hourHeight="60dp"
-        app:nowLineColor="@color/default_active"
-        app:nowLineDotColor="@color/default_active"
-        app:nowLineDotRadius="5dp"
-        app:nowLineStrokeWidth="1dp"
-        app:numberOfVisibleDays="7"
-        app:overlappingEventGap="1dp"
-        app:restoreNumberOfVisibleDays="true"
-        app:showFirstDayOfWeekFirst="true"
-        app:showHeaderBottomLine="true"
-        app:showNowLine="true"
-        app:showNowLineDot="true"
-        app:showTimeColumnSeparator="true"
-        app:showWeekNumber="true"
-        app:timeColumnBackgroundColor="@color/default_background_color"
-        app:timeColumnPadding="8dp"
-        app:timeColumnSeparatorColor="@color/gray_300"
-        app:timeColumnSeparatorStrokeWidth="1dp"
-        app:timeColumnTextColor="@color/gray_600"
-        app:timeColumnTextSize="12sp"
-        app:todayHeaderTextColor="@color/default_active" />
+        android:layout_height="match_parent">
+
+        <com.alamkanak.weekview.WeekView
+            android:id="@+id/weekView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:adaptiveEventTextSize="true"
+            app:allDayEventTextSize="13sp"
+            app:columnGap="1dp"
+            app:dayBackgroundColor="#DDFFFFFF"
+            app:daySeparatorColor="#f2f2f2"
+            app:eventCornerRadius="4dp"
+            app:eventTextColor="@android:color/white"
+            app:headerBackgroundColor="@color/default_background_color"
+            app:headerBottomLineColor="@color/gray_300"
+            app:headerBottomLineWidth="1dp"
+            app:headerPadding="12dp"
+            app:headerTextColor="@color/gray_600"
+            app:hourHeight="60dp"
+            app:hourSeparatorColor="#f2f2f2"
+            app:nowLineColor="@color/default_active"
+            app:nowLineDotColor="@color/default_active"
+            app:nowLineDotRadius="5dp"
+            app:nowLineStrokeWidth="1dp"
+            app:numberOfVisibleDays="7"
+            app:overlappingEventGap="1dp"
+            app:restoreNumberOfVisibleDays="true"
+            app:showFirstDayOfWeekFirst="true"
+            app:showHeaderBottomLine="true"
+            app:showNowLine="true"
+            app:showNowLineDot="true"
+            app:showTimeColumnSeparator="true"
+            app:showWeekNumber="true"
+            app:timeColumnBackgroundColor="@color/default_background_color"
+            app:timeColumnPadding="8dp"
+            app:timeColumnSeparatorColor="@color/gray_300"
+            app:timeColumnSeparatorStrokeWidth="1dp"
+            app:timeColumnTextColor="@color/gray_600"
+            app:timeColumnTextSize="12sp"
+            app:todayHeaderTextColor="@color/default_active" />
+
+        <LinearLayout
+            android:id="@+id/weekViewWeekNumberGuideZone"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:background="@color/transparent"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/weekViewConstraintLayout"
+            app:layout_constraintTop_toTopOf="@id/weekViewConstraintLayout" />
+
+        <LinearLayout
+            android:id="@+id/weekViewGuideZone"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/transparent"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/weekViewConstraintLayout"
+            app:layout_constraintTop_toBottomOf="@id/weekViewWeekNumberGuideZone" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </LinearLayout>

@@ -13,11 +13,13 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import cn.authing.guard.Authing
 import cn.authing.guard.data.UserInfo
 import cn.authing.guard.network.AuthClient
@@ -25,12 +27,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.erha.calander.R
+import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.databinding.ActivityHomeBinding
 import com.erha.calander.fragment.*
 import com.erha.calander.service.NotificationService
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
+import com.erha.calander.util.GuideEntity
+import com.erha.calander.util.GuideUtil
 import com.erha.calander.util.TinyDB
 import com.mikepenz.iconics.Iconics
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome
@@ -151,6 +156,7 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
         }
         binding.viewPager2.adapter = MonitorPagerAdapter(this, list)
         binding.viewPager2.isUserInputEnabled = false
+        binding.viewPager2.setPageTransformer(DepthPageTransformer())
 
         intent?.apply {
             getStringExtra("defaultPage")?.apply {
@@ -158,6 +164,48 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
                 gotoTab(this)
             }
         }
+    }
+
+    private fun loadGuide() {
+        val guideVersion = 1
+        if (!ConfigDao.isDisplayingAnyGuide && !GuideUtil.getGuideStatus(
+                binding.root.context,
+                this.javaClass.name,
+                guideVersion
+            )
+        ) {
+            ConfigDao.isDisplayingAnyGuide = true
+            val list = listOf(
+                GuideEntity(
+                    view = binding.floatButton,
+                    title = "创建任务",
+                    text = "快速新建一个普通的任务"
+                ),
+                GuideEntity(
+                    view = binding.ntb,
+                    title = "三模块",
+                    text = "任务清单、日历视图、里程碑"
+                )
+            )
+            var i = 0
+            GuideUtil.getDefaultBuilder(this, list[i++])
+                .setGuideListener {
+                    GuideUtil.getDefaultBuilder(this, list[i++])
+                        .setGuideListener {
+                            ConfigDao.isDisplayingAnyGuide = false
+                            GuideUtil.updateGuideStatus(
+                                binding.root.context,
+                                this.javaClass.name,
+                                guideVersion
+                            )
+                        }.build().show()
+                }.build().show()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadGuide()
     }
 
     private fun gotoTab(tabName: String) {
@@ -498,5 +546,49 @@ class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) 
     init {
         this.context = context
         this.fragments = fragments
+    }
+}
+
+private const val MIN_SCALE = 0.75f
+
+@RequiresApi(21)
+class DepthPageTransformer : ViewPager2.PageTransformer {
+
+    override fun transformPage(view: View, position: Float) {
+        view.apply {
+            val pageWidth = width
+            when {
+                position < -1 -> { // [-Infinity,-1)
+                    // This page is way off-screen to the left.
+                    alpha = 0f
+                }
+                position <= 0 -> { // [-1,0]
+                    // Use the default slide transition when moving to the left page
+                    alpha = 1f
+                    translationX = 0f
+                    translationZ = 0f
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+                position <= 1 -> { // (0,1]
+                    // Fade the page out.
+                    alpha = 1 - position
+
+                    // Counteract the default slide transition
+                    translationX = pageWidth * -position
+                    // Move it behind the left page
+                    translationZ = -1f
+
+                    // Scale the page down (between MIN_SCALE and 1)
+                    val scaleFactor = (MIN_SCALE + (1 - MIN_SCALE) * (1 - Math.abs(position)))
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                else -> { // (1,+Infinity]
+                    // This page is way off-screen to the right.
+                    alpha = 0f
+                }
+            }
+        }
     }
 }

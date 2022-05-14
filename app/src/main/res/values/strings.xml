@@ -73,4 +73,5 @@
     <string name="setting_time_first_day_of_week">每周的第一天是</string>
     <string name="setting_time_first_day_of_week_subtitle" translatable="false">%1$s</string>
     <string name="menu_deadline_text">里程碑</string>
+    <string name="text_reset_guide">重置教程</string>
 </resources>

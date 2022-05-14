@@ -14,16 +14,17 @@ import com.alamkanak.weekview.WeekViewEntity
 import com.erha.calander.R
 import com.erha.calander.activity.AddSimpleTaskActivity
 import com.erha.calander.activity.ModifySimpleTaskActivity
+import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.CourseDao
 import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.FragmentCalenderBinding
 import com.erha.calander.model.CalendarEntity
+import com.erha.calander.model.SimpleTaskWithoutID
+import com.erha.calander.model.TaskStatus
 import com.erha.calander.model.toWeekViewEntity
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
-import com.erha.calander.util.CalendarUtil
-import com.erha.calander.util.TinyDB
-import com.erha.calander.util.setupWithWeekView
+import com.erha.calander.util.*
 import com.google.android.material.appbar.MaterialToolbar
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
 import es.dmoral.toasty.Toasty
@@ -34,7 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.OnDateSetListener {
-    private lateinit var binding: FragmentCalenderBinding
+    lateinit var binding: FragmentCalenderBinding
 
     //    private val viewModel by genericViewModel()
     private lateinit var store: TinyDB
@@ -105,8 +106,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
             } catch (e: NumberFormatException) {
                 Log.e("滚动到上次的位置（记忆）", "NumberFormatException")
             }
-
-
         }
         //初始化标题日期
         binding.toolbarContainer.toolbar.apply {
@@ -124,9 +123,87 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         updateTimeRangeText()
     }
 
+    private fun loadGuide() {
+        val guideVersion = 1
+        if (!ConfigDao.isDisplayingAnyGuide && !GuideUtil.getGuideStatus(
+                binding.root.context,
+                this.javaClass.name,
+                guideVersion
+            )
+        ) {
+            ConfigDao.isDisplayingAnyGuide = true
+            val list = listOf(
+                GuideEntity(
+                    view = binding.toolbarContainer.toolbar,
+                    title = "日历视图",
+                    text = "快速跳转到指定日期、今天，\n以及设置日历视图的可见天数"
+                ),
+                GuideEntity(
+                    view = binding.weekViewWeekNumberGuideZone,
+                    title = "当前周数",
+                    text = "你可以在设置中自定义起始周的日期"
+                ),
+                GuideEntity(
+                    view = binding.weekViewGuideZone,
+                    title = "快捷操作",
+                    text = "点击任务 -> 查看详情\n长按拖动任务 -> 改变时间\n空白区域长按 -> 在目标时间添加任务"
+                )
+            )
+            val demoCalendar = CalendarUtil.getWithoutSecond().apply {
+                set(Calendar.HOUR_OF_DAY, 12)
+            }
+            val nextHour = CalendarUtil.getWithoutSecond(demoCalendar).apply {
+                add(Calendar.HOUR_OF_DAY, 1)
+            }
+            binding.weekView.scrollToDateTime((demoCalendar.clone() as Calendar).apply {
+                add(Calendar.HOUR_OF_DAY, 1)
+            })
+            val demoTaskId = TaskDao.addSimpleTask(
+                SimpleTaskWithoutID(
+                    status = TaskStatus.ONGOING,
+                    title = "演示任务",
+                    detailHtml = "程序自动创建",
+                    hashTime = true,
+                    date = demoCalendar,
+                    isAllDay = false,
+                    beginTime = demoCalendar,
+                    endTime = nextHour,
+                    isDDL = true,
+                    notifyTimes = ArrayList()
+                )
+            )
+            var i = 0
+            GuideUtil.getDefaultBuilder(requireActivity(), list[i++])
+                .setGuideListener {
+                    GuideUtil.getDefaultBuilder(requireActivity(), list[i++])
+                        .setGuideListener {
+                            GuideUtil.getDefaultBuilder(requireActivity(), list[i++])
+                                .setGuideListener {
+                                    TaskDao.getSimpleTaskById(demoTaskId)
+                                        ?.let { it1 ->
+                                            TaskDao.removeSimpleTask(it1)
+                                            reloadAllCalendarEvents()
+                                        }
+                                    ConfigDao.isDisplayingAnyGuide = false
+                                    GuideUtil.updateGuideStatus(
+                                        binding.root.context,
+                                        this.javaClass.name,
+                                        guideVersion
+                                    )
+                                }.build().show()
+                        }.build().show()
+                }.build().show()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadGuide()
+    }
+
     override fun onResume() {
         super.onResume()
-        weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
+        reloadAllCalendarEvents()
     }
 
     fun updateTimeRangeText(numberOfVisibleDays: Int = binding.weekView.numberOfVisibleDays) {
@@ -149,6 +226,11 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                     .format(lastVisibleDate.timeInMillis)
             }"
         }
+    }
+
+    //更新日历视图的所有事件
+    private fun reloadAllCalendarEvents() {
+        weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
     }
 
     //初始化第一周的日期
@@ -194,7 +276,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 if (isPostEventChangeMyself) {
                     isPostEventChangeMyself = false
                 } else {
-                    weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
+                    reloadAllCalendarEvents()
                 }
             }
             EventType.LANGUAGE_CHANGE -> updateLanguage()

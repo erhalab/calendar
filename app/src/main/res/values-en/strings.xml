@@ -64,4 +64,5 @@
     <string name="string_import_class_fail">Import Failed</string>
     <string name="login_phone">Phone number</string>
     <string name="setting_time_first_day_of_week">First day of Week</string>
+    <string name="text_reset_guide">Reset Guide</string>
 </resources>
