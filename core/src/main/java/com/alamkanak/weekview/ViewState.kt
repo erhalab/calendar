@@ -32,6 +32,9 @@ internal class ViewState {
     var firstVisibleDate: Calendar = today()
     var pendingScroll: Calendar? = null
 
+    //滚动到的垂直距离
+    var pendingScrollVerticalOffset: Float = -1F
+
     private var isFirstDraw: Boolean = true
 
     // Calendar configuration

@@ -84,6 +84,24 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 else -> defaultTimeFormatter().format(date.time)
             }
         }
+        //初始化标题日期
+        binding.toolbarContainer.toolbar.apply {
+            title = SimpleDateFormat("MMMM", locale).format(binding.weekView.firstVisibleDate.time)
+            subtitle =
+                SimpleDateFormat("yyyy", locale).format(binding.weekView.firstVisibleDate.time)
+        }
+        binding.weekView.apply {
+            hourHeight = 300
+            minHourHeight = 200
+            maxHourHeight = 500
+            stickToActualWeek = true
+        }
+        gotoCalendarHistoryPosition()
+        initFirstWeek()
+        updateTimeRangeText()
+    }
+
+    private fun gotoCalendarHistoryPosition() {
         //滚动到上次的位置（记忆）
         store.getString(LocalStorageKey.CALENDAR_LAST_FIRST_DAY)?.apply {
             if (this.isBlank()) return@apply
@@ -107,20 +125,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 Log.e("滚动到上次的位置（记忆）", "NumberFormatException")
             }
         }
-        //初始化标题日期
-        binding.toolbarContainer.toolbar.apply {
-            title = SimpleDateFormat("MMMM", locale).format(binding.weekView.firstVisibleDate.time)
-            subtitle =
-                SimpleDateFormat("yyyy", locale).format(binding.weekView.firstVisibleDate.time)
-        }
-        binding.weekView.apply {
-            hourHeight = 300
-            minHourHeight = 200
-            maxHourHeight = 500
-            stickToActualWeek = true
-        }
-        initFirstWeek()
-        updateTimeRangeText()
     }
 
     private fun loadGuide() {

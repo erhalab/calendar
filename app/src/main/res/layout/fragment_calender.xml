@@ -45,7 +45,6 @@
             app:headerBottomLineWidth="1dp"
             app:headerPadding="12dp"
             app:headerTextColor="@color/gray_600"
-            app:hourHeight="60dp"
             app:hourSeparatorColor="#f2f2f2"
             app:nowLineColor="@color/default_active"
             app:nowLineDotColor="@color/default_active"

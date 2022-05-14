@@ -130,9 +130,16 @@ class WeekView @JvmOverloads constructor(
 
     private fun performPendingScroll() {
         val pendingScroll = viewState.pendingScroll
+        val scrollVerticalOffset = viewState.pendingScrollVerticalOffset
         viewState.pendingScroll = null
+        viewState.pendingScrollVerticalOffset = -1F
         pendingScroll?.let { dateTime ->
             scrollToDateTime(dateTime)
+        }
+        scrollVerticalOffset.let { it3 ->
+            if (it3 >= 0) {
+                scrollToVerticalOffset(it3)
+            }
         }
     }
 
@@ -163,7 +170,9 @@ class WeekView @JvmOverloads constructor(
                 viewState.numberOfVisibleDays,
                 viewState.firstVisibleDate,
                 viewState.customFirstWeekEnable,
-                viewState.firstWeekCalendar
+                viewState.firstWeekCalendar,
+                verticalScrollOffset,
+                viewState.hourHeight
             )
         }
     }
@@ -172,11 +181,14 @@ class WeekView @JvmOverloads constructor(
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
 
+        hourHeight = savedState.hourHeight.roundToInt()
+        viewState.hourHeight = savedState.hourHeight
+
         if (viewState.restoreNumberOfVisibleDays) {
             viewState.numberOfVisibleDays = savedState.numberOfVisibleDays
         }
-
-        scrollToDate(savedState.firstVisibleDate)
+        internalScrollToDate(savedState.firstVisibleDate) {}
+        scrollToVerticalOffset(savedState.verticalScrollOffset)
 
         setWeekNumber(savedState.firstWeekCalendar)
         setCustomFirstWeekEnable(savedState.customFirstWeekEnable)
@@ -1259,6 +1271,19 @@ class WeekView @JvmOverloads constructor(
         navigator.scrollVerticallyTo(offset = finalOffset)
     }
 
+    /* 注意，这里需要一个正数的offset */
+    @PublicApi
+    fun scrollToVerticalOffset(offset: Float) {
+        if (isWaitingToBeLaidOut) {
+            viewState.pendingScrollVerticalOffset = offset
+            return
+        }
+        if (offset < 0 || verticalScrollOffset == offset) {
+            return
+        }
+        navigator.scrollVerticallyTo(offset = offset * -1)
+    }
+
     private fun internalScrollToDate(date: Calendar, onComplete: (Calendar) -> Unit = {}) {
         val adjustedDate = viewState.getStartDateInAllowedRange(date)
         if (adjustedDate.toEpochDays() == viewState.firstVisibleDate.toEpochDays()) {
@@ -1279,6 +1304,21 @@ class WeekView @JvmOverloads constructor(
             onComplete(adjustedDate)
         }
     }
+
+//    private fun internalScrollToVerticalOffset(
+//        scrollVerticalOffset: Float,
+//        onComplete: (Float) -> Unit = {}
+//    ) {
+//        if (navigator.scrollVerticalFinialOffset == scrollVerticalOffset) {
+//            onComplete(scrollVerticalOffset)
+//            return
+//        }
+//        if (isWaitingToBeLaidOut) {
+//            viewState.pendingScrollVerticalOffset = scrollVerticalOffset
+//            return
+//        }
+//        navigator.scrollVerticallyTo(offset = scrollVerticalOffset)
+//    }
 
     /**
      * Returns the first hour that is visible on the screen.

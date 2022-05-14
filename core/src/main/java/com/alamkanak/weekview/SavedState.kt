@@ -11,6 +11,8 @@ internal class SavedState : BaseSavedState {
     var firstVisibleDate: Calendar = today()
     var customFirstWeekEnable = false
     var firstWeekCalendar: Calendar = Calendar.getInstance()
+    var verticalScrollOffset: Float = -1F
+    var hourHeight: Float = 60F
 
     constructor(superState: Parcelable) : super(superState)
 
@@ -19,12 +21,16 @@ internal class SavedState : BaseSavedState {
         numberOfVisibleDays: Int,
         firstVisibleDate: Calendar,
         customFirstWeekEnable: Boolean,
-        firstWeekCalendar: Calendar
+        firstWeekCalendar: Calendar,
+        verticalScrollOffset: Float,
+        hourHeight: Float
     ) : super(superState) {
         this.numberOfVisibleDays = numberOfVisibleDays
         this.firstVisibleDate = firstVisibleDate
         this.customFirstWeekEnable = customFirstWeekEnable
         this.firstWeekCalendar = firstWeekCalendar
+        this.verticalScrollOffset = verticalScrollOffset
+        this.hourHeight = hourHeight
     }
 
     constructor(source: Parcel) : super(source) {
@@ -32,6 +38,8 @@ internal class SavedState : BaseSavedState {
         firstVisibleDate = source.readSerializable() as Calendar
         customFirstWeekEnable = source.readSerializable() as Boolean
         firstWeekCalendar = source.readSerializable() as Calendar
+        verticalScrollOffset = source.readFloat()
+        hourHeight = source.readFloat()
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
@@ -40,6 +48,8 @@ internal class SavedState : BaseSavedState {
         out.writeSerializable(firstVisibleDate)
         out.writeSerializable(customFirstWeekEnable)
         out.writeSerializable(firstWeekCalendar)
+        out.writeFloat(verticalScrollOffset)
+        out.writeFloat(hourHeight)
     }
 
     companion object {
