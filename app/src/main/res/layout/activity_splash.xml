@@ -48,8 +48,7 @@
                 android:id="@+id/avatorImageView"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:background="@color/default_background_color"
-                android:src="@mipmap/image_default_avator" />
+                android:background="@color/default_background_color" />
 
             <TextView
                 android:id="@+id/userNicknameTextView"
