@@ -32,7 +32,7 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
     private val mDataList = ArrayList<TimeLineModel>()
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var store: TinyDB
-    private var simpleDateFormat = SimpleDateFormat("yy/MM/dd HH:mm", Locale.getDefault())
+    private var simpleDateFormat = SimpleDateFormat("yy/MM/dd EEE HH:mm", Locale.getDefault())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -114,10 +114,7 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
                     TimeLineModel(
                         i.title.ifBlank { "无标题的DDL" },
                         "第${weekNumber}周 ${
-                            SimpleDateFormat(
-                                "yy/MM/dd HH:mm",
-                                Locale.getDefault()
-                            ).format(beginCalendar.timeInMillis)
+                            simpleDateFormat.format(beginCalendar.timeInMillis)
                         }",
                         if (i.status == TaskStatus.ONGOING) {
                             OrderStatus.ACTIVE
