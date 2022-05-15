@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.util.Log
 import com.erha.calander.model.CalendarEntity
@@ -36,6 +37,8 @@ object TaskDao {
 
     private lateinit var simpleTaskSQL: SimpleTaskSQL
 
+    private lateinit var db: SQLiteDatabase
+
     @SuppressLint("Range")
     fun load(context: Context) {
         if (hasInit) {
@@ -59,7 +62,7 @@ object TaskDao {
         simpleTaskList.clear()
         //读取到一个列表，然后循环添加他们
         try {
-            val db = this.simpleTaskSQL.readableDatabase
+            db = this.simpleTaskSQL.writableDatabase
             val cursor: Cursor = db.query("info", null, null, null, null, null, null)
             if (cursor.moveToFirst()) {
                 do {
@@ -74,7 +77,6 @@ object TaskDao {
                 } while (cursor.moveToNext())
             }
             cursor.close()
-            db.close()
         } catch (e: Exception) {
         } catch (e: Exception) {
         }
@@ -119,9 +121,7 @@ object TaskDao {
             }
         }
         if (!isRemove4Update) {
-            val db = this.simpleTaskSQL.writableDatabase
             db.delete("info", "id = ?", listOf(oldTask.id.toString()).toTypedArray())
-            db.close()
         }
     }
 
@@ -168,18 +168,14 @@ object TaskDao {
         postAllNewNotifications()
         //保存到本地
         if (is4Update) {
-            val db = this.simpleTaskSQL.writableDatabase
             val values = ContentValues()
             values.put("json", Gson().toJson(task))
             db.update("info", values, "id = ?", listOf(newId.toString()).toTypedArray())
-            db.close()
         } else if (!isInti) {
-            val db = this.simpleTaskSQL.writableDatabase
             val values = ContentValues()
             values.put("id", newId)
             values.put("json", Gson().toJson(task))
             db.insert("info", null, values)
-            db.close()
         }
         //返回id
         return newId
