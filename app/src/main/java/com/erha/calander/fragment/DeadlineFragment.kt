@@ -59,18 +59,15 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
     }
 
     private fun reloadDataListItems() {
-        val now = CalendarUtil.getWithoutSecond()
         var hasInsertNow = false
         mDataList.clear()
         val weekDate = store.getString(LocalStorageKey.FIRST_WEEK).toString()
-        val weekNumber = if (weekDate.isNotBlank()) {
-            val calendar = CalendarUtil.getWithoutTime().apply {
+        var firstWeekCalendar: Calendar? = null
+        if (weekDate.isNotEmpty()) {
+            firstWeekCalendar = CalendarUtil.getWithoutTime().apply {
                 set(Calendar.MONTH, weekDate.split(",")[0].toInt() - 1)
                 set(Calendar.DAY_OF_MONTH, weekDate.split(",")[1].toInt())
             }
-            CalendarUtil.getWeekNumber(now, calendar)
-        } else {
-            CalendarUtil.getWeekNumber(now)
         }
         for (i in TaskDao.getAllDeadlines()) {
             val beginCalendar = CalendarUtil.getWithoutTime(i.date).apply {
@@ -79,6 +76,13 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
             }
             var simpleTaskId = i.id
             val isPassed = CalendarUtil.getWithoutSecond() > beginCalendar
+
+            val weekNumber = if (firstWeekCalendar != null) {
+                CalendarUtil.getWeekNumber(beginCalendar, firstWeekCalendar = firstWeekCalendar)
+            } else {
+                CalendarUtil.getWeekNumber(beginCalendar)
+            }
+
             if (isPassed && i.status == TaskStatus.ONGOING) {
                 //任务过去了，但是还正在进行中
                 mDataList.add(
@@ -95,7 +99,7 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
             if (isPassed && i.status != TaskStatus.ONGOING) {
                 continue
             }
-            if (beginCalendar > now && !hasInsertNow) {
+            if (beginCalendar > Calendar.getInstance() && !hasInsertNow) {
                 hasInsertNow = true
                 mDataList.add(
                     TimeLineModel(
@@ -134,7 +138,17 @@ class DeadlineFragment : Fragment(R.layout.fragment_deadline), SingleTimeLineCal
                     OrderStatus.INACTIVE
                 )
             )
+            hasInsertNow = true
             mDataList.add(TimeLineModel("你没有DEADLINE呀~", "-", OrderStatus.COMPLETED))
+        } else if (!hasInsertNow) {
+            mDataList.add(
+                TimeLineModel(
+                    "现在",
+                    "${simpleDateFormat.format(CalendarUtil.getWithoutSecond().timeInMillis)}",
+                    OrderStatus.INACTIVE
+                )
+            )
+            hasInsertNow = true
         }
     }
 
