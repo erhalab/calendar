@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:background="#00000000"
     android:layout_height="20dp"
+    android:background="#00000000"
     android:orientation="horizontal"
     android:theme="@style/QMUI" />

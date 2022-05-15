@@ -11,8 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:theme="@style/QMUI"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:theme="@style/QMUI">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager2"
@@ -51,9 +51,9 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom|end"
+                android:foreground="?selectableItemBackground"
                 android:src="@drawable/ic_baseline_add_35_white"
                 android:theme="@style/Theme.Material3.Light.NoActionBar"
-                android:foreground="?selectableItemBackground"
                 app:fab_colorNormal="@color/default_active"
                 app:fab_colorPressed="@color/default_active"
                 app:fab_colorRipple="@color/default_active" />
