@@ -129,7 +129,7 @@ class TaskAdapter(val context: Context) :
                 }
             }
             val time = findViewById<TextView>(R.id.taskTime).apply {
-                text = if (task.hashTime) {
+                text = if (task.hasTime) {
                     val beginCalendar = CalendarUtil.getWithoutSecond(task.beginTime).apply {
                         set(Calendar.YEAR, task.date.get(Calendar.YEAR))
                         set(Calendar.MONTH, task.date.get(Calendar.MONTH))
@@ -144,7 +144,7 @@ class TaskAdapter(val context: Context) :
                 } else {
                     "无时间"
                 }
-                if (!task.hashTime) {
+                if (!task.hasTime) {
                     setTextColor(resources.getColor(R.color.gray_300))
                 }
             }
@@ -158,7 +158,7 @@ class TaskAdapter(val context: Context) :
                     set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
                 }
                 var notifyNumber = 0
-                if (task.hashTime) {
+                if (task.hasTime) {
                     for (i in task.notifyTimes) {
                         val notifyCalendar = (beginCalendar.clone() as Calendar).apply {
                             add(Calendar.MINUTE, -1 * i)
@@ -181,7 +181,7 @@ class TaskAdapter(val context: Context) :
             val taskDDLIcon = findViewById<IconicsImageView>(R.id.taskDDLIcon).apply {
                 val taskDDLLeftTime =
                     holder.itemView.findViewById<TextView>(R.id.taskDDLLeftTime)
-                if (!task.isDDL || !task.hashTime) {
+                if (!task.isDDL || !task.hasTime) {
                     this.visibility = View.GONE
                     taskDDLLeftTime.visibility = View.GONE
                 } else {

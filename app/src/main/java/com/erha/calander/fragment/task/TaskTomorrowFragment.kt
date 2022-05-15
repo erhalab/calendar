@@ -23,7 +23,7 @@ class TaskTomorrowFragment : TaskBaseFragment() {
             add(Calendar.DAY_OF_MONTH, 1)
         }
         for (i in TaskDao.getAllSimpleTasks()) {
-            if (i.hashTime && CalendarUtil.getWithoutTime(i.date) == now) {
+            if (i.hasTime && CalendarUtil.getWithoutTime(i.date) == now) {
                 when (i.status) {
                     TaskStatus.ONGOING -> listUnDone.add(SimpleTaskWithID.copy(i))
                     TaskStatus.FINISHED -> listDone.add(SimpleTaskWithID.copy(i))

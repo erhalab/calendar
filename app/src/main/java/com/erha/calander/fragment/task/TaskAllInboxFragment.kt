@@ -18,7 +18,7 @@ class TaskAllInboxFragment : TaskBaseFragment() {
         //过滤数据，只关心部分数据
         for (i in TaskDao.getAllSimpleTasks()) {
             //找所有没有时间的
-            if (!i.hashTime) {
+            if (!i.hasTime) {
                 when (i.status) {
                     TaskStatus.ONGOING -> listUnDone.add(SimpleTaskWithID.copy(i))
                     TaskStatus.FINISHED -> listDone.add(SimpleTaskWithID.copy(i))

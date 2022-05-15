@@ -88,7 +88,7 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                 val queryTask = TaskDao.getSimpleTaskById(simpleTaskId)
                 if (simpleTaskId != -1 && queryTask != null) {
                     queryTask.apply {
-                        task.hasTime = hashTime
+                        task.hasTime = hasTime
                         task.date = date
                         task.isAllDay = isAllDay
                         task.beginTime = beginTime
@@ -123,7 +123,7 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                                 status = status,
                                 title = title,
                                 detailHtml = detailHtml,
-                                hashTime = task.hasTime,
+                                hasTime = task.hasTime,
                                 date = task.date,
                                 isAllDay = task.isAllDay,
                                 beginTime = task.beginTime,

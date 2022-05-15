@@ -220,7 +220,7 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                     status = status,
                     title = binding.taskTitle.text.toString(),
                     detailHtml = html,
-                    hashTime = taskTimeAndNotify.hasTime,
+                    hasTime = taskTimeAndNotify.hasTime,
                     date = CalendarUtil.getWithoutTime(taskTimeAndNotify.date),
                     isAllDay = taskTimeAndNotify.isAllDay,
                     beginTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.beginTime),

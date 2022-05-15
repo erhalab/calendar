@@ -167,7 +167,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                     status = TaskStatus.ONGOING,
                     title = "演示任务",
                     detailHtml = "程序自动创建",
-                    hashTime = true,
+                    hasTime = true,
                     date = demoCalendar,
                     isAllDay = false,
                     beginTime = demoCalendar,

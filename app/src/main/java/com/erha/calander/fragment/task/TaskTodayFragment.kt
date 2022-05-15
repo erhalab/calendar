@@ -20,7 +20,7 @@ class TaskTodayFragment : TaskBaseFragment() {
         //过滤数据，只关心部分数据
         val now = CalendarUtil.getWithoutTime()
         for (i in TaskDao.getAllSimpleTasks()) {
-            if (i.hashTime && CalendarUtil.getWithoutTime(i.date) == now) {
+            if (i.hasTime && CalendarUtil.getWithoutTime(i.date) == now) {
                 when (i.status) {
                     TaskStatus.ONGOING -> listUnDone.add(SimpleTaskWithID.copy(i))
                     TaskStatus.FINISHED -> listDone.add(SimpleTaskWithID.copy(i))

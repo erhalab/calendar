@@ -124,7 +124,7 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
                         Toasty.error(binding.root.context, "加载Editor失败", Toast.LENGTH_SHORT, false)
                             .show()
                     }
-                    taskTimeAndNotify.hasTime = hashTime
+                    taskTimeAndNotify.hasTime = hasTime
                     taskTimeAndNotify.date = CalendarUtil.getWithoutTime(date)
                     taskTimeAndNotify.isAllDay = isAllDay
                     taskTimeAndNotify.beginTime = CalendarUtil.getWithoutSecond(beginTime)
@@ -375,7 +375,7 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
             status = status,
             title = binding.taskTitle.text.toString(),
             detailHtml = html,
-            hashTime = taskTimeAndNotify.hasTime,
+            hasTime = taskTimeAndNotify.hasTime,
             date = CalendarUtil.getWithoutTime(taskTimeAndNotify.date),
             isAllDay = taskTimeAndNotify.isAllDay,
             beginTime = CalendarUtil.getWithoutSecond(taskTimeAndNotify.beginTime),

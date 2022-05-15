@@ -45,7 +45,7 @@ object TaskDao {
             TODO("不能重复load")
         } else {
             hasInit = true
-            this.simpleTaskSQL = SimpleTaskSQL(context, "simpleTask.db", 1)
+            this.simpleTaskSQL = SimpleTaskSQL(context, "simpleTask.db", 2)
         }
         //初始化色板
         colorMap.clear()
@@ -148,7 +148,7 @@ object TaskDao {
             status = simpleTaskWithoutID.status,
             title = simpleTaskWithoutID.title,
             detailHtml = simpleTaskWithoutID.detailHtml,
-            hashTime = simpleTaskWithoutID.hashTime,
+            hasTime = simpleTaskWithoutID.hasTime,
             date = simpleTaskWithoutID.date,
             isAllDay = simpleTaskWithoutID.isAllDay,
             beginTime = simpleTaskWithoutID.beginTime,
@@ -274,7 +274,7 @@ object TaskDao {
             return
         }
         //如果没有设置时间，也不可能有通知
-        if (!simpleTaskWithID.hashTime) {
+        if (!simpleTaskWithID.hasTime) {
             return
         }
         //获取起始时间

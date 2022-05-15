@@ -18,7 +18,7 @@ class TaskAllCancelFragment : TaskBaseFragment() {
         //过滤数据，只关心部分数据
         for (i in TaskDao.getAllSimpleTasks()) {
             if (i.status == TaskStatus.CANCELED) {
-                if (i.hashTime) {
+                if (i.hasTime) {
                     SimpleTaskWithID.copy(i).apply {
                         this.beginTime.apply {
                             set(Calendar.YEAR, i.date.get(Calendar.YEAR))
