@@ -55,11 +55,6 @@ dependencies {
     implementation libraries.androidxCore
     implementation libraries.appCompat
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.activity:activity-ktx:1.4.0'
-    implementation 'androidx.fragment:fragment-ktx:1.4.1'
-    implementation "androidx.recyclerview:recyclerview:+"
-
     implementation 'com.google.android.material:material:1.6.0'
 
     //okhttp
@@ -84,9 +79,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     //--------------------------------------------------------------------------
     //Drawer Layout
-    // https://mvnrepository.com/artifact/com.mikepenz/materialdrawer
     implementation group: 'com.mikepenz', name: 'materialdrawer', version: '9.0.0'
-    implementation 'com.mikepenz:materialdrawer-nav:9.0.0'
     implementation 'com.mikepenz:materialdrawer-iconics:9.0.0'
     //--------------------------------------------------------------------------
     //RecyclerView
@@ -103,16 +96,15 @@ dependencies {
     implementation 'cn.carbswang.android:NumberPickerView:1.2.0'
     //--------------------------------------------------------------------------
     //Login
-    implementation 'cn.authing:guard:1.3.1'
+    implementation('cn.authing:guard:1.3.1'){
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
     //--------------------------------------------------------------------------
     //Code input
     implementation 'com.galenleo.widgets:code-input-view:1.0.0'
     //--------------------------------------------------------------------------
     //Toast
     implementation 'com.github.GrenderG:Toasty:1.5.2'
-    //--------------------------------------------------------------------------
-    //Loading
-    //implementation 'com.github.ybq:Android-SpinKit:1.4.0'
     //--------------------------------------------------------------------------
     //SMS
     implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
@@ -149,7 +141,6 @@ dependencies {
     implementation "dev.sasikanth:colorsheet:1.0.1"
     //--------------------------------------------------------------------------
     //timeline
-    implementation "androidx.core:core-ktx:+"
     implementation 'com.github.vipulasri:timelineview:1.1.5'
     //--------------------------------------------------------------------------
     //navigation
