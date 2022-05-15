@@ -192,6 +192,7 @@ class AddSimpleTaskActivity : AppCompatActivity() {
             setOnClickListener {
                 val i = Intent(this@AddSimpleTaskActivity, SelectSimpleTaskTimeActivity::class.java)
                 taskTimeAndNotify.apply {
+                    i.putExtra("fromAddTask", true)
                     i.putExtra("hasTime", taskTimeAndNotify.hasTime)
                     i.putExtra("date", taskTimeAndNotify.date)
                     i.putExtra("isAllDay", taskTimeAndNotify.isAllDay)
