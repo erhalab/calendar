@@ -1,4 +1,4 @@
-package com.erha.calander.fragment
+package com.erha.calander.fragment.task
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-abstract class TaskFragment : Fragment(R.layout.fragment_task) {
+abstract class TaskBaseFragment : Fragment(R.layout.fragment_task) {
     lateinit var binding: FragmentTaskBinding
 
     private lateinit var adapter: TaskAdapter

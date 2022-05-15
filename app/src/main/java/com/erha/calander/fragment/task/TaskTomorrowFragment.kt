@@ -1,13 +1,12 @@
 package com.erha.calander.fragment.task
 
 import com.erha.calander.dao.TaskDao
-import com.erha.calander.fragment.TaskFragment
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.TaskStatus
 import com.erha.calander.util.CalendarUtil
 import java.util.*
 
-class TaskTomorrowFragment : TaskFragment() {
+class TaskTomorrowFragment : TaskBaseFragment() {
 
     override fun getSmallTitleText(): String {
         return "明天,所有"

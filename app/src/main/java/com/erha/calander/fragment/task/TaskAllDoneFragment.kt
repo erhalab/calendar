@@ -1,12 +1,11 @@
 package com.erha.calander.fragment.task
 
 import com.erha.calander.dao.TaskDao
-import com.erha.calander.fragment.TaskFragment
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.TaskStatus
 import java.util.*
 
-class TaskAllDoneFragment : TaskFragment() {
+class TaskAllDoneFragment : TaskBaseFragment() {
 
     override fun getSmallTitleText(): String {
         return "所有,已完成"

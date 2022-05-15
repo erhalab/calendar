@@ -1,11 +1,10 @@
 package com.erha.calander.fragment.task
 
 import com.erha.calander.dao.TaskDao
-import com.erha.calander.fragment.TaskFragment
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.TaskStatus
 
-class TaskAllInboxFragment : TaskFragment() {
+class TaskAllInboxFragment : TaskBaseFragment() {
 
     override fun getSmallTitleText(): String {
         return "收集箱,所有"
