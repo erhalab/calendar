@@ -98,8 +98,8 @@ class TaskAdapter(val context: Context) :
                             else -> false
                         }
                     }
-                    setOnStateChangedListener { checkBox, newState ->
-                        task.status = when (newState) {
+                    setOnClickListener {
+                        task.status = when (state) {
                             null -> TaskStatus.CANCELED
                             true -> TaskStatus.FINISHED
                             false -> TaskStatus.ONGOING
