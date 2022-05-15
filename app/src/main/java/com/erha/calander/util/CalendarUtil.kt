@@ -1,20 +1,41 @@
 package com.erha.calander.util
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
 object CalendarUtil {
 
-    //返回更加清晰的日期时间格式（起始日期必须是同一天）
-    fun getClearTimeText(begin: Calendar, end: Calendar): String {
-        val now = CalendarUtil.getWithoutSecond()
-        val beginCalendar = CalendarUtil.getWithoutSecond(begin)
-        val endCalendar = CalendarUtil.getWithoutSecond(end)
+    //返回更加清晰的时间格式
+    fun getClearTimeText(time: Calendar): String {
+        val t = getWithoutSecond(time)
+        var timeString = when (t.get(Calendar.HOUR_OF_DAY)) {
+            in 0..3, 23 -> "深夜 "
+            in 4..6 -> "清晨 "
+            in 7..10 -> "上午 "
+            in 11..13 -> "中午 "
+            in 14..18 -> "下午 "
+            in 19..22 -> "晚上 "
+            else -> "ERROR "
+        }
+        timeString += SimpleDateFormat(
+            "H:mm",
+            Locale.getDefault()
+        ).format(t.timeInMillis)
+        return timeString
+    }
 
-        var dateString = ""
+    //返回更加清晰的日期时间格式（起始日期必须是同一天）
+    fun getClearDateTimeText(begin: Calendar, end: Calendar): String {
+        val now = getWithoutSecond()
+        val beginCalendar = getWithoutSecond(begin)
+        val endCalendar = getWithoutSecond(end)
+
+        var dateString: String
         if (now.get(Calendar.YEAR) == beginCalendar.get(Calendar.YEAR)) {
             //是同一年的
             val dayDiffs = now.get(Calendar.DAY_OF_YEAR) - beginCalendar.get(Calendar.DAY_OF_YEAR)
+            Log.e("Calendar Util", "daydiffs = ${dayDiffs}")
             dateString = when (dayDiffs) {
                 0 -> "今天,"
                 1 -> "昨天,"
@@ -31,31 +52,24 @@ object CalendarUtil {
             dateString =
                 SimpleDateFormat("yy年M月d日 ", Locale.getDefault()).format(beginCalendar.timeInMillis)
         }
-        var timeString = ""
-        if (CalendarUtil.compareOnlyTime(beginCalendar, endCalendar) == 0) {
-            //只有一个时间呢
-            timeString = when (beginCalendar.get(Calendar.HOUR_OF_DAY)) {
-                0 -> "凌晨"
-                in 1..10 -> "上午"
-                in 11..12 -> "中午"
-                in 13..19 -> "下午"
-                else -> "晚上"
+        val timeString = when {
+            compareOnlyTime(beginCalendar, endCalendar) == 0 -> {
+                //只有一个时间呢
+                getClearTimeText(beginCalendar)
             }
-            timeString += SimpleDateFormat(
-                "H:mm",
-                Locale.getDefault()
-            ).format(beginCalendar.timeInMillis)
-        } else if ((endCalendar.timeInMillis - beginCalendar.timeInMillis) == (1000 * 60 * 60 * 24 - 1000 * 60).toLong()) {
-            //相差1天少1分钟
-            timeString = "全天"
-        } else {
-            timeString = SimpleDateFormat(
-                "H:mm",
-                Locale.getDefault()
-            ).format(beginCalendar.timeInMillis) + "-" + SimpleDateFormat(
-                "H:mm",
-                Locale.getDefault()
-            ).format(endCalendar.timeInMillis)
+            (endCalendar.timeInMillis - beginCalendar.timeInMillis) == (1000 * 60 * 60 * 24 - 1000 * 60).toLong() -> {
+                //相差1天少1分钟
+                "全天"
+            }
+            else -> {
+                SimpleDateFormat(
+                    "H:mm",
+                    Locale.getDefault()
+                ).format(beginCalendar.timeInMillis) + "-" + SimpleDateFormat(
+                    "H:mm",
+                    Locale.getDefault()
+                ).format(endCalendar.timeInMillis)
+            }
         }
         return dateString + "" + timeString
     }
@@ -117,9 +131,9 @@ object CalendarUtil {
 
     //只比较时间，包括小时...毫秒
     fun compareOnlyTime(calendar1: Calendar, calendar2: Calendar): Int {
-        var a = Calendar.getInstance()
-        var b = calendar1.clone() as Calendar
-        var c = calendar2.clone() as Calendar
+        val a = Calendar.getInstance()
+        val b = calendar1.clone() as Calendar
+        val c = calendar2.clone() as Calendar
         b.apply {
             set(Calendar.YEAR, a.get(Calendar.YEAR))
             set(Calendar.DAY_OF_YEAR, a.get(Calendar.DAY_OF_YEAR))

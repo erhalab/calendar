@@ -140,7 +140,7 @@ class TaskAdapter(val context: Context) :
                         set(Calendar.MONTH, task.date.get(Calendar.MONTH))
                         set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
                     }
-                    CalendarUtil.getClearTimeText(beginCalendar, endCalendar)
+                    CalendarUtil.getClearDateTimeText(beginCalendar, endCalendar)
                 } else {
                     "无时间"
                 }

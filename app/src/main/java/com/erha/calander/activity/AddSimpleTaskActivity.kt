@@ -38,7 +38,6 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -433,22 +432,27 @@ class AddSimpleTaskActivity : AppCompatActivity() {
     private fun updateTimeTextview() {
         binding.taskTime.apply {
             if (taskTimeAndNotify.hasTime) {
-                if (taskTimeAndNotify.isAllDay) {
-                    text = "${
-                        SimpleDateFormat.getDateInstance()
-                            .format(taskTimeAndNotify.date.timeInMillis)
-                    } 全天"
-                } else {
-                    var timeSimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    text = "${
-                        SimpleDateFormat.getDateInstance()
-                            .format(taskTimeAndNotify.date.timeInMillis)
-                    } ${timeSimpleDateFormat.format(taskTimeAndNotify.beginTime.timeInMillis)}-${
-                        timeSimpleDateFormat.format(
-                            taskTimeAndNotify.endTime.timeInMillis
-                        )
-                    }"
+                taskTimeAndNotify.beginTime.apply {
+                    set(Calendar.YEAR, taskTimeAndNotify.date.get(Calendar.YEAR))
+                    set(Calendar.DAY_OF_YEAR, taskTimeAndNotify.date.get(Calendar.DAY_OF_YEAR))
                 }
+                taskTimeAndNotify.endTime.apply {
+                    set(Calendar.YEAR, taskTimeAndNotify.date.get(Calendar.YEAR))
+                    set(Calendar.DAY_OF_YEAR, taskTimeAndNotify.date.get(Calendar.DAY_OF_YEAR))
+                }
+                if (taskTimeAndNotify.isAllDay) {
+                    taskTimeAndNotify.beginTime =
+                        CalendarUtil.getWithoutTime(taskTimeAndNotify.date)
+                    taskTimeAndNotify.endTime =
+                        CalendarUtil.getWithoutTime(taskTimeAndNotify.date).apply {
+                            set(Calendar.HOUR_OF_DAY, 23)
+                            set(Calendar.MINUTE, 59)
+                        }
+                }
+                text = CalendarUtil.getClearDateTimeText(
+                    taskTimeAndNotify.beginTime,
+                    taskTimeAndNotify.endTime
+                )
                 if (taskTimeAndNotify.isDDL) {
                     setTextColor(resources.getColor(R.color.dark_orange))
                 } else {
@@ -459,7 +463,6 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 setTextColor(resources.getColor(R.color.default_active))
             }
         }
-
     }
 
     lateinit var loadingPopup: LoadingPopupView

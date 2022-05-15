@@ -103,6 +103,15 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
             }
         }
         binding.submitZone.setOnClickListener {
+            //将beginTime和endTime与date对齐
+            task.beginTime = CalendarUtil.getWithoutSecond(task.beginTime).apply {
+                set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+                set(Calendar.DAY_OF_YEAR, task.date.get(Calendar.DAY_OF_YEAR))
+            }
+            task.endTime = CalendarUtil.getWithoutSecond(task.endTime).apply {
+                set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+                set(Calendar.DAY_OF_YEAR, task.date.get(Calendar.DAY_OF_YEAR))
+            }
             val intent = Intent()
             intent.apply {
                 putExtra("hasTime", task.hasTime)
@@ -233,7 +242,7 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                 detailText = if (!task.hasTime) {
                     "未设置日期"
                 } else {
-                    SimpleDateFormat.getTimeInstance().format(task.beginTime.timeInMillis)
+                    CalendarUtil.getClearTimeText(task.beginTime)
                 }
 
             }
@@ -257,7 +266,7 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                 detailText = if (!task.hasTime) {
                     "未设置日期"
                 } else {
-                    SimpleDateFormat.getTimeInstance().format(task.endTime.timeInMillis)
+                    CalendarUtil.getClearTimeText(task.endTime)
                 }
 
             }
@@ -344,12 +353,11 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
 
     private fun openTimePickerDialog(is4BeginTime: Boolean) {
         isOpenTimePickerDialog4BeginTime = is4BeginTime
-        var builder: BottomSheetPickerDialog = NumberPadTimePickerDialog.newInstance(
+        val builder: BottomSheetPickerDialog = NumberPadTimePickerDialog.newInstance(
             this@SelectSimpleTaskTimeActivity,
             true
-        )
-        (builder as NumberPadTimePickerDialog).apply {
-            setHint("输入时间")
+        ).apply {
+            setHint("${if (is4BeginTime) "起始" else "结束"}时间")
         }
         builder.setAccentColor(resources.getColor(R.color.default_active))
         builder.setHeaderColor(resources.getColor(R.color.default_active))
@@ -431,12 +439,18 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
             task.beginTime.apply {
                 set(Calendar.HOUR_OF_DAY, hourOfDay)
                 set(Calendar.MINUTE, minute)
+                set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+                set(Calendar.MONTH, task.date.get(Calendar.MONTH))
+                set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
             }
             task.beginTime = CalendarUtil.getWithoutSecond(task.beginTime)
         } else {
             task.endTime.apply {
                 set(Calendar.HOUR_OF_DAY, hourOfDay)
                 set(Calendar.MINUTE, minute)
+                set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+                set(Calendar.MONTH, task.date.get(Calendar.MONTH))
+                set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
             }
             task.endTime = CalendarUtil.getWithoutSecond(task.endTime)
         }
