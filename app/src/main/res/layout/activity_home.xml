@@ -9,17 +9,9 @@
     android:theme="@style/QMUI"
     tools:context=".activity.HomeActivity">
 
-    <com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
-        android:id="@+id/slider"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        android:theme="@style/Theme.Material3.Light.NoActionBar" />
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:theme="@style/QMUI"
         android:layout_height="match_parent">
 
         <androidx.viewpager2.widget.ViewPager2
@@ -70,5 +62,36 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/crossFadeSlider"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:clickable="true"
+        android:fitsSystemWindows="true"
+        android:theme="@style/Drawer">
+
+        <com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
+            android:id="@+id/crossFadeLargeView"
+            android:layout_width="72dp"
+            android:layout_height="0dp"
+            android:fitsSystemWindows="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.mikepenz.materialdrawer.widget.MiniDrawerSliderView
+            android:id="@+id/crossFadeSmallView"
+            android:layout_width="72dp"
+            android:layout_height="0dp"
+            android:fitsSystemWindows="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

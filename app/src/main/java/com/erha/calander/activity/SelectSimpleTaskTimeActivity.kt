@@ -9,9 +9,12 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.erha.calander.R
+import com.erha.calander.dao.TaskDao
 import com.erha.calander.databinding.ActivitySelectSimpleTaskTimeBinding
+import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.popup.SelectTaskNotifyTimesPopup
 import com.erha.calander.popup.SelectTaskNotifyTimesPopupCallback
+import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.TinyDB
@@ -27,6 +30,7 @@ import com.philliphsu.bottomsheetpickers.time.numberpad.NumberPadTimePickerDialo
 import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import es.dmoral.toasty.Toasty
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,6 +44,8 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
     private lateinit var binding: ActivitySelectSimpleTaskTimeBinding
     private lateinit var store: TinyDB
     private val task = TaskTimeAndNotify()
+
+    private var simpleTaskId = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,13 +74,33 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
             binding.taskTimeQMUILinearLayout.radius = this
         }
         intent?.apply {
-            task.hasTime = getBooleanExtra("hasTime", task.hasTime)
-            task.date = getSerializableExtra("date") as Calendar
-            task.isAllDay = getBooleanExtra("isAllDay", task.isAllDay)
-            task.beginTime = getSerializableExtra("beginTime") as Calendar
-            task.endTime = getSerializableExtra("endTime") as Calendar
-            task.isDDL = getBooleanExtra("isDDL", task.isDDL)
-            task.notifyTimes = getSerializableExtra("notifyTimes") as ArrayList<Int>
+            if (getBooleanExtra("fromAddTask", false)) {
+                task.hasTime = getBooleanExtra("hasTime", task.hasTime)
+                task.date = getSerializableExtra("date") as Calendar
+                task.isAllDay = getBooleanExtra("isAllDay", task.isAllDay)
+                task.beginTime = getSerializableExtra("beginTime") as Calendar
+                task.endTime = getSerializableExtra("endTime") as Calendar
+                task.isDDL = getBooleanExtra("isDDL", task.isDDL)
+                task.notifyTimes = getSerializableExtra("notifyTimes") as ArrayList<Int>
+            }
+            if (getBooleanExtra("fromQuickModifySimpleTask", false)) {
+                simpleTaskId = getIntExtra("simpleTaskId", -1)
+                val queryTask = TaskDao.getSimpleTaskById(simpleTaskId)
+                if (simpleTaskId != -1 && queryTask != null) {
+                    queryTask.apply {
+                        task.hasTime = hashTime
+                        task.date = date
+                        task.isAllDay = isAllDay
+                        task.beginTime = beginTime
+                        task.endTime = endTime
+                        task.isDDL = isDDL
+                        task.notifyTimes = notifyTimes
+                    }
+                } else {
+                    setResult(RESULT_CANCELED)
+                    finish()
+                }
+            }
         }
         binding.submitZone.setOnClickListener {
             val intent = Intent()
@@ -88,6 +114,31 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                 putExtra("notifyTimes", task.notifyTimes)
             }
             setResult(RESULT_OK, intent)
+            if (simpleTaskId != -1) {
+                Thread {
+                    TaskDao.getSimpleTaskById(simpleTaskId)?.apply {
+                        TaskDao.updateSimpleTask(
+                            SimpleTaskWithID(
+                                id = id,
+                                status = status,
+                                title = title,
+                                detailHtml = detailHtml,
+                                hashTime = task.hasTime,
+                                date = task.date,
+                                isAllDay = task.isAllDay,
+                                beginTime = task.beginTime,
+                                endTime = task.endTime,
+                                isDDL = task.isDDL,
+                                notifyTimes = task.notifyTimes,
+                                customColor = customColor,
+                                color = color
+                            )
+                        )
+                        EventBus.getDefault().post(EventType.EVENT_CHANGE)
+                    }
+                }.start()
+                Toasty.success(binding.root.context, "更新成功", Toast.LENGTH_SHORT, false).show()
+            }
             finish()
         }
         refreshAllItems()
@@ -139,6 +190,14 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
                         })
                     switch.setOnCheckedChangeListener { buttonView, isChecked ->
                         task.isAllDay = isChecked
+                        task.beginTime = CalendarUtil.getWithoutTime(task.date).apply {
+                            set(Calendar.HOUR_OF_DAY, 0)
+                            set(Calendar.MINUTE, 0)
+                        }
+                        task.endTime = CalendarUtil.getWithoutTime(task.date).apply {
+                            set(Calendar.HOUR_OF_DAY, 23)
+                            set(Calendar.MINUTE, 59)
+                        }
                         refreshAllItems()
                     }
                     orientation = QMUICommonListItemView.HORIZONTAL

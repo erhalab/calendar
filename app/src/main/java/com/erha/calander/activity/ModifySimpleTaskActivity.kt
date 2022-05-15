@@ -214,6 +214,7 @@ class ModifySimpleTaskActivity : AppCompatActivity() {
                 val i =
                     Intent(this@ModifySimpleTaskActivity, SelectSimpleTaskTimeActivity::class.java)
                 taskTimeAndNotify.apply {
+                    i.putExtra("fromAddTask", true)
                     i.putExtra("hasTime", taskTimeAndNotify.hasTime)
                     i.putExtra("date", taskTimeAndNotify.date)
                     i.putExtra("isAllDay", taskTimeAndNotify.isAllDay)

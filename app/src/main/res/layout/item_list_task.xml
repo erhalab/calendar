@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingTop="0dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="0dp"
+    android:theme="@style/QMUI">
+
+    <com.buildware.widget.indeterm.IndeterminateCheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:backgroundTint="@null"
+        android:buttonTint="@color/default_active"
+        android:foreground="@null"
+        android:gravity="center_horizontal"
+        android:paddingBottom="30dp"
+        app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+        app:layout_constraintTop_toTopOf="@id/constraintLayout" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/checkBox"
+        app:layout_constraintTop_toTopOf="@id/constraintLayout">
+
+        <TextView
+            android:id="@+id/taskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingTop="8dp"
+            android:text="我是任务的标题呀"
+            android:textSize="17sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp">
+
+            <TextView
+                android:id="@+id/taskTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="我是任务的时间"
+                android:textSize="13sp" />
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/taskNotifyIcon"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                app:iiv_color="@color/gray_500"
+                app:iiv_contour_color="@color/gray_500"
+                app:iiv_icon="gmd-alarm" />
+
+            <TextView
+                android:id="@+id/taskNotifyNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="5"
+                android:textColor="@color/gray_500"
+                android:textSize="11dp" />
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/taskDDLIcon"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                app:iiv_color="@color/gray_500"
+                app:iiv_contour_color="@color/gray_500"
+                app:iiv_icon="gmd-hourglass-empty" />
+
+            <TextView
+                android:id="@+id/taskDDLLeftTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1天"
+                android:textColor="@color/gray_500"
+                android:textSize="11dp" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

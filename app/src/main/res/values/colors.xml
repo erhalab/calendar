@@ -6,6 +6,10 @@
     <color name="default_active">#4d70fa</color>
     <color name="transparent">#00000000</color>
 
+    <color name="success">#0cce9c</color>
+    <color name="warning">#ff9315</color>
+    <color name="danger">#df3130</color>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

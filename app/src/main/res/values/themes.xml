@@ -51,4 +51,9 @@
         <item name="android:colorControlNormal">#00FFFFFF</item>
         <item name="android:colorControlActivated">#00FFFFFF</item>
     </style>
+
+    <style name="Drawer" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="materialDrawerStyle">@style/Widget.MaterialDrawerStyle</item>
+        <item name="materialDrawerHeaderStyle">@style/Widget.MaterialDrawerHeaderStyle</item>
+    </style>
 </resources>

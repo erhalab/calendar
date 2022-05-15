@@ -5,11 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -23,32 +24,26 @@ import androidx.viewpager2.widget.ViewPager2
 import cn.authing.guard.Authing
 import cn.authing.guard.data.UserInfo
 import cn.authing.guard.network.AuthClient
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.erha.calander.R
 import com.erha.calander.dao.ConfigDao
 import com.erha.calander.dao.SecretKeyDao
 import com.erha.calander.databinding.ActivityHomeBinding
 import com.erha.calander.fragment.*
 import com.erha.calander.service.NotificationService
+import com.erha.calander.timeline.utils.VectorDrawableUtils
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
 import com.erha.calander.util.GuideEntity
 import com.erha.calander.util.GuideUtil
 import com.erha.calander.util.TinyDB
+import com.google.android.material.navigation.NavigationView
 import com.mikepenz.iconics.Iconics
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
-import com.mikepenz.materialdrawer.holder.ImageHolder
-import com.mikepenz.materialdrawer.iconics.iconicsIcon
-import com.mikepenz.materialdrawer.model.DividerDrawerItem
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
-import com.mikepenz.materialdrawer.model.interfaces.descriptionText
-import com.mikepenz.materialdrawer.model.interfaces.nameText
-import com.mikepenz.materialdrawer.widget.AccountHeaderView
+import com.mikepenz.materialdrawer.model.interfaces.iconBitmap
+import com.mikepenz.materialdrawer.model.interfaces.iconDrawable
 import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.tencent.smtt.export.external.TbsCoreSettings
 import com.tencent.smtt.sdk.QbSdk
@@ -58,12 +53,14 @@ import es.dmoral.toasty.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.*
 
 
-class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndexListener {
+class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndexListener,
+    NavigationView.OnNavigationItemSelectedListener, MenuEventCallback {
     data class FragmentObject(
         var fragment: Fragment,
         var identity: String
@@ -163,7 +160,6 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
 
         intent?.apply {
             getStringExtra("defaultPage")?.apply {
-                Log.e("intent", "is safe")
                 gotoTab(this)
             }
         }
@@ -310,7 +306,9 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
         fragmentObjects.addAll(
             listOf(
                 FragmentObject(
-                    fragment = HomeFragment(),
+                    fragment = TaskPaneFragment().apply {
+                        menuEventCallback = this@HomeActivity
+                    },
                     identity = "任务"
                 ),
                 FragmentObject(
@@ -350,70 +348,77 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
 
     //初始化侧边栏
     private fun initDrawer(recreate: Boolean = false) {
-        binding.slider.apply {
-            if (recreate) {
-                this.headerAdapter.clear()
-                this.itemAdapter.clear()
-                this.footerAdapter.clear()
-            }
-            val i = ProfileDrawerItem().apply {
-                nameText = userInfo?.run { this.nickname } ?: "未登录"
-                descriptionText = userInfo?.run { this.email } ?: ""
-                identifier = 102
-            }
-            val accountHeaderView = AccountHeaderView(binding.root.context).apply {
-                attachToSliderView(binding.slider) // attach to the slider
-                selectionListEnabledForSingleProfile = false
-                closeDrawerOnProfileListClick = false
-            }
-            Glide.with(this@HomeActivity)
-                .asBitmap()
-                .load("https://files.authing.co/user-contents/photos/52e998bf-a2b5-4db3-ae3d-71aea9b8314a")
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        i.icon = ImageHolder(resource)
-                        accountHeaderView.addProfiles(i)
+        binding.crossFadeLargeView.apply {
+            var correctIndex = 0
+            if (store.getBoolean(LocalStorageKey.USER_IS_LOGIN)) {
+                store.getString(LocalStorageKey.USER_PHOTO_CACHE_ID)?.apply {
+                    if (this.isNotEmpty()) {
+                        var id = this
+                        itemAdapter.add(
+                            ProfileDrawerItem().apply {
+                                iconBitmap = BitmapFactory.decodeFile(
+                                    File(
+                                        File(
+                                            binding.root.context.filesDir,
+                                            "avator"
+                                        ), id
+                                    ).path
+                                )
+                            }
+                        )
+                        correctIndex++
                     }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
-                })
-            val item1 =
-                PrimaryDrawerItem().apply {
-                    nameText = "测试"
-                    identifier = 1
-                    isSelectable = false
-                    iconicsIcon = FontAwesome.Icon.faw_star
                 }
-            val item2 =
-                SecondaryDrawerItem().apply { nameText = "测试2"; identifier = 2 }
-
-            // get the reference to the slider and add the items
-            this.itemAdapter.add(
-                item1,
-                DividerDrawerItem(),
-                item2,
-                SecondaryDrawerItem().apply { nameText = "设置" }
-            )
-
-            // specify a click listener
-            this.onDrawerItemClickListener = { v, drawerItem, position ->
-                // do something with the clicked item :D
-                Toast.makeText(
-                    binding.root.context,
-                    "onDrawerItemClickListener ${drawerItem.identifier}",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                Log.e("onDrawerItemClickListener", "ID = ${drawerItem.identifier}")
-                false
             }
-            closeOnClick = false
-            scrollToTopAfterClick = false
+            itemAdapter.add(
+                PrimaryDrawerItem().apply {
+                    iconDrawable = VectorDrawableUtils.getDrawable(
+                        binding.root.context, R.drawable.ic_baseline_wb_sunny_24,
+                        Color.BLACK
+                    )
+                },
+                PrimaryDrawerItem().apply {
+                    iconDrawable = VectorDrawableUtils.getDrawable(
+                        binding.root.context,
+                        R.drawable.ic_baseline_inbox_24,
+                        Color.BLACK
+                    )
+                },
+                PrimaryDrawerItem().apply {
+                    iconDrawable = VectorDrawableUtils.getDrawable(
+                        binding.root.context,
+                        R.drawable.ic_baseline_playlist_play_24,
+                        Color.BLACK
+                    )
+                },
+                PrimaryDrawerItem().apply {
+                    iconDrawable = VectorDrawableUtils.getDrawable(
+                        binding.root.context,
+                        R.drawable.ic_baseline_playlist_add_check_24,
+                        Color.BLACK
+                    )
+                },
+                PrimaryDrawerItem().apply {
+                    iconDrawable = VectorDrawableUtils.getDrawable(
+                        binding.root.context,
+                        R.drawable.ic_baseline_playlist_remove_24,
+                        Color.BLACK
+                    )
+                },
+            )
+            onDrawerItemClickListener = { v, drawerItem, position ->
+                for (i in fragmentObjects) {
+                    var g = i.fragment
+                    if (g is TaskPaneFragment) {
+                        g.gotoPage(position - correctIndex)
+                    }
+                }
+                binding.root.close()
+                true
+            }
         }
+        binding.crossFadeSmallView.drawer = binding.crossFadeLargeView
+        binding.crossFadeSmallView.background = binding.crossFadeLargeView.background
     }
 
     //初始化悬浮按钮
@@ -532,11 +537,20 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
     private fun updateLanguage() {
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.e("dhjehdada", item.itemId.toString())
+        return false
+    }
+
+    override fun menuOnclick() {
+        binding.root.open()
+    }
+
 }
 
 class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) :
     FragmentStateAdapter(context) {
-    var context: Context
+    var context: Context = context
     var fragments: List<Fragment> = ArrayList()
 
     override fun createFragment(position: Int): Fragment {
@@ -552,7 +566,6 @@ class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) 
     }
 
     init {
-        this.context = context
         this.fragments = fragments
     }
 }

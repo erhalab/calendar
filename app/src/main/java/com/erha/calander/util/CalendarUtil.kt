@@ -1,8 +1,97 @@
 package com.erha.calander.util
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 object CalendarUtil {
+
+    //返回更加清晰的日期时间格式（起始日期必须是同一天）
+    fun getClearTimeText(begin: Calendar, end: Calendar): String {
+        val now = CalendarUtil.getWithoutSecond()
+        val beginCalendar = CalendarUtil.getWithoutSecond(begin)
+        val endCalendar = CalendarUtil.getWithoutSecond(end)
+
+        var dateString = ""
+        if (now.get(Calendar.YEAR) == beginCalendar.get(Calendar.YEAR)) {
+            //是同一年的
+            val dayDiffs = now.get(Calendar.DAY_OF_YEAR) - beginCalendar.get(Calendar.DAY_OF_YEAR)
+            dateString = when (dayDiffs) {
+                0 -> "今天,"
+                1 -> "昨天,"
+                2 -> "前天,"
+                -1 -> "明天,"
+                -2 -> "后天,"
+                else -> SimpleDateFormat(
+                    "M月d日 ",
+                    Locale.getDefault()
+                ).format(beginCalendar.timeInMillis)
+            }
+        } else {
+            //不是同一年的
+            dateString =
+                SimpleDateFormat("yy年M月d日 ", Locale.getDefault()).format(beginCalendar.timeInMillis)
+        }
+        var timeString = ""
+        if (CalendarUtil.compareOnlyTime(beginCalendar, endCalendar) == 0) {
+            //只有一个时间呢
+            timeString = when (beginCalendar.get(Calendar.HOUR_OF_DAY)) {
+                0 -> "凌晨"
+                in 1..10 -> "上午"
+                in 11..12 -> "中午"
+                in 13..19 -> "下午"
+                else -> "晚上"
+            }
+            timeString += SimpleDateFormat(
+                "H:mm",
+                Locale.getDefault()
+            ).format(beginCalendar.timeInMillis)
+        } else if ((endCalendar.timeInMillis - beginCalendar.timeInMillis) == (1000 * 60 * 60 * 24 - 1000 * 60).toLong()) {
+            //相差1天少1分钟
+            timeString = "全天"
+        } else {
+            timeString = SimpleDateFormat(
+                "H:mm",
+                Locale.getDefault()
+            ).format(beginCalendar.timeInMillis) + "-" + SimpleDateFormat(
+                "H:mm",
+                Locale.getDefault()
+            ).format(endCalendar.timeInMillis)
+        }
+        return dateString + "" + timeString
+    }
+
+    //返回时间差的容易辨识的文本
+    fun getTimeDiffClearText(
+        calendar: Calendar,
+        calendar1: Calendar = Calendar.getInstance()
+    ): String {
+        val millsDiff = calendar.timeInMillis - calendar1.timeInMillis
+        if (millsDiff < 0) {
+            //时间已过去
+            return "已过期"
+        } else {
+            var i: Long = millsDiff / (1000 * 60 * 60 * 24)
+            if (i > 0) {
+                if (i > 364) {
+                    return "1年以后"
+                }
+                return "${i}天"
+            } else {
+                i = millsDiff / (1000 * 60 * 60)
+                if (i > 0) {
+                    return "${i}小时"
+                } else {
+                    i = millsDiff / (1000 * 60)
+                    if (i > 0) {
+                        return "${i}分钟"
+                    } else {
+                        return "现在"
+                    }
+                }
+            }
+        }
+    }
+
     //返回只包含日期的，其他设置为0
     fun getWithoutTime(calendar: Calendar = Calendar.getInstance()): Calendar {
         val r = calendar.clone() as Calendar

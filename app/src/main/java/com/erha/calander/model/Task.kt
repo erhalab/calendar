@@ -46,6 +46,26 @@ data class SimpleTaskWithID(
     var customColor: Boolean,
     var color: String
 ) {
+    companion object {
+        fun copy(origin: SimpleTaskWithID): SimpleTaskWithID {
+            return SimpleTaskWithID(
+                id = origin.id,
+                status = origin.status,
+                title = origin.title,
+                detailHtml = origin.detailHtml,
+                hashTime = origin.hashTime,
+                date = origin.date.clone() as Calendar,
+                isAllDay = origin.isAllDay,
+                beginTime = origin.beginTime.clone() as Calendar,
+                endTime = origin.endTime.clone() as Calendar,
+                isDDL = origin.isDDL,
+                notifyTimes = ArrayList(origin.notifyTimes),
+                customColor = origin.customColor,
+                color = origin.color
+            )
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other is SimpleTaskWithID) {
             return other.id == this.id
