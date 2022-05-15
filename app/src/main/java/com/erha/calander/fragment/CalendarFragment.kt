@@ -98,7 +98,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         }
         gotoCalendarHistoryPosition()
         initFirstWeek()
-        updateTimeRangeText()
     }
 
     private fun gotoCalendarHistoryPosition() {
@@ -206,28 +205,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
         reloadAllCalendarEvents()
     }
 
-    fun updateTimeRangeText(numberOfVisibleDays: Int = binding.weekView.numberOfVisibleDays) {
-        Log.e("updateTimeRangeText", "numberOfVisibleDays=${numberOfVisibleDays}")
-        val firstVisibleDate = binding.weekView.firstVisibleDate
-        val lastVisibleDate = firstVisibleDate.clone() as Calendar
-        lastVisibleDate.apply {
-            add(Calendar.DAY_OF_YEAR, numberOfVisibleDays)
-        }
-        binding.timeRangeText.text = when (numberOfVisibleDays) {
-            1 -> "${
-                SimpleDateFormat.getDateInstance()
-                    .format(firstVisibleDate.timeInMillis)
-            }"
-            else -> "${
-                SimpleDateFormat.getDateInstance()
-                    .format(firstVisibleDate.timeInMillis)
-            } - ${
-                SimpleDateFormat.getDateInstance()
-                    .format(lastVisibleDate.timeInMillis)
-            }"
-        }
-    }
-
     //更新日历视图的所有事件
     private fun reloadAllCalendarEvents() {
         weekViewAdapter.submitList(CourseDao.getAllCalendarEntities() + TaskDao.getAllCalendarEntities())
@@ -249,9 +226,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     private fun defaultDateFormatter(
         numberOfDays: Int
     ) = when (numberOfDays) {
-        1 -> SimpleDateFormat("EEEE", locale)
-        in 2..6 -> SimpleDateFormat("EEE", locale)
-        else -> SimpleDateFormat("EEEEE", locale)
+        1 -> SimpleDateFormat("d号", locale)
+        in 2..6 -> SimpleDateFormat("dd\nEEE", locale)
+        else -> SimpleDateFormat("d\nEEEEE", locale)
     }
 
     //侧边栏格式
@@ -399,7 +376,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
                 SimpleDateFormat("yyyy/MM/dd", locale).format(firstVisibleDate.timeInMillis)
             )
             Log.e("日历被滑动了，现在显示的第一天是 ->", firstVisibleDate.toString())
-            calendarFragment.updateTimeRangeText()
             toolbar?.apply {
                 title = SimpleDateFormat("MMMM", locale).format(firstVisibleDate.timeInMillis)
                 subtitle = SimpleDateFormat("yyyy", locale).format(firstVisibleDate.timeInMillis)

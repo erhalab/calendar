@@ -7,7 +7,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.alamkanak.weekview.WeekView
 import com.erha.calander.R
-import com.erha.calander.fragment.CalendarFragment
 import com.erha.calander.type.LocalStorageKey
 import com.philliphsu.bottomsheetpickers.BottomSheetPickerDialog
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog
@@ -40,9 +39,6 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
                     )
                 }
                 weekView.scrollToDateTime(dateTime = time)
-                if (fragment is CalendarFragment) {
-                    fragment.updateTimeRangeText()
-                }
                 true
             }
             R.id.action_today -> {
@@ -75,9 +71,6 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
                         else -> Calendar.SUNDAY
                     }
                 fragment.fragmentManager?.let { builder.show(it, "Time") }
-                if (fragment is CalendarFragment) {
-                    fragment.updateTimeRangeText()
-                }
                 true
             }
             //响应下拉菜单，周视图、日视图切换
@@ -95,9 +88,6 @@ fun Toolbar.setupWithWeekView(weekView: WeekView, fragment: Fragment) {
                             -1 * (c.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY)
                         )
                         weekView.scrollToDate(c)
-                    }
-                    if (fragment is CalendarFragment) {
-                        fragment.updateTimeRangeText(numberOfVisibleDays = viewType.value)
                     }
                 }
                 true
