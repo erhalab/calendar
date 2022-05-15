@@ -147,6 +147,8 @@
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:hint="准备做什么?"
+            android:inputType="text"
+            android:maxLines="1"
             android:paddingLeft="5dp"
             android:textColor="@color/black"
             android:textColorHint="@color/gray_500"
