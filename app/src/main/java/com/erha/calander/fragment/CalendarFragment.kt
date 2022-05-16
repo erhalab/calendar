@@ -248,14 +248,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calender), DatePickerDialog.
     fun onEvent(str: String?) {
         when (str) {
             EventType.FIRST_WEEK_CHANGE -> initFirstWeek()
-            EventType.EVENT_CHANGE -> {
-                //如果是自己发布了事件变化Event，不要刷新视图，减少开销。
-                if (isPostEventChangeMyself) {
-                    isPostEventChangeMyself = false
-                } else {
-                    reloadAllCalendarEvents()
-                }
-            }
             EventType.LANGUAGE_CHANGE -> updateLanguage()
         }
     }
