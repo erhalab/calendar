@@ -171,8 +171,8 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
                 binding.root.context,
                 this.javaClass.name,
                 guideVersion
-            )
-        ) else if (binding.floatButton.visibility == View.VISIBLE && binding.ntb.visibility == View.VISIBLE) {
+            ) && binding.floatButton.visibility == View.VISIBLE && binding.ntb.visibility == View.VISIBLE
+        ) {
             ConfigDao.isDisplayingAnyGuide = true
             val list = listOf(
                 GuideEntity(
