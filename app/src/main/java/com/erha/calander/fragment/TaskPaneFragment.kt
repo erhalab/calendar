@@ -1,13 +1,10 @@
 package com.erha.calander.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.erha.calander.R
 import com.erha.calander.activity.MonitorPagerAdapter
 import com.erha.calander.databinding.FragmentTaskPaneBinding
@@ -24,22 +21,14 @@ class TaskPaneFragment : Fragment(R.layout.fragment_task_pane) {
     private var isLogin = false
     private lateinit var store: TinyDB
     var menuEventCallback: MenuEventCallback? = null
+    private val list = ArrayList<Fragment>()
+    private val titles = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    private val titles = ArrayList<String>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        saveInstanceState: Bundle?
-    ): View {
-        binding = FragmentTaskPaneBinding.inflate(inflater, container, false)
-        store = TinyDB(binding.root.context)
-
-        val list = ArrayList<Fragment>()
+    init {
         list.add(TaskTodayFragment())
         titles.add("今天")
         list.add(TaskAllInboxFragment())
@@ -50,6 +39,15 @@ class TaskPaneFragment : Fragment(R.layout.fragment_task_pane) {
         titles.add("所有已完成")
         list.add(TaskAllCancelFragment())
         titles.add("所有已放弃")
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        saveInstanceState: Bundle?
+    ): View {
+        binding = FragmentTaskPaneBinding.inflate(inflater, container, false)
+        store = TinyDB(binding.root.context)
 
         binding.viewPager2.adapter = MonitorPagerAdapter(requireActivity(), list)
         binding.viewPager2.isUserInputEnabled = false
@@ -59,7 +57,9 @@ class TaskPaneFragment : Fragment(R.layout.fragment_task_pane) {
                 menuEventCallback?.menuOnclick()
             }
         }
-        gotoPage(0)
+        if (saveInstanceState == null) {
+            gotoPage(0)
+        }
         return binding.root
     }
 
@@ -71,26 +71,21 @@ class TaskPaneFragment : Fragment(R.layout.fragment_task_pane) {
             binding.title.text = titles[index]
         }
     }
-}
 
-class MonitorPagerAdapter(context: FragmentActivity, fragments: List<Fragment>) :
-    FragmentStateAdapter(context) {
-    var context: Context = context
-    var fragments: List<Fragment> = ArrayList()
-
-    override fun createFragment(position: Int): Fragment {
-        return fragments[position]
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            val index = savedInstanceState.getInt("pageIndex", -1)
+            index.apply {
+                if (this in 0 until list.size) {
+                    gotoPage(index)
+                }
+            }
+        }
     }
 
-    fun getFragment(position: Int): Fragment {
-        return fragments[position]
-    }
-
-    override fun getItemCount(): Int {
-        return fragments.size
-    }
-
-    init {
-        this.fragments = fragments
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("pageIndex", binding.viewPager2.currentItem)
     }
 }
