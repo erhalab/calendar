@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,6 +32,7 @@ import com.erha.calander.service.NotificationService
 import com.erha.calander.timeline.utils.VectorDrawableUtils
 import com.erha.calander.type.EventType
 import com.erha.calander.type.LocalStorageKey
+import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.GuideEntity
 import com.erha.calander.util.GuideUtil
 import com.erha.calander.util.TinyDB
@@ -423,21 +423,34 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
 
     //初始化悬浮按钮
     private fun initFloatButton(recreate: Boolean = false) {
-        binding.floatButtonShadowLayout.apply {
-            setRadiusAndShadow(
-                100, QMUIDisplayHelper.dp2px(binding.root.context, 5), 0.1F
-            )
+        if (!recreate) {
+            binding.floatButtonShadowLayout.apply {
+                setRadiusAndShadow(
+                    100, QMUIDisplayHelper.dp2px(binding.root.context, 5), 0.1F
+                )
+            }
         }
         binding.floatButton.apply {
             if (recreate) {
 
             } else {
-                setOnLongClickListener {
-                    Toast.makeText(binding.root.context, "long", Toast.LENGTH_SHORT).show()
-                    true
-                }
+
                 setOnClickListener {
                     val i = Intent(this@HomeActivity, AddSimpleTaskActivity::class.java)
+                    if (binding.ntb.models[binding.ntb.modelIndex].title == "里程碑") {
+                        i.putExtra("isDDL", true)
+                        i.putExtra("date", CalendarUtil.getWithoutTime())
+                        i.putExtra("hasDefaultDate", true)
+                    }
+                    for (g in fragmentObjects) {
+                        val fragment = g.fragment
+                        if (fragment is TaskPaneFragment) {
+                            if (fragment.isDisplayingToday() && binding.ntb.models[binding.ntb.modelIndex].title == "任务") {
+                                i.putExtra("date", CalendarUtil.getWithoutTime())
+                                i.putExtra("hasDefaultDate", true)
+                            }
+                        }
+                    }
                     startActivity(i)
                 }
             }
@@ -538,7 +551,6 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.e("dhjehdada", item.itemId.toString())
         return false
     }
 

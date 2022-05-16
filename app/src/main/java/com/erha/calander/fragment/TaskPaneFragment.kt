@@ -72,6 +72,19 @@ class TaskPaneFragment : Fragment(R.layout.fragment_task_pane) {
         }
     }
 
+    fun getNowPageIndex(): Int {
+        return binding.viewPager2.currentItem
+    }
+
+    fun isDisplayingToday(): Boolean {
+        for (i in 0 until titles.size) {
+            if (titles[i] == "今天" && i == getNowPageIndex()) {
+                return true
+            }
+        }
+        return false
+    }
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {

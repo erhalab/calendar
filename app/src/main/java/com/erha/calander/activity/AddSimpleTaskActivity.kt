@@ -46,7 +46,7 @@ data class TaskTimeAndNotify(
     var date: Calendar = CalendarUtil.getWithoutTime(),
     var isAllDay: Boolean = false,
     var beginTime: Calendar = CalendarUtil.getWithoutSecond(),
-    var endTime: Calendar = CalendarUtil.getWithoutSecond(),
+    var endTime: Calendar = beginTime.clone() as Calendar,
     var isDDL: Boolean = false,
     var notifyTimes: ArrayList<Int> = ArrayList()
 )
@@ -114,6 +114,17 @@ class AddSimpleTaskActivity : AppCompatActivity() {
                 taskTimeAndNotify.beginTime = beginTime
                 taskTimeAndNotify.endTime = endTime
             }
+            if (getBooleanExtra("hasDefaultDate", false)) {
+                val calendar = getSerializableExtra("date") as Calendar
+                taskTimeAndNotify.hasTime = true
+                val date = CalendarUtil.getWithoutTime(calendar)
+                taskTimeAndNotify.date = date
+                taskTimeAndNotify.beginTime =
+                    CalendarUtil.alignDateAndTime(date, taskTimeAndNotify.beginTime)
+                taskTimeAndNotify.endTime =
+                    CalendarUtil.alignDateAndTime(date, taskTimeAndNotify.endTime)
+            }
+            taskTimeAndNotify.isDDL = getBooleanExtra("isDDL", taskTimeAndNotify.isDDL)
         }
         binding.editor.apply {
             setPadding(5, 10, 10, 10)
