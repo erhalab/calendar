@@ -10,7 +10,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
@@ -36,7 +35,6 @@ import com.erha.calander.util.CalendarUtil
 import com.erha.calander.util.GuideEntity
 import com.erha.calander.util.GuideUtil
 import com.erha.calander.util.TinyDB
-import com.google.android.material.navigation.NavigationView
 import com.mikepenz.iconics.Iconics
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
@@ -60,7 +58,7 @@ import java.util.*
 
 
 class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndexListener,
-    NavigationView.OnNavigationItemSelectedListener, MenuEventCallback {
+    MenuEventCallback {
     data class FragmentObject(
         var fragment: Fragment,
         var identity: String
@@ -548,10 +546,6 @@ class HomeActivity : AppCompatActivity(), NavigationTabBar.OnTabBarSelectedIndex
     }
 
     private fun updateLanguage() {
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return false
     }
 
     override fun menuOnclick() {
