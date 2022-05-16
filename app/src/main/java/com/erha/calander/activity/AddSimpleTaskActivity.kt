@@ -99,17 +99,17 @@ class AddSimpleTaskActivity : AppCompatActivity() {
         }
         intent?.apply {
             if (getBooleanExtra("calendarLongClickAddTask", false)) {
-                var calendar = getSerializableExtra("date") as Calendar
-                var date = CalendarUtil.getWithoutTime(calendar)
-                var beginTime = CalendarUtil.getWithoutSecond(calendar)
+                val calendar = getSerializableExtra("date") as Calendar
+                val date = CalendarUtil.getWithoutTime(calendar)
+                val beginTime = CalendarUtil.getWithoutSecond(calendar)
                 var endTime = CalendarUtil.getWithoutSecond(calendar)
                 taskTimeAndNotify.hasTime = true
                 taskTimeAndNotify.date = date
                 endTime.apply {
-                    add(Calendar.MINUTE, 120)
+                    add(Calendar.MINUTE, 15)
                 }
                 if (CalendarUtil.compareOnlyTime(beginTime, endTime) > 0) {
-                    endTime = beginTime
+                    endTime = beginTime.clone() as Calendar
                 }
                 taskTimeAndNotify.beginTime = beginTime
                 taskTimeAndNotify.endTime = endTime
