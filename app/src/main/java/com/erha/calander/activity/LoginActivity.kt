@@ -103,7 +103,7 @@ class LoginActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             if (checkPhone() && checkCode()) {
                 val now = Calendar.getInstance()
-                var checkCode = true
+                var checkCode = false
                 initLoadingPopup()
                 loadingPopup.show()
                 for (i in SMSDao.list) {
