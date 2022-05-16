@@ -20,9 +20,9 @@ class TaskAllInboxFragment : TaskBaseFragment() {
             //找所有没有时间的
             if (!i.hasTime) {
                 when (i.status) {
-                    TaskStatus.ONGOING -> listUnDone.add(SimpleTaskWithID.copy(i))
-                    TaskStatus.FINISHED -> listDone.add(SimpleTaskWithID.copy(i))
-                    TaskStatus.CANCELED -> listCanceled.add(SimpleTaskWithID.copy(i))
+                    TaskStatus.ONGOING -> listUnDone.add(i)
+                    TaskStatus.FINISHED -> listDone.add(i)
+                    TaskStatus.CANCELED -> listCanceled.add(i)
                 }
             }
         }

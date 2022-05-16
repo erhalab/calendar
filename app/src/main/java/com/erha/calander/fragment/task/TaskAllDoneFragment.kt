@@ -3,7 +3,6 @@ package com.erha.calander.fragment.task
 import com.erha.calander.dao.TaskDao
 import com.erha.calander.model.SimpleTaskWithID
 import com.erha.calander.model.TaskStatus
-import java.util.*
 
 class TaskAllDoneFragment : TaskBaseFragment() {
 
@@ -19,16 +18,9 @@ class TaskAllDoneFragment : TaskBaseFragment() {
         for (i in TaskDao.getAllSimpleTasks()) {
             if (i.status == TaskStatus.FINISHED) {
                 if (i.hasTime) {
-                    SimpleTaskWithID.copy(i).apply {
-                        this.beginTime.apply {
-                            set(Calendar.YEAR, i.date.get(Calendar.YEAR))
-                            set(Calendar.MONTH, i.date.get(Calendar.MONTH))
-                            set(Calendar.DAY_OF_MONTH, i.date.get(Calendar.DAY_OF_MONTH))
-                        }
-                        listDone.add(this)
-                    }
+                    listDone.add(i)
                 } else {
-                    listNoDate.add(SimpleTaskWithID.copy(i))
+                    listNoDate.add(i)
                 }
             }
         }

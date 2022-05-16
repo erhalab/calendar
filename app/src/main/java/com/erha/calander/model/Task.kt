@@ -1,5 +1,6 @@
 package com.erha.calander.model
 
+import com.erha.calander.util.CalendarUtil
 import java.util.*
 
 
@@ -54,10 +55,10 @@ data class SimpleTaskWithID(
                 title = origin.title,
                 detailHtml = origin.detailHtml,
                 hasTime = origin.hasTime,
-                date = origin.date.clone() as Calendar,
+                date = CalendarUtil.getWithoutTime(origin.date),
                 isAllDay = origin.isAllDay,
-                beginTime = origin.beginTime.clone() as Calendar,
-                endTime = origin.endTime.clone() as Calendar,
+                beginTime = CalendarUtil.alignDateAndTime(origin.date, origin.beginTime),
+                endTime = CalendarUtil.alignDateAndTime(origin.date, origin.endTime),
                 isDDL = origin.isDDL,
                 notifyTimes = ArrayList(origin.notifyTimes),
                 customColor = origin.customColor,

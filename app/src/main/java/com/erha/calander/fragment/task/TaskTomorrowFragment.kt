@@ -25,32 +25,20 @@ class TaskTomorrowFragment : TaskBaseFragment() {
         for (i in TaskDao.getAllSimpleTasks()) {
             if (i.hasTime && CalendarUtil.getWithoutTime(i.date) == now) {
                 when (i.status) {
-                    TaskStatus.ONGOING -> listUnDone.add(SimpleTaskWithID.copy(i))
-                    TaskStatus.FINISHED -> listDone.add(SimpleTaskWithID.copy(i))
-                    TaskStatus.CANCELED -> listCanceled.add(SimpleTaskWithID.copy(i))
+                    TaskStatus.ONGOING -> listUnDone.add(i)
+                    TaskStatus.FINISHED -> listDone.add(i)
+                    TaskStatus.CANCELED -> listCanceled.add(i)
                 }
             }
         }
         listUnDone.sortBy { i ->
-            CalendarUtil.getWithoutSecond(i.beginTime).apply {
-                set(Calendar.YEAR, i.date.get(Calendar.YEAR))
-                set(Calendar.MONTH, i.date.get(Calendar.MONTH))
-                set(Calendar.DAY_OF_MONTH, i.date.get(Calendar.DAY_OF_MONTH))
-            }
+            i.beginTime
         }
         listDone.sortBy { i ->
-            CalendarUtil.getWithoutSecond(i.beginTime).apply {
-                set(Calendar.YEAR, i.date.get(Calendar.YEAR))
-                set(Calendar.MONTH, i.date.get(Calendar.MONTH))
-                set(Calendar.DAY_OF_MONTH, i.date.get(Calendar.DAY_OF_MONTH))
-            }
+            i.beginTime
         }
         listCanceled.sortBy { i ->
-            CalendarUtil.getWithoutSecond(i.beginTime).apply {
-                set(Calendar.YEAR, i.date.get(Calendar.YEAR))
-                set(Calendar.MONTH, i.date.get(Calendar.MONTH))
-                set(Calendar.DAY_OF_MONTH, i.date.get(Calendar.DAY_OF_MONTH))
-            }
+            i.beginTime
         }
         list.addAll(listUnDone + listDone + listCanceled)
         return list

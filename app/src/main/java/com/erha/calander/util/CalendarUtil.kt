@@ -6,6 +6,14 @@ import java.util.*
 
 object CalendarUtil {
 
+    //将时间与日期对齐
+    fun alignDateAndTime(date: Calendar, time: Calendar): Calendar {
+        return getWithoutSecond(time).apply {
+            set(Calendar.YEAR, date.get(Calendar.YEAR))
+            set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR))
+        }
+    }
+
     //返回更加清晰的时间格式
     fun getClearTimeText(time: Calendar): String {
         val t = getWithoutSecond(time.clone() as Calendar)

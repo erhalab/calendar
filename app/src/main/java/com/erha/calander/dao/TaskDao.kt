@@ -149,10 +149,16 @@ object TaskDao {
             title = simpleTaskWithoutID.title,
             detailHtml = simpleTaskWithoutID.detailHtml,
             hasTime = simpleTaskWithoutID.hasTime,
-            date = simpleTaskWithoutID.date,
+            date = CalendarUtil.getWithoutTime(simpleTaskWithoutID.date),
             isAllDay = simpleTaskWithoutID.isAllDay,
-            beginTime = simpleTaskWithoutID.beginTime,
-            endTime = simpleTaskWithoutID.endTime,
+            beginTime = CalendarUtil.alignDateAndTime(
+                simpleTaskWithoutID.date,
+                simpleTaskWithoutID.beginTime
+            ),
+            endTime = CalendarUtil.alignDateAndTime(
+                simpleTaskWithoutID.date,
+                simpleTaskWithoutID.endTime
+            ),
             isDDL = simpleTaskWithoutID.isDDL,
             notifyTimes = simpleTaskWithoutID.notifyTimes,
             customColor = simpleTaskWithoutID.customColor,
@@ -326,7 +332,11 @@ object TaskDao {
         if (!hasInit) {
             return ArrayList()
         }
-        return this.simpleTaskList
+        val list = ArrayList<SimpleTaskWithID>()
+        for (i in simpleTaskList) {
+            list.add(SimpleTaskWithID.copy(i))
+        }
+        return list
     }
 
     fun getAllDeadlines(): ArrayList<SimpleTaskWithID> {
