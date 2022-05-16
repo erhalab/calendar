@@ -8,7 +8,7 @@ object CalendarUtil {
 
     //返回更加清晰的时间格式
     fun getClearTimeText(time: Calendar): String {
-        val t = getWithoutSecond(time)
+        val t = getWithoutSecond(time.clone() as Calendar)
         var timeString = when (t.get(Calendar.HOUR_OF_DAY)) {
             in 0..3, 23 -> "深夜 "
             in 4..6 -> "清晨 "
@@ -151,14 +151,15 @@ object CalendarUtil {
     }
 
     fun getWeekNumber(calendar: Calendar, firstWeekCalendar: Calendar): Int {
+        val firstWeekCalendarClone = firstWeekCalendar.clone() as Calendar
         // 自己适配周数
-        firstWeekCalendar.apply {
+        firstWeekCalendarClone.apply {
             val now = getWithoutTime(calendar)
             val begin2 = getWithoutTime()
             begin2.apply {
                 set(Calendar.YEAR, now.get(Calendar.YEAR))
-                set(Calendar.DAY_OF_MONTH, firstWeekCalendar.get(Calendar.DAY_OF_MONTH))
-                set(Calendar.MONTH, firstWeekCalendar.get(Calendar.MONTH))
+                set(Calendar.DAY_OF_MONTH, firstWeekCalendarClone.get(Calendar.DAY_OF_MONTH))
+                set(Calendar.MONTH, firstWeekCalendarClone.get(Calendar.MONTH))
                 add(Calendar.DAY_OF_YEAR, (get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY) * -1)
             }
             if (begin2 > now) {

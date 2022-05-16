@@ -431,6 +431,16 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
         calendar = CalendarUtil.getWithoutTime(calendar)
         task.hasTime = true
         task.date = calendar
+        task.beginTime.apply {
+            set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+            set(Calendar.MONTH, task.date.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
+        }
+        task.endTime.apply {
+            set(Calendar.YEAR, task.date.get(Calendar.YEAR))
+            set(Calendar.MONTH, task.date.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, task.date.get(Calendar.DAY_OF_MONTH))
+        }
         refreshAllItems()
     }
 
@@ -457,9 +467,9 @@ class SelectSimpleTaskTimeActivity : AppCompatActivity(), DatePickerDialog.OnDat
 
         if (CalendarUtil.compareOnlyTime(task.beginTime, task.endTime) > 0) {
             if (isOpenTimePickerDialog4BeginTime) {
-                task.endTime = task.beginTime
+                task.endTime = CalendarUtil.getWithoutSecond(task.beginTime)
             } else {
-                task.beginTime = task.endTime
+                task.beginTime = CalendarUtil.getWithoutSecond(task.endTime)
             }
         }
         if (!task.hasTime) {
