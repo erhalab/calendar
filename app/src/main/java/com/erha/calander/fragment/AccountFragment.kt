@@ -2,6 +2,7 @@ package com.erha.calander.fragment
 
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -160,7 +161,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         saveInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAccountBinding.inflate(inflater, container, false)
         store = TinyDB(binding.root.context)
         store.apply {
@@ -347,6 +348,14 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     when (item.key) {
                         "userCenter" -> {
                             resultLauncher.launch(Intent(activity, UserCenterActivity::class.java))
+                        }
+                        "discuss" -> {
+                            startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://idiscuz.qugeek.com/")
+                                )
+                            )
                         }
                         else -> {
                             Toasty.info(binding.root.context, R.string.text_developing).show()
