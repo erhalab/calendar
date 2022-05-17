@@ -4,15 +4,15 @@
 
 ## 应用预览图
 
-![](https://pic.imgdb.cn/item/628326e9094754312909026e.jpg)
+![](https://wkphoto.cdn.bcebos.com/7af40ad162d9f2d30f6eaf8ab9ec8a136327cc5c.jpg)
 
-![](https://pic.imgdb.cn/item/628326e90947543129090265.jpg)
+![](https://wkphoto.cdn.bcebos.com/7a899e510fb30f245bd06766d895d143ad4b0308.jpg)
 
-![](https://pic.imgdb.cn/item/628326e9094754312909023b.jpg)
+![](https://wkphoto.cdn.bcebos.com/e7cd7b899e510fb31753fcf2c933c895d1430c08.jpg)
 
-![](https://pic.imgdb.cn/item/628326e90947543129090235.jpg)
+![](https://wkphoto.cdn.bcebos.com/a8014c086e061d95582ebc5d6bf40ad162d9ca6f.jpg)
 
-![](https://pic.imgdb.cn/item/628326e90947543129090232.jpg)
+![](https://wkphoto.cdn.bcebos.com/b999a9014c086e064cc0b42e12087bf40ad1cb6f.jpg)
 
 ## 下载安卓安装包
 
