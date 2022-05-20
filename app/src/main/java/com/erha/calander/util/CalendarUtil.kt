@@ -92,20 +92,27 @@ object CalendarUtil {
             //时间已过去
             return "已过期"
         } else {
-            var i: Long = millsDiff / (1000 * 60 * 60 * 24)
-            if (i > 0) {
-                if (i > 364) {
+            val days: Long = millsDiff / (1000 * 60 * 60 * 24)
+            val daysString = if (days != 0L) "${days}天" else ""
+            val hours: Long = millsDiff / (1000 * 60 * 60)
+            val hoursString = if (hours != 0L) "${hours}小时" else ""
+            val minutes: Long = millsDiff / (1000 * 60)
+            val minutesString = if (minutes != 0L) "${minutes}分钟" else ""
+            if (days > 0) {
+                if (days > 364) {
                     return "1年以后"
                 }
-                return "${i}天"
+                val leftHours: Long = (millsDiff / (1000 * 60 * 60)) % 24
+                val leftHoursString = if (leftHours != 0L) "${leftHours}小时" else ""
+                return "${daysString}${leftHoursString}"
             } else {
-                i = millsDiff / (1000 * 60 * 60)
-                if (i > 0) {
-                    return "${i}小时"
+                if (hours > 0) {
+                    val leftMinutes: Long = (millsDiff / (1000 * 60)) % (24 * 60) % 60
+                    val leftMinutesString = if (leftMinutes != 0L) "${leftMinutes}分钟" else ""
+                    return "${hoursString}${leftMinutesString}"
                 } else {
-                    i = millsDiff / (1000 * 60)
-                    if (i > 0) {
-                        return "${i}分钟"
+                    if (minutes > 0) {
+                        return minutesString
                     } else {
                         return "现在"
                     }
